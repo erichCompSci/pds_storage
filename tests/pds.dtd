@@ -1,0 +1,23 @@
+ <!ELEMENT  PDSBulkLoadSet (PDSDomain*)>
+ <!ELEMENT  PDSDomain (PDSContext)>
+ <!ELEMENT  PDSContext (PDSContext | PDSEntity)*>
+ <!ELEMENT  PDSEntity (Value*,  Attribute*)>
+ <!ELEMENT  Attribute (#PCDATA)>
+ <!ELEMENT  Value (#PCDATA)>
+   <!ATTLIST PDSDomain DomainName CDATA #REQUIRED
+                       DomainType CDATA #REQUIRED
+                       DomainVersion CDATA #REQUIRED
+                       ApplicationName CDATA #REQUIRED>
+   <!ATTLIST PDSContext full_name CDATA #REQUIRED
+                        name CDATA #REQUIRED>
+   <!ATTLIST PDSEntity full_name CDATA #REQUIRED
+                       value CDATA #REQUIRED
+                       name CDATA #REQUIRED
+                       dataType CDATA #REQUIRED
+                       dataLength CDATA #IMPLIED>
+   <!ATTLIST Attribute name CDATA #REQUIRED
+                      attrID CDATA #REQUIRED
+                      attrType CDATA #REQUIRED>
+  
+
+
