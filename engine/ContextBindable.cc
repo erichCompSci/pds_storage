@@ -109,10 +109,10 @@ ContextBindable::make_real()
 void 
 ContextBindable::send_event(BaseEventWrapper* ev, unsigned short which_event)
 {
-  /*FIXME: Need to uncomment and handle this code in the new system
+  
   if (domain_ != 0)
     domain_->send_wrapped_event(ev);
-  */
+  
     
  Proactive::send_event_(ev->event(), which_event);
 }

@@ -12,22 +12,110 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 
 #include "agent/pds.h"
+#include "common/formats.h"
 #include "cmdline.h"
+
+pds_domain_id_t new_domain_id;
+CManager cm;
+
+int domain_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
+{
+  pds_domain_change_event_ptr evt = (pds_domain_change_event_ptr) event;
+  printf("--------------------------\n");
+  printf("Domain event handler called\n");  
+  printf("Event descript: %s\n", evt->event_desc);
+  printf("Event type: %d\n", evt->event_type);
+  printf("Event fullname if applicable: %s\n", evt->event_fullname ? evt->event_fullname : "");
+  printf("--------------------------\n");
+  return 1;
+}
+  
+
+int
+entity_create_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
+{
+  pds_entity_exist_change_ntf_ptr evt = (pds_entity_exist_change_ntf_ptr) event;
+  printf("-------------------------\n");
+  printf("Entity existance handler called\n"); 
+  if(evt->type == PDS_ENTITY_CHANGE_CREATION)
+  {
+    printf("Entity: %s\t was created\n", evt->entity_id.id);
+  }
+  else if(evt->type == PDS_ENTITY_CHANGE_DELETION)
+  {
+    printf("Entity: %s\t was destroyed\n", evt->entity_id.id);
+  }
+  else
+  {
+    printf("Error: create event handled but neither created nor destroyed\n");
+    return 0;
+  }
+  printf("-------------------------\n");
+
+  return 1;
+}
+
+int
+entity_data_change_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
+{
+  pds_entity_data_change_ntf_ptr evt = (pds_entity_data_change_ntf_ptr) event;
+  printf("-------------------------\n");
+  printf("Entity data change handler called\n");
+  pds_entity_data_t new_data = evt->entity_data;
+  
+  assert(new_data.data_type == Attr_String && "Error: data type is supposed to be a string");
+  printf("The new data string for %s is:\n%s\n", evt->entity_id.id, new_data.data);
+  printf("-------------------------\n");
+
+  return 1;
+}
+
+int entity_bind_unbind_event_handler (CManager cm, void * event, void * client_data, attr_list event_list)
+{
+  pds_entity_u_bind_change_ntf_ptr evt = (pds_entity_u_bind_change_ntf_ptr) event;
+  printf("-------------------------\n");
+  printf("Entity bind/unbind handler called\n");
+  if(evt->type == PDS_ENTITY_CHANGE_BIND)
+    printf("Entity: %s\t was bound\n", evt->entity_id.id);
+  else if(evt->type == PDS_ENTITY_CHANGE_UNBIND)
+    printf("Entity: %s\t was unbound\n", evt->entity_id.id);
+  else
+  {
+    printf("Error: bound event handled but neither bound nor unbound\n");
+    return 0;
+  }
+  printf("-------------------------\n");
+  return 1;
+  
+}
+
+void register_domain()
+{
+  pds_register_for_domain_changes(cm, new_domain_id, domain_event_handler, 0);
+  printf("Registered for domain changes...\n");
+}
+
+void register_entity_channel(int which_channel, char * print_msg, EVSimpleHandlerFunc handler_func )
+{
+  pds_register_for_entity_changes_by_channel(cm, new_domain_id, "/newEntity", null_pds_context_id, handler_func, 0, which_channel);
+  printf("Registered for: %s\n", print_msg ? print_msg : "NULL");
+}
+
 
 int main (int argc, char *argv[])
 {
+  printf("Program starting\n");
   struct gengetopt_args_info args_info;
   pds_service wps;
-  pds_domain_id_t new_domain_id;
-  pds_context_id_t cid1, cid2, cid3;
+  pds_context_id_t cid1;
   pds_entity_id_t eid1;
-  attr_list attrs, attrs2, contact_attrs;
+  attr_list contact_attrs;
   char *pds_host;
-  int val1 = 99, val2 = 98;
-  char *str = "This is the first test string I will store.";
+  char *str = "First stored string before any changes are made.";
   pds_entity_data_t tt;
   char **bindings;
   int i2;
@@ -59,104 +147,51 @@ int main (int argc, char *argv[])
             Attr_Int4,
             (attr_value*)8848);
 
+  printf("Before the cmlisten\n");
+  cm = CManager_create();
+  CMlisten(cm);
+  printf("After the cmlisten\n");
+
   if ((wps = pds_service_open (contact_attrs)) == NULL)
     {
       fprintf (stderr, "Couldn't init PDS client-side (is pdsd running?)\n");
       exit (1);
     }
-
+  printf("Before the open_domain call\n");
   new_domain_id = pds_open_domain (wps, 
                                   "newDomain",
                                   "newDomaintype",
                                   1,
-                                  "wp-test");
+                                  "wp-register");
 
 
   cid1 = pds_get_root_context (new_domain_id);
-  printf ("Got root context...\n");
+  printf("After the open_domain call and got the root context\n");
+  //printf ("Got root context: %d\n", cid1);
   
-  attrs = create_attr_list();
-  printf ("created attr list...\n");
+  //attrs = create_attr_list();
+  //printf ("created attr list...\n");
 
-  VAL1_ATOM = attr_atom_from_string("PDS_TEST_VAL1");
+  /*VAL1_ATOM = attr_atom_from_string("PDS_TEST_VAL1");
   VAL2_ATOM = attr_atom_from_string("PDS_TEST_VAL2");
   add_int_attr (attrs, VAL1_ATOM, val1);
   add_int_attr (attrs, VAL2_ATOM, val2);
   printf ("[ added attributes ]");
   fflush (0);
+  */
 
-  eid1 = pds_create_entity (new_domain_id, "newEntity", null_pds_context_id, &tt, attrs);
+  printf("Before registering the domain\n");
+  register_domain(); 
+  register_entity_channel(ENTITY_CREATE_DESTROY, "entity_create_destroy", entity_create_event_handler);
+  register_entity_channel(ENTITY_BIND_UNBIND, "entity_bind_unbind", entity_bind_unbind_event_handler);
+  register_entity_channel(ENTITY_DATA_CHANGE, "entity_data_change", entity_data_change_event_handler);
+
+  eid1 = pds_create_entity (new_domain_id, "/newEntity", null_pds_context_id, &tt, NULL);
   printf ("[ created entity %s]", eid1.id);
   fflush (0);
 
-  attrs2 = create_attr_list();
-  pds_get_entity_attributes_by_id (new_domain_id, eid1, attrs2);
-  printf ("[ retrieved entity attributes ]"); fflush (0);
-
-  dump_attr_list (attrs2);
-
-  bindings = pds_get_binding_list_id (new_domain_id, cid1, OnlyEntityBindings);
-  i2 = 0;
-  for (i2 = 0; bindings[i2] != NULL; i2++)
-    {
-      printf ("got binding of root context [%s]\n", bindings[i2]);
-      
-      free(bindings[i2]);
-    }
-  free(bindings);
-
-  pds_remove_entity (new_domain_id, "newEntity", null_pds_context_id);
-  printf ("[ removed entity ]"); fflush (0);
-
-  cid2 = pds_create_context (new_domain_id, "newContext", cid1);
-
-  cid2 = pds_create_context (new_domain_id, "new3Context/child", cid1);
-  cid3 = pds_create_context (new_domain_id, "gatech/coc", cid1);
-  cid2 = pds_create_context (new_domain_id, "new2Context", cid3);
-  printf ("created new context... \n");
-
-  bindings = pds_get_binding_list_id (new_domain_id, cid1, OnlyContextBindings);
-  i2 = 0;
-  for (i2 = 0; bindings[i2] != NULL; i2++)
-    {
-      printf ("got binding of root context [%s]\n", bindings[i2]);
-      free(bindings[i2]);
-    }
-  free(bindings);
-
-  bindings = pds_get_binding_list_id (new_domain_id, cid3, OnlyContextBindings);
-  for (i2 = 0; bindings[i2] != NULL; ++i2)
-  {
-      printf("got binding of root context [%s] from two levels down\n", bindings[i2]);
-      free(bindings[i2]);
-  }
-  free(bindings);
-
-  printf( "Checking for bindings in created context... " );
-  bindings = pds_get_binding_list_id( new_domain_id, cid2, OnlyEntityBindings );
-  if(bindings[0] == NULL)
-    printf("There is no entity bound, nor should there be...\n");
-  else
-    printf("There is a bound entity, but there shouldn't be...\n");
-  printf( "done\n" );
-  
-  printf ("removing context... "); fflush(0);
-  pds_remove_context_by_id (new_domain_id, cid2);
-  printf( "done\n" );
-  
-  if (pds_remove_domain (new_domain_id))
-    {
-      printf ("domain removal success\n");
-    }
-  else
-    {
-      printf ("domain removal failure\n");
-    }
-
-  free_attr_list (attrs);
-  free_attr_list (attrs2);
-  free_attr_list (contact_attrs);
-
+  printf("Finished waiting for events...\n");
+  CMrun_network(cm);
   pds_service_close (wps);
   
   return 0;

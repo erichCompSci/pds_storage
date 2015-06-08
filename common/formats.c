@@ -111,14 +111,14 @@ FMStructDescRec xpath_query_request_msg_formats[] =
 /* Erich's code */
 FMField entity_data_change_ntf_flds[] = 
   {
-    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(entity_data_change_ntf_ptr, entity_id) },
-    { "entity_data", "pds_entity_data_t", sizeof(pds_entity_data_t), FMOffset(entity_data_change_ntf_ptr, entity_data) },
+    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_data_change_ntf_ptr, entity_id) },
+    { "entity_data", "pds_entity_data_t", sizeof(pds_entity_data_t), FMOffset(pds_entity_data_change_ntf_ptr, entity_data) },
     { NULL, NULL, 0, 0 }
   };
 
 FMStructDescRec entity_data_change_ntf_formats[] =
   {
-    { "entity_data_change_event", entity_data_change_ntf_flds, sizeof(entity_data_change_ntf), NULL },
+    { "entity_data_change_event", entity_data_change_ntf_flds, sizeof(pds_entity_data_change_ntf), NULL },
     { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
     { "pds_entity_data_t", pds_entity_data_t_flds, sizeof(pds_entity_data_t), NULL },
     { NULL, NULL }
@@ -126,29 +126,29 @@ FMStructDescRec entity_data_change_ntf_formats[] =
 
 FMField entity_u_bind_change_ntf_flds[] = 
   {
-    { "type", "integer", sizeof(int), FMOffset(entity_u_bind_change_ntf_ptr, type) },
-    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(entity_u_bind_change_ntf_ptr, entity_id) },
+    { "type", "integer", sizeof(int), FMOffset(pds_entity_u_bind_change_ntf_ptr, type) },
+    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_u_bind_change_ntf_ptr, entity_id) },
     {NULL, NULL, 0, 0 }
   };
 
 FMStructDescRec entity_u_bind_change_ntf_formats[] =
   {
-    { "entity_u_bind_change_event", entity_u_bind_change_ntf_flds, sizeof(entity_u_bind_change_ntf), NULL },
+    { "entity_u_bind_change_event", entity_u_bind_change_ntf_flds, sizeof(pds_entity_u_bind_change_ntf), NULL },
     { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
     { NULL, NULL }
   };
 
 FMField entity_exist_change_ntf_flds[] = 
   {
-    { "type", "integer", sizeof(int), FMOffset(entity_exist_change_ntf_ptr, type) },
-    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(entity_exist_change_ntf_ptr, entity_id) },
-    { "entity_data", "pds_entity_data_t", sizeof(pds_entity_data_t), FMOffset(entity_exist_change_ntf_ptr, entity_data) },
+    { "type", "integer", sizeof(int), FMOffset(pds_entity_exist_change_ntf_ptr, type) },
+    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_exist_change_ntf_ptr, entity_id) },
+    { "entity_data", "pds_entity_data_t", sizeof(pds_entity_data_t), FMOffset(pds_entity_exist_change_ntf_ptr, entity_data) },
     { NULL, NULL, 0, 0 }
   };
 
 FMStructDescRec entity_exist_change_ntf_formats[] =
   {
-    { "entity_exist_change_event", entity_exist_change_ntf_flds, sizeof(entity_exist_change_ntf), NULL },
+    { "entity_exist_change_event", entity_exist_change_ntf_flds, sizeof(pds_entity_exist_change_ntf), NULL },
     { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
     { "pds_entity_data_t", pds_entity_data_t_flds, sizeof(pds_entity_data_t), NULL },
     { NULL, NULL }
@@ -156,30 +156,30 @@ FMStructDescRec entity_exist_change_ntf_formats[] =
 
 FMField context_u_bind_change_ntf_flds[] =
   {
-    { "type", "integer", sizeof(int), FMOffset(context_u_bind_change_ntf_ptr, type)  },
-    { "fullname", "string", sizeof(char *), FMOffset(context_u_bind_change_ntf_ptr, fullname) }, 
-    { "context_id", "pds_context_id_t", sizeof(pds_context_id_t), FMOffset(context_u_bind_change_ntf_ptr, context_id) },
+    { "type", "integer", sizeof(int), FMOffset(pds_context_u_bind_change_ntf_ptr, type)  },
+    { "fullname", "string", sizeof(char *), FMOffset(pds_context_u_bind_change_ntf_ptr, fullname) }, 
+    { "context_id", "pds_context_id_t", sizeof(pds_context_id_t), FMOffset(pds_context_u_bind_change_ntf_ptr, context_id) },
     { NULL, NULL, 0, 0 }
   };
 
 FMStructDescRec context_u_bind_change_ntf_formats[] =
   {
-    { "context_u_bind_change_event", context_u_bind_change_ntf_flds, sizeof(context_u_bind_change_ntf), NULL },
+    { "context_u_bind_change_event", context_u_bind_change_ntf_flds, sizeof(pds_context_u_bind_change_ntf), NULL },
     { "pds_context_id_t", pds_context_id_t_flds, sizeof(pds_context_id_t), NULL },
     { NULL, NULL }
   };
 
 FMField context_exist_change_ntf_flds[] =
   {
-    { "type", "integer", sizeof(int), FMOffset(context_exist_change_ntf_ptr, type)  },
-    { "fullname", "string", sizeof(char *), FMOffset(context_exist_change_ntf_ptr, fullname) },
-    { "context_id", "pds_context_id_t", sizeof(pds_context_id_t), FMOffset(context_exist_change_ntf_ptr, context_id) },
+    { "type", "integer", sizeof(int), FMOffset(pds_context_exist_change_ntf_ptr, type)  },
+    { "fullname", "string", sizeof(char *), FMOffset(pds_context_exist_change_ntf_ptr, fullname) },
+    { "context_id", "pds_context_id_t", sizeof(pds_context_id_t), FMOffset(pds_context_exist_change_ntf_ptr, context_id) },
     { NULL, NULL, 0, 0 }
   };
 
 FMStructDescRec context_exist_change_ntf_formats[] =
   {
-    { "context_u_bind_change_event", context_u_bind_change_ntf_flds, sizeof(context_exist_change_ntf), NULL },
+    { "context_u_bind_change_event", context_u_bind_change_ntf_flds, sizeof(pds_context_exist_change_ntf), NULL },
     { "pds_context_id_t", pds_context_id_t_flds, sizeof(pds_context_id_t), NULL },
     { NULL, NULL }
   };

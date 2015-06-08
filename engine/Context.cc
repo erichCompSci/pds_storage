@@ -218,7 +218,7 @@ Context::make_real()
 void
 Context::send_bind_event (const char *n)
 {
-  context_u_bind_change_ntf evt;
+  pds_context_u_bind_change_ntf evt;
   evt.type = PDS_CONTEXT_CHANGE_BIND;
   evt.fullname = const_cast<char*> (n);
   evt.context_id = objectId::make_pds_context_id (domain_, this);
@@ -230,7 +230,7 @@ Context::send_bind_event (const char *n)
 void
 Context::send_unbind_event (const char *n)
 {
-  context_u_bind_change_ntf evt;
+  pds_context_u_bind_change_ntf evt;
   evt.type = PDS_CONTEXT_CHANGE_UNBIND;
   evt.fullname = const_cast<char*>(n);
   evt.context_id = objectId::make_pds_context_id (domain_, this);
@@ -244,7 +244,7 @@ Context::send_unbind_event (const char *n)
 void
 Context::send_creation_event()
 {
-  context_exist_change_ntf evt;
+  pds_context_exist_change_ntf evt;
   evt.type = PDS_CONTEXT_CHANGE_CREATION;
   string fullname = get_full_name();
   evt.fullname = (char*)fullname.c_str();
@@ -258,7 +258,7 @@ Context::send_creation_event()
 void
 Context::send_deletion_event()
 {
-  context_exist_change_ntf evt;
+  pds_context_exist_change_ntf evt;
   evt.type = PDS_CONTEXT_CHANGE_DELETION;
   string fullname = get_full_name();
   evt.fullname = (char*)fullname.c_str();

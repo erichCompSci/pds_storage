@@ -96,7 +96,7 @@ Entity::unbound_from (Context *c)
 void 
 Entity::send_creation_event()
 {
-  entity_exist_change_ntf evt;
+  pds_entity_exist_change_ntf evt;
   evt.type = PDS_ENTITY_CHANGE_CREATION;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
   evt.entity_data = get_data();
@@ -107,7 +107,7 @@ Entity::send_creation_event()
 void 
 Entity::send_data_event()
 {
-  entity_data_change_ntf evt;
+  pds_entity_data_change_ntf evt;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
   evt.entity_data = get_data();
   EntityEventWrapper wrap (evt);
@@ -117,7 +117,7 @@ Entity::send_data_event()
 void 
 Entity::send_bind_event()
 {
-  entity_u_bind_change_ntf evt;
+  pds_entity_u_bind_change_ntf evt;
   evt.type = PDS_ENTITY_CHANGE_BIND;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
   EntityEventWrapper wrap (evt);
@@ -127,7 +127,7 @@ Entity::send_bind_event()
 void 
 Entity::send_unbind_event()
 {
-  entity_u_bind_change_ntf evt;
+  pds_entity_u_bind_change_ntf evt;
   evt.type = PDS_ENTITY_CHANGE_UNBIND;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
   EntityEventWrapper wrap (evt);
@@ -137,7 +137,7 @@ Entity::send_unbind_event()
 void
 Entity::send_deletion_event()
 {
-  entity_exist_change_ntf evt;
+  pds_entity_exist_change_ntf evt;
   evt.type = PDS_ENTITY_CHANGE_DELETION;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
   make_entity_data_null (&(evt.entity_data));

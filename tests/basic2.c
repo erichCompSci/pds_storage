@@ -485,7 +485,7 @@ void register_entity()
 
     printf("registering for entity changes\n");
 
-    pds_register_for_entity_changes(cm, domain_id, "/test_events/register_entity_1", null_pds_context_id, entity_event_handler, 0);
+    pds_register_for_entity_changes_by_channel(cm, domain_id, "/test_events/register_entity_1", null_pds_context_id, entity_event_handler, 0, ENTITY_CREATE_DESTROY);
 
 /****** cases that migh cause the server to crash*/
 /*    pds_register_for_entity_changes(cm, domain_id, "/test_change/register_entity_2", null_pds_context_id, event_handler, 0);*/
@@ -495,10 +495,10 @@ void register_entity()
 void register_context()
 {
     printf("registering for context changes\n");
-    pds_register_for_context_changes(cm, domain_id, "/", null_pds_context_id, context_event_handler, 0);
-    pds_register_for_context_changes(cm, domain_id, "/test_events", null_pds_context_id, context_event_handler, 0);
-    pds_register_for_context_changes(cm, domain_id, "/test_events/newContext", null_pds_context_id, context_event_handler, 0);
-    pds_register_for_context_changes(cm, domain_id, "/test_events/test_new_context", null_pds_context_id, context_event_handler, 0);
+    pds_register_for_context_changes_by_channel(cm, domain_id, "/", null_pds_context_id, context_event_handler, 0, CONTEXT_CREATE_DESTROY);
+    pds_register_for_context_changes_by_channel(cm, domain_id, "/test_events", null_pds_context_id, context_event_handler, 0, CONTEXT_CREATE_DESTROY);
+    pds_register_for_context_changes_by_channel(cm, domain_id, "/test_events/newContext", null_pds_context_id, context_event_handler, 0, CONTEXT_CREATE_DESTROY);
+    pds_register_for_context_changes_by_channel(cm, domain_id, "/test_events/test_new_context", null_pds_context_id, context_event_handler, 0, CONTEXT_CREATE_DESTROY);
 /****** cases that migh cause the server to crash*/
 /*    pds_register_for_context_changes(cm, domain_id, "/", null_pds_context_id, event_handler, 0);*/
 /*    pds_register_for_context_changes(cm, domain_id, "/gatech1", null_pds_context_id, event_handler, 0);*/

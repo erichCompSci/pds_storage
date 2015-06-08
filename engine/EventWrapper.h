@@ -32,9 +32,9 @@ class EntityEventWrapper: public BaseEventWrapper
 {
 public:
   EntityEventWrapper(pds_entity_change_event& evt);
-  EntityEventWrapper(entity_data_change_ntf& evt);
-  EntityEventWrapper(entity_exist_change_ntf& evt);
-  EntityEventWrapper(entity_u_bind_change_ntf& evt);
+  EntityEventWrapper(pds_entity_data_change_ntf& evt);
+  EntityEventWrapper(pds_entity_exist_change_ntf& evt);
+  EntityEventWrapper(pds_entity_u_bind_change_ntf& evt);
   virtual const char* full_name();
   virtual const char* desc();
   virtual int         type();
@@ -43,6 +43,7 @@ private:
   EntityEventWrapper(const EntityEventWrapper&);
   const EntityEventWrapper& operator=(const EntityEventWrapper&);
   char * entity_fullname;
+  const char * descript;
   int entity_type;
 };
 /***********************************************/
@@ -50,8 +51,8 @@ class ContextEventWrapper : public BaseEventWrapper
 {
 public:
   ContextEventWrapper(pds_context_change_event& evt);
-  ContextEventWrapper(context_u_bind_change_ntf& evt);
-  ContextEventWrapper(context_exist_change_ntf& evt);
+  ContextEventWrapper(pds_context_u_bind_change_ntf& evt);
+  ContextEventWrapper(pds_context_exist_change_ntf& evt);
   virtual const char* full_name();
   virtual const char* desc();
   virtual int         type();
@@ -60,6 +61,7 @@ private:
   ContextEventWrapper(const ContextEventWrapper&);
   const ContextEventWrapper& operator=(const ContextEventWrapper&);
   char * context_fullname;
+  const char * descript;
   int context_type;
 };
 /***********************************************/

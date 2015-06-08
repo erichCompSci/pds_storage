@@ -64,6 +64,7 @@ Proactive::set_up_stones()
 
     for(i = 0; formats_list_[i].fm_format != NULL; ++i);
     assert((i != 0) && "There is nothing in the formats_list but a Null value");
+    ++i;
 
     stones_ = (EVstone *)malloc(sizeof(EVstone) * (i + 1));
     splits_ = (EVaction *)malloc(sizeof(EVaction) * (i + 1));
@@ -128,13 +129,20 @@ Proactive::determine_correct_stone(unsigned short which_event)
 EVstone
 Proactive::add_target( attr_list contact_list, EVstone remote_stone, unsigned short which_event ) 
 {
+  //printf("add_target entered...\n");
   set_up_stones();
+  //printf("Set up the stones...\n");
   EVstone s = EValloc_stone( server_cm_ );
+  //printf("Allocated a stone correctly\n");
   EVassoc_bridge_action( server_cm_, s, contact_list, remote_stone );
+  printf("Associated bridge action correctly\n");
 
   int which_target = determine_correct_stone(which_event);
+  printf("Correctly determined the correct stone, probably...\n");
 
+  printf("Adding the split target...\n");
   EVaction_add_split_target( server_cm_, stones_[which_target], splits_[which_target], s );
+  printf("Returning...\n");
   return s;
 }
  

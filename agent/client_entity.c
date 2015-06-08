@@ -206,7 +206,8 @@ do_registration (int operation,
 		 pds_context_id_t context,
                  FMStructDescRec *format_list,
 		 EVSimpleHandlerFunc func_ptr,
-		 void* client_data)
+		 void* client_data,
+         int which_channel)
 {
   evpath_op_msg msg, return_msg;
   EVstone new_stone;
@@ -219,6 +220,7 @@ do_registration (int operation,
   msg.name = name;
   msg.stone = 0;
   msg.operation = operation;
+  msg.options = which_channel;
 
   contact_attrs = CMget_contact_list( cm );
   if (contact_attrs == NULL) {
@@ -229,8 +231,10 @@ do_registration (int operation,
 
   new_stone = EValloc_stone( cm );
   msg.stone = new_stone;
-
+  
+  printf("Before the pds_request...\n");
   pds_request (EVPATH_OP_RPC_NAME, wps, &msg, &return_msg);
+  printf("After the pds_request...\n");
   
   if (return_msg.operation != OP_RESULT_OK) {
     EVfree_stone( cm, new_stone );
@@ -258,45 +262,159 @@ pds_register_for_domain_changes (CManager cm,
 			  null_pds_context_id,
                           domain_change_event_formats,
 			  func_ptr,
-			  client_data);
+			  client_data,
+        DOMAIN_CHANGE);
 }
 
 
 EVaction
-pds_register_for_entity_changes (CManager cm,
-                                 pds_domain_id_t d_id,
-                                 const char* name,
-                                 pds_context_id_t c_id,
-                                 EVSimpleHandlerFunc func_ptr,
-                                 void *client_data)
+pds_register_for_entity_changes_by_channel (CManager cm,
+                                            pds_domain_id_t d_id,
+                                            const char* name,
+                                            pds_context_id_t c_id,
+                                            EVSimpleHandlerFunc func_ptr,
+                                            void *client_data,
+                                            int which_channel)
 {
+
+  FMStructDescRec *format_list;
+
+  switch(which_channel) 
+  {
+     case ENTITY_CREATE_DESTROY:
+        format_list = entity_exist_change_ntf_formats;
+        break;
+     case ENTITY_BIND_UNBIND:
+        format_list = entity_u_bind_change_ntf_formats;
+        break;
+     case ENTITY_DATA_CHANGE:
+        format_list = entity_data_change_ntf_formats;
+        break;
+     default:
+        fprintf(stderr, "Error: invalid entity register option selected\n");
+        return -1;
+   } 
+
   return do_registration (OP_GET_ENTITY_STONE,
                           cm,
 			  d_id,
 			  name,
 			  c_id,
-                          entity_change_event_formats,
+              format_list,
 			  func_ptr,
-			  client_data);
+			  client_data,
+              which_channel);
 }
 
 
 EVaction
-pds_register_for_context_changes (CManager cm,
-                                  pds_domain_id_t d_id,
-                                  const char* name,
-                                  pds_context_id_t c_id,
-                                  EVSimpleHandlerFunc func_ptr,
-                                  void *client_data)
+pds_register_for_entity_changes_by_format (CManager cm,
+                                           pds_domain_id_t d_id,
+                                           const char* name,
+                                           pds_context_id_t c_id,
+                                           EVSimpleHandlerFunc func_ptr,
+                                           void *client_data,
+                                           FMStructDescRec * format_list)
 {
+  int which_channel = -1; 
+
+  if(format_list == entity_exist_change_ntf_formats)
+  {
+    which_channel = ENTITY_CREATE_DESTROY;
+  }
+  else if(format_list == entity_u_bind_change_ntf_formats)
+  {
+    which_channel = ENTITY_BIND_UNBIND;
+  }
+  else if(format_list == entity_data_change_ntf_formats)
+  {
+    which_channel = ENTITY_DATA_CHANGE;
+  }
+  else
+  {
+    fprintf(stderr, "Error: invalid entity register format selected\n");
+    return -1;
+  } 
+
+  return do_registration (OP_GET_ENTITY_STONE,
+                          cm,
+			  d_id,
+			  name,
+			  c_id,
+              format_list,
+			  func_ptr,
+			  client_data,
+              which_channel);
+}
+
+
+EVaction
+pds_register_for_context_changes_by_channel (CManager cm,
+                                             pds_domain_id_t d_id,
+                                             const char* name,
+                                             pds_context_id_t c_id,
+                                             EVSimpleHandlerFunc func_ptr,
+                                             void *client_data,
+                                             int which_channel)
+{
+  FMStructDescRec * format_list;
+  switch(which_channel)
+  {
+    case CONTEXT_CREATE_DESTROY:
+        format_list = context_exist_change_ntf_formats;
+        break;
+    case CONTEXT_BIND_UNBIND:
+        format_list = context_u_bind_change_ntf_formats;
+        break;
+    default:
+        fprintf(stderr, "Error: invalid context register option selected\n");
+        return -1;
+  }
+
   return do_registration (OP_GET_CONTEXT_STONE,
                           cm,
 			  d_id,
 			  name,
 			  c_id,
-                          context_change_event_formats,
+              format_list,
 			  func_ptr,
-			  client_data);
+			  client_data,
+              which_channel);
+}
+
+EVaction
+pds_register_for_context_changes_by_format (CManager cm,
+                                            pds_domain_id_t d_id,
+                                            const char* name,
+                                            pds_context_id_t c_id,
+                                            EVSimpleHandlerFunc func_ptr,
+                                            void *client_data,
+                                            FMStructDescRec * format_list)
+{
+  int which_channel = -1;
+  if(format_list == context_exist_change_ntf_formats)
+  {
+    which_channel = CONTEXT_CREATE_DESTROY;
+  }
+  else if(format_list == context_u_bind_change_ntf_formats)
+  {
+    which_channel = CONTEXT_BIND_UNBIND;
+  }
+  else
+  {
+    fprintf(stderr, "Error: invalid context register format selected\n");
+    return -1;
+  }
+
+  return do_registration (OP_GET_CONTEXT_STONE,
+                          cm,
+			  d_id,
+			  name,
+			  c_id,
+              format_list,
+			  func_ptr,
+			  client_data,
+              which_channel);
 }
 
 int

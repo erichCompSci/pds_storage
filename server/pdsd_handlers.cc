@@ -576,6 +576,7 @@ handle_domain_attributes (void* in_msg, void* out_msg, CMrpc_options options)
 static void
 handle_evpath_msg (void* in_msg, void* out_msg, CMrpc_options opt)
 {
+  //printf("Received the message on the server side...\n");
   WriterGuard guard;
   evpath_op_msg_ptr msg = static_cast<evpath_op_msg_ptr> (in_msg);
   evpath_op_msg_ptr return_msg = static_cast<evpath_op_msg_ptr> (out_msg);
@@ -585,6 +586,7 @@ handle_evpath_msg (void* in_msg, void* out_msg, CMrpc_options opt)
 
   pdsTrace_out (pdsdVerbose, "pdsd handle_echannel_msg enter");
   pdsTrace_out (pdsdVerbose, "using domain %p", d);
+  //printf("Before we check to see if the domain is NULL\n");
   if (d == NULL)
     {
       return_msg->stone = 0;
@@ -596,6 +598,7 @@ handle_evpath_msg (void* in_msg, void* out_msg, CMrpc_options opt)
   c = objectId::get_context_ptr_from_id (msg->context_id);
   pdsTrace_out (pdsdVerbose, "using context %p", c);
 
+  //printf("Before the switch statement\n");
   switch (msg->operation)
     {
     case OP_GET_ENTITY_STONE:
@@ -619,11 +622,14 @@ handle_evpath_msg (void* in_msg, void* out_msg, CMrpc_options opt)
       p = d->resolve_or_create_name (msg->name, context_binding, c, true);
       break;
     }
+  //printf("After the switch statement\n");
 
   attr_list c_attrs = attr_list_from_string( msg->contact_attrs );
 
   int which_event = msg->options;
+  pdsTrace_out (pdsdVerbose, "Trying to add the correct target...");
   return_msg->stone = p->add_target( c_attrs, msg->stone, which_event );
+  pdsTrace_out (pdsdVerbose, "Returned from add_target.");
   free_attr_list( c_attrs );
   return_msg->operation = OP_RESULT_OK;
   return_msg->name = NULL;

@@ -12,6 +12,7 @@
 #include "evpath.h"
 
 #include "agent/pds.h"
+#include "common/formats.h"
 
 int keep_going = 1;
 
@@ -74,12 +75,13 @@ int main (int argc, char *argv[])
                                   "wp-test");
   
   action = pds_register_for_domain_changes (cm, new_domain_id, event_handler, NULL); 
-  action = pds_register_for_entity_changes (cm,
+  action = pds_register_for_entity_changes_by_channel (cm,
 					    new_domain_id,
 					    "newEntity",
 					    null_pds_context_id,
 					    event_handler,
-					    NULL);
+					    NULL,
+                        ENTITY_CREATE_DESTROY);
 
   while (keep_going)
     {
