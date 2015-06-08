@@ -64,7 +64,7 @@ register_formats()
    *  this will fail will no ill effects.  If they have, then that thread 
    *  will handle the network for PDS communication.
    */
-  CMfork_comm_thread(client_cm);
+  //CMfork_comm_thread(client_cm);
 
   CMrpc_register_rpc_request (client_cm, CREATE_DOMAIN_RPC_NAME, NULL,
                               create_domain_msg_formats, return_domain_id_msg_formats);

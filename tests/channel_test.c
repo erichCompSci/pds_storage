@@ -147,17 +147,17 @@ int main (int argc, char *argv[])
             Attr_Int4,
             (attr_value*)8848);
 
-  printf("Before the cmlisten\n");
+  /* Get the CM from the client_manager 
   cm = CManager_create();
-  CMlisten(cm);
-  printf("After the cmlisten\n");
+  CMlisten(cm);*/
 
   if ((wps = pds_service_open (contact_attrs)) == NULL)
     {
       fprintf (stderr, "Couldn't init PDS client-side (is pdsd running?)\n");
       exit (1);
     }
-  printf("Before the open_domain call\n");
+
+  cm = pds_get_CManager();
   new_domain_id = pds_open_domain (wps, 
                                   "newDomain",
                                   "newDomaintype",
@@ -182,13 +182,14 @@ int main (int argc, char *argv[])
 
   printf("Before registering the domain\n");
   register_domain(); 
-  register_entity_channel(ENTITY_CREATE_DESTROY, "entity_create_destroy", entity_create_event_handler);
-  register_entity_channel(ENTITY_BIND_UNBIND, "entity_bind_unbind", entity_bind_unbind_event_handler);
-  register_entity_channel(ENTITY_DATA_CHANGE, "entity_data_change", entity_data_change_event_handler);
 
   eid1 = pds_create_entity (new_domain_id, "/newEntity", null_pds_context_id, &tt, NULL);
   printf ("[ created entity %s]", eid1.id);
   fflush (0);
+
+  register_entity_channel(ENTITY_CREATE_DESTROY, "entity_create_destroy", entity_create_event_handler);
+  register_entity_channel(ENTITY_BIND_UNBIND, "entity_bind_unbind", entity_bind_unbind_event_handler);
+  register_entity_channel(ENTITY_DATA_CHANGE, "entity_data_change", entity_data_change_event_handler);
 
   printf("Finished waiting for events...\n");
   CMrun_network(cm);
