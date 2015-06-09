@@ -64,7 +64,7 @@ Proactive::set_up_stones()
 
     for(i = 0; formats_list_[i].fm_format != NULL; ++i);
     assert((i != 0) && "There is nothing in the formats_list but a Null value");
-    ++i;
+    //++i;
 
     stones_ = (EVstone *)malloc(sizeof(EVstone) * (i + 1));
     splits_ = (EVaction *)malloc(sizeof(EVaction) * (i + 1));
@@ -144,7 +144,11 @@ void
 Proactive::send_event_ (void *ev, unsigned short which_event)
 {
   int which_source = determine_correct_stone(which_event);
+  FMStructDescRec * temp_ptr = formats_list_[which_source].fm_format;
+  char * other_ptr = temp_ptr->format_name;
+  printf("The source:%s\n", other_ptr);
   EVsubmit( source_handles_[which_source], ev, NULL );
+  printf("After the EVSubmit\n");
 }
 
 /*

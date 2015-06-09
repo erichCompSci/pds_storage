@@ -183,13 +183,14 @@ int main (int argc, char *argv[])
   printf("Before registering the domain\n");
   register_domain(); 
 
+  register_entity_channel(ENTITY_CREATE_DESTROY, "entity_create_destroy", entity_create_event_handler);
+  register_entity_channel(ENTITY_BIND_UNBIND, "entity_bind_unbind", entity_bind_unbind_event_handler);
+  register_entity_channel(ENTITY_DATA_CHANGE, "entity_data_change", entity_data_change_event_handler);
+
   eid1 = pds_create_entity (new_domain_id, "/newEntity", null_pds_context_id, &tt, NULL);
   printf ("[ created entity %s]", eid1.id);
   fflush (0);
 
-  register_entity_channel(ENTITY_CREATE_DESTROY, "entity_create_destroy", entity_create_event_handler);
-  register_entity_channel(ENTITY_BIND_UNBIND, "entity_bind_unbind", entity_bind_unbind_event_handler);
-  register_entity_channel(ENTITY_DATA_CHANGE, "entity_data_change", entity_data_change_event_handler);
 
   printf("Finished waiting for events...\n");
   CMrun_network(cm);
