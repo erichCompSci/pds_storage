@@ -441,7 +441,7 @@ pds_find_matching_domains (pds_service wps,
 			  const char *domain_type,
 			  int domain_version,
 			  const char *application_name,
-                          pds_domain_id_t **matches)
+                          pds_domain_id_t *matches)
 {
   create_domain_msg msg;
   matching_domains_msg return_msg;
@@ -454,10 +454,10 @@ pds_find_matching_domains (pds_service wps,
   
   pds_request (FIND_MATCHING_DOMAINS_RPC_NAME, wps, &msg, &return_msg);
 
-  *matches = (pds_domain_id_t*) calloc (return_msg.domain_count, sizeof (pds_domain_id_t));
+  matches = (pds_domain_id_t*) calloc (return_msg.domain_count, sizeof (pds_domain_id_t));
   for (i = 0; i < return_msg.domain_count; i++)
     {
-      *matches[i] = return_msg.domain_list[i];
+      matches[i] = return_msg.domain_list[i];
     }
 
   free (return_msg.domain_list);

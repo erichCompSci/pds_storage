@@ -64,13 +64,21 @@ int main (int argc, char *argv[])
     }
 
   cm = pds_get_CManager();
-  new_domain_id = pds_open_domain (wps, 
+  pds_domain_id_t * domains;
+  if(!(pds_find_matching_domains (wps, 
                                   "newDomain",
                                   "newDomaintype",
                                   1,
-                                  "wp-register");
+                                  "wp-register",
+                                  domains)))
+  {
+    fprintf(stderr, "Did not find any matching domains...\n");
+    exit(1);
+  }
 
+  new_domain_id = domains[0];
 
+  //Fails here?  Intereesting....
   cid1 = pds_get_root_context (new_domain_id);
 
   cid2 = pds_create_context (new_domain_id, "/test/newContext2", cid1);

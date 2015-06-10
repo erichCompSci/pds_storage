@@ -199,7 +199,7 @@ pds_find_matching_domains (pds_service s,
 			  const char *domain_type,
 			  int domain_version,
 			  const char *application_name,
-                          pds_domain_id_t **matches);
+                          pds_domain_id_t *matches);
 
   /* @{ */
   /*! Set/get the attributes of a domain.  The given attribute list replaces the previous attribute list. 
