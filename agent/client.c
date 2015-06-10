@@ -215,12 +215,10 @@ pds_service_open (attr_list contact_list)
   pds_service_struct *new_service = NULL;
   static atom_t PDS_IP_PORT = -1;
   static atom_t PDS_IP_HOST = -1;
-  printf("Inside the function at the beginning\n");
 
   if (! formats_registered)
     register_formats();
 
-  printf("Registered formats...\n");
   /*
    *  first make sure that we don't already have a service
    *  set up for this contact list
@@ -236,7 +234,6 @@ pds_service_open (attr_list contact_list)
       port_attr = PDS_SERVER_PORT;
     }
 
-  printf("Successfuly queried for service set up for contact list\n");
 
   /*
    *  All port numbers stored for server identification purposes
@@ -249,7 +246,6 @@ pds_service_open (attr_list contact_list)
    *  particular bit pattern.
    */
   net_order_port_attr = htons (port_attr);
-  printf("Called htons correctly\n");
 
   if (!query_attr (contact_list, PDS_IP_HOST,
                    NULL, (attr_value*) &hostname))
@@ -267,7 +263,6 @@ pds_service_open (attr_list contact_list)
   hostptr = gethostbyname (hostname);
   p = (struct in_addr*) hostptr->h_addr_list[0];
   host_addr = p->s_addr;
-  printf("Successfully called gethostbyname\n");
 
   for (q = open_services.next; q != NULL; q = q->next)
     {    
@@ -275,21 +270,17 @@ pds_service_open (attr_list contact_list)
       if (q->service->address == host_addr && q->service->port == net_order_port_attr)
         break;
     }
-  printf("Past the for loop for open_services...\n"); 
   if (q != NULL) return q->service;
 
   /*
    *  have to open a new one
    */
   new_service = (pds_service) malloc (sizeof (pds_service_struct));
-  printf("Malloced a new_service\n");
   /* so that someone doesn't nuke the contact list out from under us */
   add_ref_attr_list (contact_list);
   new_service->contact_list = contact_list;
 
-  printf("Sending a new_service request\n");
   pds_request (OPEN_SERVICE_RPC_NAME, new_service, &in_msg, &out_msg);
-  printf("New service request returned\n");
 
   /* 
    *  convert the values to network order since they're sent with
@@ -304,7 +295,6 @@ pds_service_open (attr_list contact_list)
   p1->next = open_services.next;
   open_services.next = p1;
 
-  printf("About to return\n");
   return new_service;
 }
 
