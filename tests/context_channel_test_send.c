@@ -87,6 +87,11 @@ int main (int argc, char *argv[])
   cid2 = pds_create_context (new_domain_id, "/test/newContext2", cid1);
   printf ("[ created context %s]\n", cid2.id);
 
+  if(!(pds_bind_context_by_name(new_domain_id, "/test/newContext", "/test2/newContext")))
+    fprintf(stderr, "Failed to bind context /test/newContext to /test2/newContext\n");
+  else
+    printf("Successfully, bound /test/newContext to /test2/newContext\n");
+
   //Error is -1 if fail, 1 if succeed
   if((pds_unbind_context_from_name(new_domain_id, "/test/newContext")) < 0)
     fprintf(stderr, "Failed to unbind context /test/newContext\n");
@@ -94,10 +99,10 @@ int main (int argc, char *argv[])
     printf("Successfully, unbound /test/newContext\n");
 
   // Error is 0 if fail, 1 if succeed
-  if(!pds_bind_context_by_name(new_domain_id, "/test/newContext", "/test/newContext"))
+  if(!pds_bind_context_by_name(new_domain_id, "/test2/newContext", "/test/newContext"))
     fprintf(stderr, "Failed to bind context /test/newContext to / \n");
   else
-    printf("Successfully, bound /test/newContext to / \n");
+    printf("Successfully, bound /test2/newContext to /test/newContext \n");
 
   fflush (0);
 

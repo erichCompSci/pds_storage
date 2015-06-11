@@ -283,7 +283,7 @@ main (int argc, char **argv)
   {
       pthread_t gc_thread, cp_thread;
       pthread_create(&gc_thread, NULL, (void*(*)(void*))clean_thread, 0);
-      pthread_create(&cp_thread, NULL, (void*(*)(void*))checkpoint_thread, 0);
+      //pthread_create(&cp_thread, NULL, (void*(*)(void*))checkpoint_thread, 0);
   }
 
   /*

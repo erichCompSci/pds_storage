@@ -121,6 +121,7 @@ handle_open_domain (void* in_msg, void* out_msg, CMrpc_options opt)
 
   if (d == NULL)
     {
+      pdsTrace_out (pdsdVerbose, "Creating domain: %s", msg->domain_name);
       d = new Domain (msg->domain_name,
 		      msg->domain_type,
 		      msg->domain_version,
@@ -213,7 +214,14 @@ handle_bind_context(void* in_msg, void* out_msg, CMrpc_options opt)
     source = objectId::get_context_ptr_from_id (msg->source_context_id);
   }
 
+  if(source == NULL)
+  {
+    printf("Hunch was correct: Exiting...\n");
+    exit(1);
+  }
+
   const char* link_name = msg->link_name;
+  printf("bind context link_name: %s\n", link_name);
  
   return_status_msg_ptr return_msg = static_cast<return_status_msg_ptr> (out_msg);
   return_msg->status = domain->bind_context(source, link_name);

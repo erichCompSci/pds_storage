@@ -199,6 +199,7 @@ Domain::bind_context(Context* source, const char* full_name)
   parent->bind(objname, binding_pair (context_binding, source));
   return 1;
 }
+
 Context*
 Domain::get_context_of_name (const char *name,
                              char*& last_component,
@@ -362,6 +363,7 @@ Domain::resolve_name (const char *fullname,
   Context *parent;
   char *objname;
   binding_pair bp;
+  const char * other = fullname;
 
   // allocates memory for objname, free before returning
   parent = get_context_of_name (fullname, objname, initial_context);
@@ -385,6 +387,11 @@ Domain::resolve_name (const char *fullname,
         if (bp != Context::null_binding_pair 
           && ! bp.second->is_placeholder())
           rval = bp.second;
+        else 
+        {
+          printf("We've reached the point where the context is a placeholder, so we return null\
+                  the name is %s\n", other);
+        }
       }
     }
 
@@ -590,7 +597,7 @@ Domain::remove_binding(const char* name, Context* initial_context)
 	e->send_unbind_event();
       } else if (bp.first == context_binding) {
 	Context *c = dynamic_cast<Context*> (bp.second);
-	c->send_unbind_event("");
+	c->send_unbind_event(name);
       }
       rv = 1;
     }
@@ -650,7 +657,7 @@ Domain::send_wrapped_event(BaseEventWrapper* sub_ev)
   else if (sub_ev->my_type() == CONTEXT_CHANGE_EVENT)
       ev.type = PDS_DOMAIN_CHANGE_CONTEXT_CHANGE;  
       
-  printf("Inside wrapped_event for domain!\n");
+  ev.event_desc = (char*)sub_ev->desc();
   ev.d_name = domain_name_;
   ev.d_type = domain_type_;
   ev.d_version = domain_version_;
@@ -658,10 +665,6 @@ Domain::send_wrapped_event(BaseEventWrapper* sub_ev)
   ev.domain_id = objectId::make_pds_domain_id(this);
   ev.event_type = sub_ev->type();
   ev.event_fullname = (char*)sub_ev->full_name();
-  printf("ev.event_fullname=%s\n", ev.event_fullname);
-  ev.event_desc = (char*)sub_ev->desc();
-  printf("ev.event_desc=%s\n", ev.event_desc);
-  printf("Sending the event on!\n");
 
   send_event_(&ev, DOMAIN_CHANGE);
 }

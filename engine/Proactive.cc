@@ -144,11 +144,7 @@ void
 Proactive::send_event_ (void *ev, unsigned short which_event)
 {
   int which_source = determine_correct_stone(which_event);
-  FMStructDescRec * temp_ptr = formats_list_[which_source].fm_format;
-  char * other_ptr = temp_ptr->format_name;
-  printf("The source:%s\n", other_ptr);
   EVsubmit( source_handles_[which_source], ev, NULL );
-  printf("After the EVSubmit\n");
 }
 
 /*

@@ -933,9 +933,6 @@ FMField domain_change_event_flds[] =
   { "change type", "integer", sizeof (int),
     FMOffset (pds_domain_change_event_ptr, type) },
 
-  { "description", "string", sizeof (char*),
-    FMOffset (pds_domain_change_event_ptr, desc) },
-
   { "d_name", "string", sizeof (char*),
     FMOffset (pds_domain_change_event_ptr, d_name) },
 

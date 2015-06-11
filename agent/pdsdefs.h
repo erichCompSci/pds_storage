@@ -156,7 +156,6 @@ typedef struct _pds_context_change_event_struct
 typedef struct _pds_domain_change_event_struct
 {
   int type;
-  char* desc;
   char* d_name;
   char* d_type;
   int d_version;
