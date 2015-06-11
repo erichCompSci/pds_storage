@@ -64,7 +64,7 @@ int main (int argc, char *argv[])
     }
 
   cm = pds_get_CManager();
-  pds_domain_id_t * domains;
+  /*pds_domain_id_t * domains;
   if(!(pds_find_matching_domains (wps, 
                                   "newDomain",
                                   "newDomaintype",
@@ -74,22 +74,27 @@ int main (int argc, char *argv[])
   {
     fprintf(stderr, "Did not find any matching domains...\n");
     exit(1);
-  }
+  }*/
 
-  new_domain_id = domains[0];
-
+  new_domain_id = pds_open_domain (wps, 
+                                  "newDomain",
+                                  "newDomaintype",
+                                  1,
+                                  "wp-register");
   //Fails here?  Intereesting....
   cid1 = pds_get_root_context (new_domain_id);
 
   cid2 = pds_create_context (new_domain_id, "/test/newContext2", cid1);
   printf ("[ created context %s]\n", cid2.id);
 
-  if(!pds_unbind_context_from_name(new_domain_id, "/test/newContext"))
+  //Error is -1 if fail, 1 if succeed
+  if((pds_unbind_context_from_name(new_domain_id, "/test/newContext")) < 0)
     fprintf(stderr, "Failed to unbind context /test/newContext\n");
   else
     printf("Successfully, unbound /test/newContext\n");
 
-  if(!pds_bind_context_by_name(new_domain_id, "/test/newContext", "/"))
+  // Error is 0 if fail, 1 if succeed
+  if(!pds_bind_context_by_name(new_domain_id, "/test/newContext", "/test/newContext"))
     fprintf(stderr, "Failed to bind context /test/newContext to / \n");
   else
     printf("Successfully, bound /test/newContext to / \n");
