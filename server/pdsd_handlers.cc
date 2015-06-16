@@ -367,6 +367,31 @@ handle_remove_entity (void* in_msg, void* out_msg, CMrpc_options opt)
   return;
 }
 
+static void
+handle_add_aggregate_entity(void * in_msg, void * out_msg)
+{
+  WriterGuard guard;
+  add_bucket_entity_msg_ptr msg = static_cast <add_bucket_entity_msg_ptr> (in_msg);
+  return_status_msg_ptr return_msg = static_cast <return_status_msg_ptr> (out_msg);
+  
+  pdsTrace_out (pdsdVerbose, "pdsd handle_add_aggregate_entity entered");
+  
+  if (!(pds_is_entity_id_null (&(msg->entity_id))))
+  {
+    Entity * e = objectId::get_entity_ptr_from_id (msg->entity_id);
+    int the_type = msg->entity_agg_type;
+    pdsTrace_out (pdsdVerbose, "Setting entity: %s to aggregate type %d", e->get_name(), the_type);
+    return_msg->status = e->set_aggregate_stone(msg->cod_function, the_type);
+  }
+  else
+  {
+    fprintf(stderr, "Error: pdsd server does not yet handle name lookups for aggregation\n");
+    return_msg->status = 0;
+  }
+  
+  return;
+}
+
 
 static void
 handle_bind_entity (void* in_msg, void* out_msg, CMrpc_options opt)
@@ -1339,6 +1364,12 @@ Chandle_open_service(void* in_msg, void* out_msg, CMrpc_options opt)
   handle_open_service(in_msg, out_msg, opt);
 }
 
+extern "C" void
+Chandle_aggregate_service(void* in_msg, void * out_msg, CMrpc_options opt)
+{
+  handle_add_aggregate_entity(in_msg, out_msg);
+}
+
 void
 register_handlers (CManager cm)
 {
@@ -1468,6 +1499,10 @@ register_handlers (CManager cm)
 			      open_service_msg_formats,
 			      open_service_msg_formats,
 			      Chandle_open_service, NULL, NULL);
+  
+  CMrpc_register_rpc_handler (cm, ADD_AGGREGATE_ENTITY_RPC,
+            add_bucket_entity_msg_formats, return_status_msg_formats,
+            Chandle_aggregate_service, NULL, NULL);
 
   return;
 }

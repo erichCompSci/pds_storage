@@ -179,7 +179,7 @@ FMField context_exist_change_ntf_flds[] =
 
 FMStructDescRec context_exist_change_ntf_formats[] =
   {
-    { "context_u_bind_change_event", context_u_bind_change_ntf_flds, sizeof(pds_context_exist_change_ntf), NULL },
+    { "context_exist_change_event", context_exist_change_ntf_flds, sizeof(pds_context_exist_change_ntf), NULL },
     { "pds_context_id_t", pds_context_id_t_flds, sizeof(pds_context_id_t), NULL },
     { NULL, NULL }
   };
@@ -437,6 +437,27 @@ FMStructDescRec remove_entity_msg_formats[] =
       NULL },
     FMStructDescList_Terminator
   };
+
+
+FMField add_bucket_entity_msg_flds[] = 
+{
+  { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t),
+    FMOffset (add_bucket_entity_msg_ptr, entity_id) },
+  { "cod_function", "string", sizeof (char*),
+    FMOffset (add_bucket_entity_msg_ptr, cod_function) },
+  { "entity_agg_type", "unsigned integer", sizeof (int), 
+    FMOffset (add_bucket_entity_msg_ptr, entity_agg_type) },
+  { NULL, NULL, 0, 0 }
+};
+
+FMStructDescRec add_bucket_entity_msg_formats[] = 
+{
+  { "add_bucket_entity_msg", add_bucket_entity_msg_flds, sizeof(add_bucket_entity_msg),
+    NULL },
+  { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t),
+    NULL },
+  { NULL, NULL }
+};
 
 
 FMField remove_context_msg_flds[] = 

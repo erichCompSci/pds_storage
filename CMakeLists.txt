@@ -7,6 +7,7 @@ SET( CMAKE_BUILD_TYPE "Debug" )
 ENDIF()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
 MESSAGE(STATUS "Looking for GNU gengetopt")
 FIND_PROGRAM(GENGETOPT gengetopt
@@ -74,7 +75,10 @@ FOREACH (AGENT_SRC ${AGENT_SRC_LIST})
     LIST (APPEND AGENT_MASTER_SRC_LIST agent/${AGENT_SRC})
 ENDFOREACH()
 
-set (ENGINE_SRC_LIST Domain.cc Entity.cc Context.cc load.cc objectId.cc Proactive.cc ContextBindable.cc utils.c EventWrapper.cc CleaningThread.cc EngineGuard.cc CheckpointThread.cc XmlDumpVisitor.cc TreeTraverse.cc base64.c)
+set (ENGINE_SRC_LIST Domain.cc Entity.cc Context.cc load.cc objectId.cc
+Proactive.cc ContextBindable.cc utils.c EventWrapper.cc CleaningThread.cc
+EngineGuard.cc CheckpointThread.cc XmlDumpVisitor.cc TreeTraverse.cc base64.c
+storage_stone.c)
 FOREACH (ENGINE_SRC ${ENGINE_SRC_LIST})
     LIST (APPEND ENGINE_MASTER_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/engine/${ENGINE_SRC})
 ENDFOREACH()

@@ -180,6 +180,9 @@ register_formats()
                              unbind_context_msg_formats,
                              return_status_msg_formats);
   
+  CMrpc_register_rpc_request (client_cm, ADD_AGGREGATE_ENTITY_RPC, NULL,
+                             add_bucket_entity_msg_formats, 
+                             return_status_msg_formats);
   
   formats_registered = 1;
 }

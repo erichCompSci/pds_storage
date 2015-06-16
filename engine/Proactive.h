@@ -11,6 +11,7 @@ extern "C"
 #include "evpath.h"
 };
 
+#include "engine/storage_stone.h"
 #include "agent/pdsdefs.h"
 
 
@@ -21,6 +22,7 @@ class Proactive
   virtual void set_up_stones();
   virtual EVstone add_target( attr_list attrs, EVstone remote_stone, unsigned short which_event );
   virtual void send_event_ (void *ev, unsigned short which_event);
+  int set_aggregate_stone (char * cod_func,unsigned int which_type);
 
  private:
   int determine_correct_stone(unsigned short which_event);

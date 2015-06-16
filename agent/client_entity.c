@@ -36,6 +36,26 @@ pds_service_of_id (unsigned char id[PDS_ID_SIZE]);
  */
 
 
+static int
+send_aggregate_entity_msg (add_bucket_entity_msg_ptr msg, pds_service pds)
+{
+  return_status_msg return_msg;
+  pds_request (ADD_AGGREGATE_ENTITY_RPC, pds, msg, &return_msg);
+  return return_msg.status;
+}
+int
+pds_aggregate_entity (pds_domain_id_t d_id, char * cod_func, pds_entity_id_t the_entity, int which_type)
+{
+  add_bucket_entity_msg msg;
+  pds_service wps;
+
+  msg.entity_id = the_entity;
+  msg.cod_function = cod_func;
+  msg.entity_agg_type = which_type; 
+  wps = pds_service_of_id(d_id.id);
+
+  return send_aggregate_entity_msg(&msg, wps);
+}
 
 pds_entity_id_t
 pds_create_entity (pds_domain_id_t d_id,

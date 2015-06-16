@@ -121,6 +121,7 @@ Proactive::determine_correct_stone(unsigned short which_event)
   {
     fprintf(stderr, "Error: Someone asked to channel a non-existent or incorrect type\n");
     //exit(1);
+    return -1;
   }
   
   return i;
@@ -139,6 +140,45 @@ Proactive::add_target( attr_list contact_list, EVstone remote_stone, unsigned sh
   return s;
 }
  
+int
+Proactive::set_aggregate_stone(char * cod_func, unsigned int which_type)
+{
+  EVstone s = EValloc_stone(server_cm_);
+  int which_target = determine_correct_stone(which_type);
+  if(which_target < 0)
+  {
+    fprintf(stderr, "Error: could not set aggregate stone\n");
+    return 0;
+  }
+  
+  //Set up storage stone
+  FMStructDescList storage_list[] = { formats_list_[which_target].fm_format, NULL };
+  char * action_spec = create_e_rolling_bucket_action_spec(storage_list, 5, cod_func);
+  if(!action_spec)
+  {
+    fprintf(stderr, "Error: failure in the action spec creation for aggregate stone\n");
+    return 0;
+  }
+  EVassoc_multi_action(server_cm_, s, action_spec, NULL);
+  
+  //Connect storage stone to split stone
+  EVstone_set_output(server_cm_, s, 0, stones_[which_target]);
+
+  //Free source handle
+  EVfree_source (source_handles_[which_target]);
+
+  //Generate new source handle connecting to storage stone
+  source_handles_[which_target] = EVcreate_submit_handle( server_cm_, s, formats_list_[which_target].fm_format);
+
+  if(!source_handles_[which_target])
+  {
+    fprintf(stderr, "Error: failure in creating the submit_handle for aggregate stone\n");
+    return 0;
+  }
+
+  return 1;
+  
+}
 
 void 
 Proactive::send_event_ (void *ev, unsigned short which_event)

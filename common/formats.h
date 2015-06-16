@@ -72,6 +72,7 @@ pdsTrace_out(const unsigned long trace_type, char const *format, ...);
 #define LOAD_FROM_URL_RPC_NAME           "load from URL"
 #define SHUTDOWN_SERVER_RPC_NAME         "shutdown server"
 #define QUERY_BY_XPATH_RPC_NAME          "xpath query"
+#define ADD_AGGREGATE_ENTITY_RPC         "aggregate entity"
 /*
  *  EChannel message operation codes
  */
@@ -208,7 +209,13 @@ typedef struct _remove_entity_msg_struct
   const char *entity_name;
   int options;
 } remove_entity_msg, *remove_entity_msg_ptr;
- 
+
+typedef struct _add_bucket_entity_msg_struct
+{
+  pds_entity_id_t entity_id;
+  char * cod_function;
+  unsigned int entity_agg_type;
+} add_bucket_entity_msg, * add_bucket_entity_msg_ptr;
 
 
 typedef struct _entity_attributes_msg_struct
@@ -379,6 +386,8 @@ extern FMField remove_domain_msg_flds[];
 extern FMStructDescRec remove_domain_msg_formats[];
 extern FMField remove_entity_msg_flds[];
 extern FMStructDescRec remove_entity_msg_formats[];
+extern FMField add_bucket_entity_msg_flds[];
+extern FMStructDescRec add_bucket_entity_msg_formats[];
 extern FMField remove_context_msg_flds[];
 extern FMStructDescRec remove_context_msg_formats[];
 extern FMField return_status_msg_flds[];
@@ -443,6 +452,8 @@ extern FMStructDescRec context_exist_change_ntf_formats[];
 extern handler_tag_FMStructDescRec entity_DescRecs[];
 extern handler_tag_FMStructDescRec context_DescRecs[];
 extern handler_tag_FMStructDescRec domain_DescRecs[];
+
+
 /*
  *
  *  $Log: not supported by cvs2svn $
