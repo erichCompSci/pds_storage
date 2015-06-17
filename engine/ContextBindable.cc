@@ -75,6 +75,23 @@ ContextBindable::ContextBindable (const char* my_name, Context* parent, Domain* 
 	add_referrer (parent);
 }
 
+ContextBindable::ContextBindable (const char* my_name, Context* parent, Domain* d) :
+  Proactive (),
+  domain_ (d),
+  parent_ (parent),
+  is_placeholder_ (true),
+  attributes_ (NULL),
+  my_name_(strdup(my_name))
+{
+  
+  /*
+   *  Insert into the global object map
+   */
+  stamp_pair sp (get_timestamp(), this);
+  objectId::global_object_map.insert (object_map_pair (this->obj_id, sp));
+  if (parent != 0)
+	add_referrer (parent);
+}
 
 ContextBindable::~ContextBindable()
 {

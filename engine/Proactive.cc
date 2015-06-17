@@ -16,9 +16,17 @@ CManager Proactive::server_cm_ = static_cast<CManager> (0);
 Proactive::Proactive (handler_tag_FMStructDescRec * formats_)
   : stones_ (NULL),
     source_handles_ (NULL),
-    formats_list_ (formats_)
-{}
+    formats_list_ (formats_),
+    is_formats_set (true)
+{
+}
 
+Proactive::Proactive ()
+  : stones_ (NULL),
+    source_handles_ (NULL),
+    formats_list_ (NULL),
+    is_formats_set (false)
+{}
 
 Proactive::~Proactive()
 {
@@ -58,6 +66,8 @@ Proactive::use_this_CM (CManager cm)
 void
 Proactive::set_up_stones()
 {
+  assert(is_formats_set && "Error: Formats are not set up for this Proactive");
+
   if (stones_ == NULL) {
 
     int i = 0;
@@ -178,6 +188,16 @@ Proactive::set_aggregate_stone(char * cod_func, unsigned int which_type)
 
   return 1;
   
+}
+
+bool
+Proactive::set_formats(handler_tag_FMStructDescRec * formats_)
+{
+  if(!formats_)
+    return false;
+  formats_list_ = formats_;
+  is_formats_set = true;
+  return true;
 }
 
 void 

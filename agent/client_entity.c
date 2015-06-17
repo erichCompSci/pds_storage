@@ -252,9 +252,7 @@ do_registration (int operation,
   new_stone = EValloc_stone( cm );
   msg.stone = new_stone;
   
-  printf("Before the pds_request...\n");
   pds_request (EVPATH_OP_RPC_NAME, wps, &msg, &return_msg);
-  printf("After the pds_request...\n");
   
   if (return_msg.operation != OP_RESULT_OK) {
     EVfree_stone( cm, new_stone );
@@ -301,15 +299,30 @@ pds_register_for_entity_changes_by_channel (CManager cm,
 
   switch(which_channel) 
   {
-     case ENTITY_CREATE_DESTROY:
-        format_list = entity_exist_change_ntf_formats;
+     case ENTITY_CREATE_DESTROY_CHAR:
+        format_list = entity_char_exist_change_ntf_formats;
         break;
+     case ENTITY_CREATE_DESTROY_INT:
+        format_list = entity_int_exist_change_ntf_formats;
+        break;
+     case ENTITY_CREATE_DESTROY_FLOAT:
+        format_list = entity_float_exist_change_ntf_formats;
+        break;
+
      case ENTITY_BIND_UNBIND:
         format_list = entity_u_bind_change_ntf_formats;
         break;
-     case ENTITY_DATA_CHANGE:
-        format_list = entity_data_change_ntf_formats;
+
+     case ENTITY_DATA_CHANGE_CHAR:
+        format_list = entity_char_data_change_ntf_formats;
         break;
+     case ENTITY_DATA_CHANGE_INT:
+        format_list = entity_int_data_change_ntf_formats;
+        break;
+     case ENTITY_DATA_CHANGE_FLOAT:
+        format_list = entity_float_data_change_ntf_formats;
+        break;
+
      default:
         fprintf(stderr, "Error: invalid entity register option selected\n");
         return -1;

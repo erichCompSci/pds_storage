@@ -23,6 +23,7 @@ class Entity : public ContextBindable
  public:
 
   Entity (const char* my_name, Domain* d, Context* parent);
+  Entity (const char* my_name, Domain* d, Context* parent, int what_data_holder);
   virtual ~Entity();
 
   virtual void make_real();

@@ -282,7 +282,8 @@ ContextBindable*
 Domain::resolve_or_create_name (const char *fullname,
                                 binding_type name_type,
                                 Context* initial_context,
-                                bool create_placeholder)
+                                bool create_placeholder,
+                                int which_event)
 {
   Context *parent;
   ContextBindable* rval = NULL;
@@ -313,7 +314,7 @@ Domain::resolve_or_create_name (const char *fullname,
       bp.first = context_binding;
       bp.second = c;
     } else {
-      e = new Entity (objname, this, parent);
+      e = new Entity (objname, this, parent, which_event);
       bp.first = entity_binding;
       bp.second = e;	  
     }

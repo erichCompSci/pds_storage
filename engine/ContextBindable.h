@@ -54,6 +54,7 @@ class ContextBindable : public objectId, public Proactive
   bool is_placeholder_;
 
   ContextBindable (const char* my_name, Context*, Domain*, handler_tag_FMStructDescRec * format_list);
+  ContextBindable (const char
 
   virtual size_t get_name_list (vector<string>& name_vec);
   

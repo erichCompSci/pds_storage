@@ -631,12 +631,13 @@ handle_evpath_msg (void* in_msg, void* out_msg, CMrpc_options opt)
   c = objectId::get_context_ptr_from_id (msg->context_id);
   pdsTrace_out (pdsdVerbose, "using context %p", c);
 
-  //printf("Before the switch statement\n");
+  int which_event = msg->options;
+
   switch (msg->operation)
     {
     case OP_GET_ENTITY_STONE:
       pdsTrace_out (pdsdVerbose, "resolving entity name (%s)", msg->name);
-      p = d->resolve_or_create_name (msg->name, entity_binding, c, true);
+      p = d->resolve_or_create_name (msg->name, entity_binding, c, true, which_event);
       /*
        *  should never return NULL - either it finds an entity and returns it,
        *  or creates a placeholder (specifying true prevents 
@@ -659,7 +660,6 @@ handle_evpath_msg (void* in_msg, void* out_msg, CMrpc_options opt)
 
   attr_list c_attrs = attr_list_from_string( msg->contact_attrs );
 
-  int which_event = msg->options;
   pdsTrace_out (pdsdVerbose, "Trying to add the correct target...");
   return_msg->stone = p->add_target( c_attrs, msg->stone, which_event );
   pdsTrace_out (pdsdVerbose, "Returned from add_target.");

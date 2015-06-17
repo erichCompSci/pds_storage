@@ -36,6 +36,16 @@ Entity::Entity (const char* my_name, Domain* d, Context* parent) :
   domain_->add_entity_to_list(this);
 }
 
+Entity::Entity (const char * my_name, Domain * d, Context * parent, int what_data_holder) :
+  ContextBindable (my_name, parent, d),
+  data_size_ (0),
+  data_ (NULL),
+  data_type_ (Attr_Undefined)
+{
+  domain_->add_entity_to_list(this);
+  if
+}
+
 
 Entity::~Entity()
 {

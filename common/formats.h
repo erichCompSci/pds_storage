@@ -30,13 +30,17 @@ pdsTrace_out(const unsigned long trace_type, char const *format, ...);
  * and client
  */
 
-#define ENTITY_CREATE_DESTROY 1
-#define ENTITY_BIND_UNBIND 2
-#define ENTITY_DATA_CHANGE 3
-#define ENTITY_ATTR_CHANGE 4
-#define CONTEXT_BIND_UNBIND 5
-#define CONTEXT_CREATE_DESTROY 6
-#define DOMAIN_CHANGE 7
+#define ENTITY_CREATE_DESTROY_CHAR    1
+#define ENTITY_CREATE_DESTROY_INT     2
+#define ENTITY_CREATE_DESTROY_FLOAT   3
+#define ENTITY_BIND_UNBIND            4
+#define ENTITY_DATA_CHANGE_CHAR       5
+#define ENTITY_DATA_CHANGE_INT        6
+#define ENTITY_DATA_CHANGE_FLOAT      7
+#define ENTITY_ATTR_CHANGE            8
+#define CONTEXT_BIND_UNBIND           9
+#define CONTEXT_CREATE_DESTROY       10
+#define DOMAIN_CHANGE                11
 
 
 
@@ -191,15 +195,36 @@ typedef struct _return_entity_id_msg_struct
   int options;
 } return_entity_id_msg, *return_entity_id_msg_ptr;
 
-typedef struct _create_entity_msg_struct
+typedef struct _create_entity_char_msg_struct
 {
   pds_domain_id_t domain_id;
   pds_context_id_t context_id;
   const char *name;
-  pds_entity_data_t edata;
+  pds_entity_char_data_t edata;
   char *encoded_attr_list;
   int options;
-} create_entity_msg, *create_entity_msg_ptr;
+} create_entity_char_msg, *create_entity_char_msg_ptr;
+
+typedef struct _create_entity_int_msg_struct
+{
+  pds_domain_id_t domain_id;
+  pds_context_id_t context_id;
+  const char *name;
+  pds_entity_int_data_t edata;
+  char *encoded_attr_list;
+  int options;
+} create_entity_int_msg, *create_entity_int_msg_ptr;
+
+typedef struct _create_entity_float_msg_struct
+{
+  pds_domain_id_t domain_id;
+  pds_context_id_t context_id;
+  const char *name;
+  pds_entity_float_data_t edata;
+  char *encoded_attr_list;
+  int options;
+} create_entity_float_msg, *create_entity_float_msg_ptr;
+
 
 typedef struct _remove_entity_msg_struct
 {
@@ -232,7 +257,7 @@ typedef struct _entity_attributes_msg_struct
 
 
 
-typedef struct _entity_data_msg_struct
+typedef struct _entity_char_data_msg_struct
 {
   int status;
   int operation;
@@ -240,10 +265,34 @@ typedef struct _entity_data_msg_struct
   pds_context_id_t context_id;
   pds_entity_id_t entity_id;
   const char *entity_name;
-  pds_entity_data_t edata;
+  pds_entity_char_data_t edata;
   int options;
-} entity_data_msg, *entity_data_msg_ptr;
+} entity_char_data_msg, *entity_char_data_msg_ptr;
 
+typedef struct _entity_int_data_msg_struct
+{
+  int status;
+  int operation;
+  pds_domain_id_t domain_id;
+  pds_context_id_t context_id;
+  pds_entity_id_t entity_id;
+  const char *entity_name;
+  pds_entity_int_data_t edata;
+  int options;
+} entity_int_data_msg, *entity_int_data_msg_ptr;
+
+
+typedef struct _entity_float_data_msg_struct
+{
+  int status;
+  int operation;
+  pds_domain_id_t domain_id;
+  pds_context_id_t context_id;
+  pds_entity_id_t entity_id;
+  const char *entity_name;
+  pds_entity_float_data_t edata;
+  int options;
+} entity_float_data_msg, *entity_float_data_msg_ptr;
 
 typedef struct _return_context_id_msg_struct
 {

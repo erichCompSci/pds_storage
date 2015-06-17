@@ -22,14 +22,16 @@ class Proactive
   virtual void set_up_stones();
   virtual EVstone add_target( attr_list attrs, EVstone remote_stone, unsigned short which_event );
   virtual void send_event_ (void *ev, unsigned short which_event);
-  int set_aggregate_stone (char * cod_func,unsigned int which_type);
 
  private:
   int determine_correct_stone(unsigned short which_event);
+  bool is_formats_set;
 
  public:
 
   static void use_this_CM (CManager cm);
+  int set_aggregate_stone (char * cod_func,unsigned int which_type);
+  bool set_formats(handler_tag_FMStructDescRec * formats_);
 
   EVstone * stones_;
   EVaction * splits_;
@@ -38,6 +40,7 @@ class Proactive
  protected:
 
   Proactive (handler_tag_FMStructDescRec * formats_);
+  Proactive ();
   virtual ~Proactive();
 
   handler_tag_FMStructDescRec * formats_list_;
