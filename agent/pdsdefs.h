@@ -136,26 +136,11 @@ typedef struct _entity_u_bind_change_ntf
   pds_entity_id_t entity_id;
 } pds_entity_u_bind_change_ntf, * pds_entity_u_bind_change_ntf_ptr;
 
-typedef struct _entity_char_exist_change_ntf
+typedef struct _entity_exist_change_ntf
 {
   int type;
   pds_entity_id_t entity_id;
-  pds_entity_char_data_t char_data;
-} pds_entity_char_exist_change_ntf, * pds_entity_char_exist_change_ntf_ptr;
-
-typedef struct _entity_int_exist_change_ntf
-{
-  int type;
-  pds_entity_id_t entity_id;
-  pds_entity_int_data_t int_data;
-} pds_entity_int_exist_change_ntf, * pds_entity_int_exist_change_ntf_ptr;
-
-typedef struct _entity_float_exist_change_ntf
-{
-  int type;
-  pds_entity_id_t entity_id;
-  pds_entity_float_data_t float_data;
-} pds_entity_float_exist_change_ntf, * pds_entity_float_exist_change_ntf_ptr;
+} pds_entity_exist_change_ntf, * pds_entity_exist_change_ntf_ptr;
 
 typedef struct _context_u_bind_change_ntf
 {

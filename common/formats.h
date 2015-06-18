@@ -30,9 +30,7 @@ pdsTrace_out(const unsigned long trace_type, char const *format, ...);
  * and client
  */
 
-#define ENTITY_CREATE_DESTROY_CHAR    1
-#define ENTITY_CREATE_DESTROY_INT     2
-#define ENTITY_CREATE_DESTROY_FLOAT   3
+#define ENTITY_CREATE_DESTROY         1
 #define ENTITY_BIND_UNBIND            4
 #define ENTITY_DATA_CHANGE_CHAR       5
 #define ENTITY_DATA_CHANGE_INT        6

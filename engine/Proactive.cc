@@ -13,47 +13,21 @@
 
 CManager Proactive::server_cm_ = static_cast<CManager> (0);
 
-Proactive::Proactive (handler_tag_FMStructDescRec * formats_)
-  : stones_ (NULL),
-    source_handles_ (NULL),
-    formats_list_ (formats_),
-    is_formats_set (true)
-{
-}
-
 Proactive::Proactive ()
-  : stones_ (NULL),
-    source_handles_ (NULL),
-    formats_list_ (NULL),
-    is_formats_set (false)
 {}
 
 Proactive::~Proactive()
 {
-  for(int i = 0; source_handles_[i] != NULL; ++i)
+  for(int i = 0; i < source_handles_.size(); ++i)
   {
     EVfree_source (source_handles_[i]);
   }
 
-  for(int i = 0; stones_[i] != -1; ++i)
+  for(int i = 0; i < stones_.size(); ++i)
   {
     EVfree_stone( server_cm_, stones_[i]);
   }
 
-
-  /*if (source_handle_ != NULL) {
-    EVfree_source( source_handle_ );
-    // also need to remove stone action?
-  }
-  if (stone_ != -1) {
-    EVfree_stone( server_cm_, stone_ );
-    
-      -- pending resolution from eisen about semantics
-
-      EVdrain_stone( server_cm_, stone_ );
-      EVdestroy_stone( server_cm_, stone_ );
-    
-  }*/
 }
 
 void
@@ -64,73 +38,34 @@ Proactive::use_this_CM (CManager cm)
 
 
 void
-Proactive::set_up_stones()
+Proactive::set_up_stone(int which_event)
 {
-  assert(is_formats_set && "Error: Formats are not set up for this Proactive");
-
-  if (stones_ == NULL) {
-
-    int i = 0;
-
-    for(i = 0; formats_list_[i].fm_format != NULL; ++i);
-    assert((i != 0) && "There is nothing in the formats_list but a Null value");
-    //++i;
-
-    stones_ = (EVstone *)malloc(sizeof(EVstone) * (i + 1));
-    splits_ = (EVaction *)malloc(sizeof(EVaction) * (i + 1));
-    source_handles_ = (EVsource *)malloc(sizeof(EVsource) * (i + 1));
-    if(!stones_)
-    {
-      fprintf(stderr, "Error: malloc failed and stones_ is NULL\n");
-      //exit(1);
-    }
-
-    if(!splits_)
-    {
-      fprintf(stderr, "Error: malloc failed and splits_ is NULL\n");
-      //exit(1);
-    }
-
-    if(!source_handles_)
-    {
-        fprintf(stderr, "Error: malloc failed and source_handles_ is NULL\n");
-        //exit(1);
-    }
-    if((!stones_) || (!splits_) || (!source_handles_))
-    {
-      fprintf(stderr, "Error: malloc failed to return pointer in Proactive set_up_stones\n");
-      exit(1);
-    }
-
-    for(int j = 0; j < i; ++j)
-    {
-      stones_[j] = EValloc_stone( server_cm_);
-      splits_[j] = EVassoc_split_action( server_cm_, stones_[j], NULL);
-      source_handles_[j] = EVcreate_submit_handle( server_cm_, stones_[j], formats_list_[j].fm_format);
-    }
+  
+    stones_.push_back(EValloc_stone(server_cm_));
+    splits_.push_back(EVassoc_split_action(server_cm_, stones_.back(), NULL));
+    source_handles_.push_back(EVcreate_submit_handle(server_cm_, stones_.back(), global_format_map[which_event]));
     
-    *(stones_ + i) = -1;
-    *(splits_ + i) = -1;
-    *(source_handles_ + i) = NULL;
-    
-  } 
-
 }
 
 int
-Proactive::determine_correct_stone(unsigned short which_event)
+Proactive::determine_stone_set_up(unsigned short which_event)
 {
-  int i;
-  for(i = 0; formats_list_[i].fm_format != NULL; ++i)
+
+  //We know the format list
+  if(formats_list_.empty())
   {
-    if(formats_list_[i].handler_type == which_event)
+    return -1; 
+  }
+
+  int i;
+  for(i = 0; i < formats_list_.size(); ++i)
+  {
+    if(formats_list_[i].first == which_event)
         break;
   }
   
-  if(formats_list_[i].fm_format == NULL)
+  if(i == formats_list_.size())
   {
-    fprintf(stderr, "Error: Someone asked to channel a non-existent or incorrect type\n");
-    //exit(1);
     return -1;
   }
   
@@ -140,13 +75,20 @@ Proactive::determine_correct_stone(unsigned short which_event)
 EVstone
 Proactive::add_target( attr_list contact_list, EVstone remote_stone, unsigned short which_event ) 
 {
-  set_up_stones();
+  int which_target = determine_stone_set_up(which_event);
+  if(which_target < 0)
+  {
+    set_up_stone(which_event);
+  }
+  // You have to call again, because this might be different depending on order of calls
+  which_target = determine_stone_set_up(which_event);
+
   EVstone s = EValloc_stone( server_cm_ );
   EVassoc_bridge_action( server_cm_, s, contact_list, remote_stone );
 
-  int which_target = determine_correct_stone(which_event);
 
   EVaction_add_split_target( server_cm_, stones_[which_target], splits_[which_target], s );
+
   return s;
 }
  
@@ -154,11 +96,11 @@ int
 Proactive::set_aggregate_stone(char * cod_func, unsigned int which_type)
 {
   EVstone s = EValloc_stone(server_cm_);
-  int which_target = determine_correct_stone(which_type);
+  int which_target = determine_stone_set_up(which_type);
   if(which_target < 0)
   {
-    fprintf(stderr, "Error: could not set aggregate stone\n");
-    return 0;
+    set_up_stone(which_type);
+    which_target = determine_stone_set_up(which_type);
   }
   
   //Set up storage stone
@@ -188,16 +130,6 @@ Proactive::set_aggregate_stone(char * cod_func, unsigned int which_type)
 
   return 1;
   
-}
-
-bool
-Proactive::set_formats(handler_tag_FMStructDescRec * formats_)
-{
-  if(!formats_)
-    return false;
-  formats_list_ = formats_;
-  is_formats_set = true;
-  return true;
 }
 
 void 

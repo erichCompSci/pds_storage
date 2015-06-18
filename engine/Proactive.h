@@ -13,6 +13,8 @@ extern "C"
 
 #include "engine/storage_stone.h"
 #include "agent/pdsdefs.h"
+#include <vector>
+#include <pair>
 
 
 class Proactive
@@ -25,25 +27,22 @@ class Proactive
 
  private:
   int determine_correct_stone(unsigned short which_event);
-  bool is_formats_set;
+  std::vector<EVstone> stones_;
+  std::vector<EVaction> splits_;
+  std::vector<EVsource> source_handles_;
 
  public:
 
   static void use_this_CM (CManager cm);
-  int set_aggregate_stone (char * cod_func,unsigned int which_type);
-  bool set_formats(handler_tag_FMStructDescRec * formats_);
 
-  EVstone * stones_;
-  EVaction * splits_;
-  EVsource * source_handles_;
 
  protected:
 
-  Proactive (handler_tag_FMStructDescRec * formats_);
   Proactive ();
   virtual ~Proactive();
+  int set_aggregate_stone (char * cod_func,unsigned int which_type);
 
-  handler_tag_FMStructDescRec * formats_list_;
+  std::vector<std::pair<unsigned short, FMStructDescRec *>> formats_list_;
   static CManager server_cm_;
 
 };  

@@ -8,6 +8,7 @@
 #include "atl.h"
 
 #include "formats.h"
+#include <map>
 
 #define FMFieldList_Terminator {(char*)0, (char*)0, 0, 0}
 #define FMStructDescList_Terminator {NULL, NULL}
@@ -170,51 +171,17 @@ FMStructDescRec entity_u_bind_change_ntf_formats[] =
     { NULL, NULL }
   };
 
-FMField entity_char_exist_change_ntf_flds[] = 
+FMField entity_exist_change_ntf_flds[] = 
   {
-    { "type", "integer", sizeof(int), FMOffset(pds_entity_char_exist_change_ntf_ptr, type) },
-    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_char_exist_change_ntf_ptr, entity_id) },
-    { "char_data", "pds_entity_char_data_t", sizeof(pds_entity_char_data_t), FMOffset(pds_entity_char_exist_change_ntf_ptr, char_data) },
+    { "type", "integer", sizeof(int), FMOffset(pds_entity_exist_change_ntf_ptr, type) },
+    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_exist_change_ntf_ptr, entity_id) },
     { NULL, NULL, 0, 0 }
   };
 
-FMStructDescRec entity_char_exist_change_ntf_formats[] =
+FMStructDescRec entity_exist_change_ntf_formats[] =
   {
-    { "entity_exist_change_event", entity_char_exist_change_ntf_flds, sizeof(pds_entity_char_exist_change_ntf), NULL },
+    { "entity_exist_change_event", entity_exist_change_ntf_flds, sizeof(pds_entity_exist_change_ntf), NULL },
     { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
-    { "pds_entity_char_data_t", pds_entity_char_data_t_flds, sizeof(pds_entity_char_data_t), NULL },
-    { NULL, NULL }
-  };
-
-FMField entity_int_exist_change_ntf_flds[] = 
-  {
-    { "type", "integer", sizeof(int), FMOffset(pds_entity_int_exist_change_ntf_ptr, type) },
-    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_int_exist_change_ntf_ptr, entity_id) },
-    { "int_data", "pds_entity_int_data_t", sizeof(pds_entity_int_data_t), FMOffset(pds_entity_int_exist_change_ntf_ptr, int_data) },
-    { NULL, NULL, 0, 0 }
-  };
-
-FMStructDescRec entity_int_exist_change_ntf_formats[] =
-  {
-    { "entity_exist_change_event", entity_int_exist_change_ntf_flds, sizeof(pds_entity_int_exist_change_ntf), NULL },
-    { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
-    { "pds_entity_int_data_t", pds_entity_int_data_t_flds, sizeof(pds_entity_int_data_t), NULL },
-    { NULL, NULL }
-  };
-
-FMField entity_float_exist_change_ntf_flds[] = 
-  {
-    { "type", "integer", sizeof(int), FMOffset(pds_entity_float_exist_change_ntf_ptr, type) },
-    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_float_exist_change_ntf_ptr, entity_id) },
-    { "float_data", "pds_entity_float_data_t", sizeof(pds_entity_float_data_t), FMOffset(pds_entity_float_exist_change_ntf_ptr, float_data) },
-    { NULL, NULL, 0, 0 }
-  };
-
-FMStructDescRec entity_float_exist_change_ntf_formats[] =
-  {
-    { "entity_exist_change_event", entity_float_exist_change_ntf_flds, sizeof(pds_entity_float_exist_change_ntf), NULL },
-    { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
-    { "pds_entity_float_data_t", pds_entity_float_data_t_flds, sizeof(pds_entity_float_data_t), NULL },
     { NULL, NULL }
   };
 
@@ -1201,26 +1168,10 @@ FMStructDescRec domain_change_event_formats[] =
   FMStructDescList_Terminator
 };
 
-handler_tag_FMStructDescRec entity_DescRecs[] = 
-{
-  { ENTITY_CREATE_DESTROY, entity_exist_change_ntf_formats},
-  { ENTITY_BIND_UNBIND, entity_u_bind_change_ntf_formats},
-  { ENTITY_DATA_CHANGE, entity_data_change_ntf_formats }, 
-  { 0, NULL }
-};
-
-handler_tag_FMStructDescRec context_DescRecs[] =
-{
-  { CONTEXT_BIND_UNBIND, context_u_bind_change_ntf_formats},
-  { CONTEXT_CREATE_DESTROY, context_exist_change_ntf_formats},
-  { 0, NULL }
-};
-
-handler_tag_FMStructDescRec domain_DescRecs[] =
-{
-  { DOMAIN_CHANGE, domain_change_event_formats},
-  { 0, NULL }
-};
+std::map<int, FMStructDescRec *> global_format_map = { {ENTITY_CREATE_DESTROY, entity_exist_change_ntf_formats },            {ENTITY_BIND_UNBIND, entity_u_bind_change_ntf_formats},
+                                                       {ENTITY_DATA_CHANGE_CHAR, entity_char_data_change_ntf_formats },      {ENTITY_DATA_CHANGE_INT, entity_int_data_change_ntf_formats},
+                                                       {ENTITY_DATA_CHANGE_FLOAT, entity_float_data_change_ntf_formats},     {CONTEXT_BIND_UNBIND, context_u_bind_change_ntf_formats},
+                                                       {CONTEXT_CREATE_DESTROY, context_exist_change_ntf_formats},           {DOMAIN_CHANGE, domain_change_event_formats}}
 
 /*
  *
