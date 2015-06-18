@@ -363,6 +363,7 @@ extern FMField pds_entity_id_t_flds[];
 extern FMField pds_context_id_t_flds[];
 extern FMField pds_domain_id_t_flds[];
 extern FMField pds_entity_data_t_flds[];
+extern FMStructDescRec pds_entity_data_t_formats[];
 
 extern FMField unbind_msg_flds[];
 extern FMStructDescRec unbind_msg_formats[];

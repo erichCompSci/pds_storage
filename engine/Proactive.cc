@@ -152,7 +152,7 @@ Proactive::set_aggregate_stone(char * cod_func, unsigned int which_type)
   }
   
   //Set up storage stone
-  FMStructDescList storage_list[] = { formats_list_[which_target].fm_format, NULL };
+  FMStructDescList storage_list[] = { formats_list_[which_target].fm_format, pds_entity_data_t_formats, NULL };
   char * action_spec = create_e_rolling_bucket_action_spec(storage_list, 5, cod_func);
   if(!action_spec)
   {

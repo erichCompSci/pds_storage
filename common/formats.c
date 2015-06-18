@@ -222,7 +222,11 @@ FMField pds_entity_data_t_flds[] =
   {(char*) 0, (char*) 0, 0, 0 }
 };
 
-
+FMStructDescRec pds_entity_data_t_formats[] =
+{
+  {"pds_entity_data", pds_entity_data_t_flds, sizeof(pds_entity_data_t), NULL },
+  { NULL, NULL }
+};
 
 
 FMField matching_domains_msg_flds[] =
