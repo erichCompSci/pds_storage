@@ -216,7 +216,7 @@ handle_bind_context(void* in_msg, void* out_msg, CMrpc_options opt)
 
   if(source == NULL)
   {
-    printf("Hunch was correct: Exiting...\n");
+    fprintf(stderr, "Error: in handle_bind_context...source is NULL when it shouldn't be\n");
     exit(1);
   }
 
@@ -276,15 +276,42 @@ handle_remove_context (void* in_msg, void* out_msg, CMrpc_options opt)
 }
 
 static void
-handle_create_entity (void* in_msg, void* out_msg, CMrpc_options opt)
+handle_create_entity (void* in_msg, void* out_msg, CMrpc_options opt, unsigned short which_data)
 {
+  pdsTrace_out (pdsdVerbose, "pdsd handle_create_entity enter");
   WriterGuard guard;
-  create_entity_msg_ptr msg = static_cast<create_entity_msg_ptr> (in_msg);
+  create_entity_char_msg_ptr msg_char = NULL;
+  create_entity_int_msg_ptr msg_int = NULL;
+  create_entity_float_msg_ptr msg_float = NULL;
   return_entity_id_msg_ptr return_msg = static_cast<return_entity_id_msg_ptr> (out_msg);
+  if(which_data == ENTITY_DATA_CHANGE_CHAR)
+  {
+    pdsTrace_out (pdsdVerbose, "pdsd entity data is of type CHAR");
+    msg_char = static_cast<create_entity_char_msg_ptr> (in_msg);
+  }
+  else if(which_data == ENTITY_DATA_CHANGE_INT)
+  {
+    pdsTrace_out (pdsdVerbose, "pdsd entity data is of type INT");
+    msg_int = static_cast<create_entity_int_msg_ptr> (in_msg);
+  }
+  else if(which_data == ENTITY_DATA_CHANGE_FLOAT)
+  {
+    pdsTrace_out (pdsdVerbose, "pdsd entity data is of type FLOAT");
+    msg_float = static_cast<create_entity_float_msg_ptr> (in_msg);
+  }
+  else
+  {
+    fprintf(stderr, "Error: the create entity was not one of the three types, should not be possible\n");
+    return_msg
+    return_msg->options = -1;
+    return_msg->fullname = NULL;
+    return_msg->entity_id = { { '\0' } };
+    return;
+  }
+    
   Domain *target_domain;
   Entity *new_entity;
 
-  pdsTrace_out (pdsdVerbose, "pdsd handle_create_entity enter");
 
   target_domain = objectId::get_domain_ptr_from_id (msg->domain_id);
   Context *initial_context = objectId::get_context_ptr_from_id (msg->context_id);
@@ -303,7 +330,7 @@ handle_create_entity (void* in_msg, void* out_msg, CMrpc_options opt)
      *  The message contains a data package.  Copy the data
      *  to the entity.
      */
-  pdsTrace_out (pdsDataVerbose, "new entity: data size = %d, data type = %d",
+  /*pdsTrace_out (pdsDataVerbose, "new entity: data size = %d, data type = %d",
 		msg->edata.data_size, msg->edata.data_type);
   
   if (pdsTrace_on (pdsDataVerbose)) {
@@ -323,13 +350,26 @@ handle_create_entity (void* in_msg, void* out_msg, CMrpc_options opt)
       pdsTrace_out (pdsDataVerbose, "data dump not supported yet for this type");
       break;
     }
-  }
+  }*/ //FIXME:Commented out code, need to fix it for new architecture later
   
-  new_entity->set_data (msg->edata.data,
-			msg->edata.data_size,
-			msg->edata.data_type);
-  pdsTrace_out (pdsdVerbose, "submitting data event");
-  new_entity->send_data_event();
+  if(which_data == ENTITY_DATA_CHANGE_CHAR)
+  {
+    new_entity->set_char_data (msg_char->edata.data, msg_char->edata.data_size);
+    pdsTrace_out (pdsdVerbose, "submitting char data event");
+    new_entity->send_char_data_event();
+  }
+  else if(which_data == ENTITY_DATA_CHANGE_INT)
+  {
+    new_entity->set_int_data(msg_int->edata.data, msg_int->edata.data_size);
+    pdsTrace_out (pdsdVerbose, "submitting int data event");
+    new_entity->send_int_data_event();
+  }
+  else if(which_data == ENTITY_DATA_CHANGE_FLOAT)
+  {
+    new_entity->set_float_data(msg_float->edata.data, msg_float->edata.data_size);
+    pdsTrace_out (pdsdVerbose, "submitting float data event");
+    new_entity->send_float_data_event();
+  }
 
   return_msg->entity_id = objectId::make_pds_entity_id (target_domain, new_entity);
   return_msg->fullname = NULL;
@@ -637,7 +677,7 @@ handle_evpath_msg (void* in_msg, void* out_msg, CMrpc_options opt)
     {
     case OP_GET_ENTITY_STONE:
       pdsTrace_out (pdsdVerbose, "resolving entity name (%s)", msg->name);
-      p = d->resolve_or_create_name (msg->name, entity_binding, c, true, which_event);
+      p = d->resolve_or_create_name (msg->name, entity_binding, c, true);
       /*
        *  should never return NULL - either it finds an entity and returns it,
        *  or creates a placeholder (specifying true prevents 
@@ -760,12 +800,12 @@ handle_entity_attributes (void* in_msg, void* out_msg, CMrpc_options options)
 }
 
 
+template <typename T>
 static void
-handle_entity_data (void* in_msg, void* out_msg, CMrpc_options opt)
+handle_entity_data (T in_msg, void* out_msg, CMrpc_options opt, unsigned short which_data)
 {
   WriterGuard guard;
-  entity_data_msg_ptr msg = static_cast<entity_data_msg_ptr> (in_msg);
-  entity_data_msg_ptr return_data_msg = static_cast<entity_data_msg_ptr> (out_msg);
+  T return_data_msg = static_cast<T> (out_msg);
   return_status_msg_ptr return_msg = static_cast<return_status_msg_ptr> (out_msg);
   char *c = NULL;
   Entity *target_entity = NULL;
@@ -779,31 +819,31 @@ handle_entity_data (void* in_msg, void* out_msg, CMrpc_options opt)
    *  are supplied it directly, we are given a context ID and a 
    *  relative name, or we are given a full name to resolve.
    */
-  if (!(pds_is_entity_id_null (&(msg->entity_id)))) {
+  if (!(pds_is_entity_id_null (&(in_msg->entity_id)))) {
     /*
      *  got an entity id.  use it.
      */
+    target_entity = objectId::get_entity_ptr_from_id (in_msg->entity_id);
     pdsTrace_out (pdsdVerbose, "using entity ID, entity %p", target_entity);
-    target_entity = objectId::get_entity_ptr_from_id (msg->entity_id);
 
   } else {
 
-    Context *c = objectId::get_context_ptr_from_id (msg->context_id);
-    d = objectId::get_domain_ptr_from_id (msg->domain_id);
+    Context *c = objectId::get_context_ptr_from_id (in_msg->context_id);
+    d = objectId::get_domain_ptr_from_id (in_msg->domain_id);
     assert (d != NULL);
     
-    if (msg->options & CreateObjIfNotFound) {
+    if (in_msg->options & CreateObjIfNotFound) {
       pdsTrace_out (pdsdVerbose, "resolve/create entity using domain %p, context %p, name (%s)",
-                    d, c, msg->entity_name);
-      target_entity = d->resolve_or_create_entity (msg->entity_name, c);
+                    d, c, in_msg->entity_name);
+      target_entity = d->resolve_or_create_entity (in_msg->entity_name, c);
     } else {
       pdsTrace_out (pdsdVerbose, "resolve entity using domain %p, context %p, name (%s)",
                     d, c, msg->entity_name);
-      target_entity = d->resolve_entity (msg->entity_name, c);
+      target_entity = d->resolve_entity (in_msg->entity_name, c);
     }
   }
 
-  if (msg->edata.data_size == 0) {
+  if (in_msg->edata.data_size == 0) {
     return_data_msg->entity_name = NULL;
     return_data_msg->options = msg->options;
     
@@ -813,7 +853,6 @@ handle_entity_data (void* in_msg, void* out_msg, CMrpc_options opt)
       pdsTrace_out (pdsdVerbose, "target_entity is NULL");
       return_data_msg->edata.data = NULL;
       return_data_msg->edata.data_size = 0;
-      return_data_msg->edata.data_type = Attr_Undefined;
       return_data_msg->status = -1;
     } else {
       /*
@@ -821,46 +860,53 @@ handle_entity_data (void* in_msg, void* out_msg, CMrpc_options opt)
        */
       pdsTrace_out (pdsdVerbose, "using entity %p", target_entity);
       
-      dataFlag = (msg->options & GetDataBuffer)
-        || (msg->options & GetDataSize)
-        || (msg->options & GetDataType);
-      
-      if ((msg->options & GetDataBuffer) || !dataFlag) {
-        return_data_msg->edata.data = target_entity->data_;
-      } else {
-        return_data_msg->edata.data = NULL;
-      }
-      
-      if ((msg->options & GetDataSize) || !dataFlag) {
-        return_data_msg->edata.data_size = target_entity->data_size_;
-      } else {
-        return_data_msg->edata.data_size = 0;
-      }
-      
-      if ((msg->options & GetDataType) || !dataFlag) {
-        return_data_msg->edata.data_type = target_entity->data_type_;
-      } else {
-        return_data_msg->edata.data_type = Attr_Undefined;
-      }
-      pdsTrace_out (pdsDataVerbose, "data size = %d, data type = %d",
-                    target_entity->data_size_, target_entity->data_type_);
-      
-      if (pdsTrace_on (pdsDataVerbose)) {
-        switch (target_entity->data_type_) {
-        case Attr_String:
-          c = (char*)malloc (target_entity->data_size_ + 1);
-          memset (c, 0, target_entity->data_size_ + 1);
-          strncpy (c, (char*)target_entity->data_, target_entity->data_size_);
-          pdsTrace_out (pdsDataVerbose, "data = [%s]", c);
-          free (c);
-          break;
-        case Attr_Int4:
-          pdsTrace_out (pdsDataVerbose, "data = [%d]", *((int*)target_entity->data_));
-          break;
-        default:
-          pdsTrace_out (pdsDataVerbose, "data dump not supported yet for this type");
-          break;
+      dataFlag = (in_msg->options & GetDataBuffer)
+        || (in_msg->options & GetDataSize)
+
+      if(which_data == ENTITY_DATA_CHANGE_CHAR)
+      { 
+        if (((in_msg->options & GetDataBuffer) || !dataFlag) && target_entity->get_char_data()) {
+          return_data_msg->edata.data = target_entity->get_char_data().data;
+        } else {
+          return_data_msg->edata.data = NULL;
         }
+        
+        if (((msg->options & GetDataSize) || !dataFlag) && target_entity->get_char_data()) {
+          return_data_msg->edata.data_size = target_entity->get_char_data().data_size;
+        } else {
+          return_data_msg->edata.data_size = 0;
+        }
+        
+      }
+      else if(which_data = ENTITY_DATA_CHANGE_INT)
+      {
+        if (((in_msg->options & GetDataBuffer) || !dataFlag) && target_entity->get_int_data()) {
+          return_data_msg->edata.data = target_entity->get_int_data().data;
+        } else {
+          return_data_msg->edata.data = NULL;
+        }
+        
+        if (((msg->options & GetDataSize) || !dataFlag) && target_entity->get_int_data()) {
+          return_data_msg->edata.data_size = target_entity->get_int_data().data_size;
+        } else {
+          return_data_msg->edata.data_size = 0;
+        }
+        
+      }
+      else if(which_data = ENTITY_DATA_CHANGE_FLOAT)
+      {
+        if (((in_msg->options & GetDataBuffer) || !dataFlag) && target_entity->get_float_data()) {
+          return_data_msg->edata.data = target_entity->get_float_data().data;
+        } else {
+          return_data_msg->edata.data = NULL;
+        }
+        
+        if (((msg->options & GetDataSize) || !dataFlag) && target_entity->get_float_data()) {
+          return_data_msg->edata.data_size = target_entity->get_float_data().data_size;
+        } else {
+          return_data_msg->edata.data_size = 0;
+        }
+        
       }
     }
   } else {
@@ -872,32 +918,19 @@ handle_entity_data (void* in_msg, void* out_msg, CMrpc_options opt)
     if (target_entity == NULL){
       return_msg->status = -1;
     } else {
-      pdsTrace_out (pdsDataVerbose, "data size = %d, data type = %d",
-                    msg->edata.data_size, msg->edata.data_type);
-          
-      if (pdsTrace_on (pdsDataVerbose)) {
-        switch (msg->edata.data_type) {
-        case Attr_String:
-          c = (char*)malloc (msg->edata.data_size + 1);
-          memset (c, 0, msg->edata.data_size + 1);
-          strncpy (c, (char*)msg->edata.data, msg->edata.data_size);
-          pdsTrace_out (pdsDataVerbose, "data = [%s]", c);
-          free (c);
-          break;
-        case Attr_Int4:
-          pdsTrace_out (pdsDataVerbose, "data = [%d]", *((int*)msg->edata.data));
-          break;
-        default:
-          pdsTrace_out (pdsDataVerbose, "data dump not supported yet for this type");
-          break;
-        }
-      }
-      
-      target_entity->set_data (msg->edata.data,
-                               msg->edata.data_size,
-                               msg->edata.data_type);
+
+      // Set the data
+      target_entity->set_data (in_msg->edata.data,
+                               in_msg->edata.data_size);
+
+      //Send the appropriate event
       pdsTrace_out (pdsdVerbose, "submitting data event");
-      target_entity->send_data_event();
+      if(which_data = ENTITY_DATA_CHANGE_CHAR)
+        target_entity->send_char_data_event();
+      if(which_data = ENTITY_DATA_CHANGE_INT)
+        target_entity->send_int_data_event();
+      if(which_data = ENTITY_DATA_CHANGE_FLOAT)
+        target_entity->send_float_data_event();
       
       return_msg->status = 1;
     }
@@ -1184,9 +1217,24 @@ Chandle_shutdown_server_cleanup( CManager cm, void* msg )
 }
 
 extern "C" void
-Chandle_entity_data(void* in_msg, void* out_msg, CMrpc_options opt)
+Chandle_entity_char_data(void* in_msg, void* out_msg, CMrpc_options opt)
 {
-  handle_entity_data(in_msg, out_msg, opt);
+  entity_char_data_msg_ptr msg = static_cast<entity_char_data_msg_ptr> (in_msg);
+  handle_entity_data<entity_char_data_msg_ptr>(msg, out_msg, opt, ENTITY_DATA_CHANGE_CHAR);
+}
+
+extern "C" void
+Chandle_entity_int_data(void* in_msg, void* out_msg, CMrpc_options opt)
+{
+  entity_int_data_msg_ptr msg = static_cast<entity_int_data_msg_ptr> (in_msg);
+  handle_entity_data<entity_int_data_msg_ptr>(msg, out_msg, opt, ENTITY_DATA_CHANGE_INT);
+}
+
+extern "C" void
+Chandle_entity_float_data(void* in_msg, void* out_msg, CMrpc_options opt)
+{
+  entity_float_data_msg_ptr msg = static_cast<entity_float_data_msg_ptr> (in_msg);
+  handle_entity_data<entity_float_data_msg_ptr>(msg, out_msg, opt, ENTITY_DATA_CHANGE_FLOAT);
 }
 
 extern "C" void
@@ -1269,9 +1317,21 @@ Chandle_match_entities(void* in_msg, void* out_msg, CMrpc_options opt)
 }
 
 extern "C" void
-Chandle_create_entity(void* in_msg, void* out_msg, CMrpc_options opt)
+Chandle_create_char_entity(void* in_msg, void* out_msg, CMrpc_options opt)
 {
-  handle_create_entity(in_msg, out_msg, opt);
+  handle_create_entity(in_msg, out_msg, opt, ENTITY_DATA_CHANGE_CHAR);
+}
+
+extern "C" void
+Chandle_create_int_entity(void * in_msg, void * out_msg, CMrpc_options opt)
+{
+  handle_create_entity(in_msg, out_msg, opt, ENTITY_DATA_CHANGE_INT);
+}
+
+extern "C" void
+Chandle_create_float_entity(void * in_msg, void * out_msg, CMrpc_options opt)
+{
+  handle_create_entity(in_msg, out_msg, opt, ENTITY_DATA_CHANGE_FLOAT);
 }
 
 extern "C" void
@@ -1419,9 +1479,17 @@ register_handlers (CManager cm)
                                Chandle_get_binding_list, NULL,
                                Chandle_get_binding_list_cleanup);
 
-  CMrpc_register_rpc_handler (cm, CREATE_ENTITY_RPC_NAME, 
-			      create_entity_msg_formats, return_entity_id_msg_formats,
-			      Chandle_create_entity, NULL, NULL);
+  CMrpc_register_rpc_handler (cm, CREATE_ENTITY_CHAR_RPC_NAME, 
+			      create_entity_char_msg_formats, return_entity_id_msg_formats,
+			      Chandle_create_char_entity, NULL, NULL);
+
+  CMrpc_register_rpc_handler (cm, CREATE_ENTITY_INT_RPC_NAME,
+            create_entity_int_msg_formats, return_entity_id_msg_formats,
+            Chandle_create_int_entity, NULL, NULL);
+
+  CMrpc_register_rpc_handler (cm, CREATE_ENTITY_FLOAT_RPC_NAME,
+            create_entity_float_msg_formats, return_entity_id_msg_formats,
+            Chandle_create_int_entity, NULL, NULL);
 
   CMrpc_register_rpc_handler (cm, REMOVE_ENTITY_RPC_NAME, 
 			      remove_entity_msg_formats,
@@ -1455,13 +1523,29 @@ register_handlers (CManager cm)
 			      Chandle_entity_attributes, NULL,
 			      NULL);
 
-  CMrpc_register_rpc_handler (cm, GET_ENTITY_DATA_RPC_NAME, 
-			      entity_data_msg_formats, entity_data_msg_formats,
-			      Chandle_entity_data, NULL, NULL);
+  CMrpc_register_rpc_handler (cm, GET_ENTITY_CHAR_DATA_RPC_NAME, 
+			      entity_char_data_msg_formats, entity_char_data_msg_formats,
+			      Chandle_entity_char_data, NULL, NULL);
 
-  CMrpc_register_rpc_handler (cm, SET_ENTITY_DATA_RPC_NAME, 
-			      entity_data_msg_formats, return_status_msg_formats,
-			      Chandle_entity_data, NULL, NULL);
+  CMrpc_register_rpc_handler (cm, GET_ENTITY_INT_DATA_RPC_NAME, 
+			      entity_int_data_msg_formats, entity_int_data_msg_formats,
+			      Chandle_entity_int_data, NULL, NULL);
+
+  CMrpc_register_rpc_handler (cm, GET_ENTITY_FLOAT_DATA_RPC_NAME, 
+			      entity_float_data_msg_formats, entity_float_data_msg_formats,
+			      Chandle_entity_float_data, NULL, NULL);
+
+  CMrpc_register_rpc_handler (cm, SET_ENTITY_CHAR_DATA_RPC_NAME, 
+			      entity_char_data_msg_formats, return_status_msg_formats,
+			      Chandle_entity_char_data, NULL, NULL);
+
+  CMrpc_register_rpc_handler (cm, SET_ENTITY_INT_DATA_RPC_NAME, 
+			      entity_int_data_msg_formats, return_status_msg_formats,
+			      Chandle_entity_int_data, NULL, NULL);
+
+  CMrpc_register_rpc_handler (cm, SET_ENTITY_FLOAT_DATA_RPC_NAME, 
+			      entity_float_data_msg_formats, return_status_msg_formats,
+			      Chandle_entity_float_data, NULL, NULL);
 
   CMrpc_register_rpc_handler (cm, FIND_MATCHING_ENTITIES_RPC_NAME, 
 			      create_entity_msg_formats, matching_entities_msg_formats,

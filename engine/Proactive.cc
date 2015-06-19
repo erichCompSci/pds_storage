@@ -42,8 +42,13 @@ Proactive::set_up_stone(int which_event)
 {
   
     stones_.push_back(EValloc_stone(server_cm_));
+
     splits_.push_back(EVassoc_split_action(server_cm_, stones_.back(), NULL));
+
     source_handles_.push_back(EVcreate_submit_handle(server_cm_, stones_.back(), global_format_map[which_event]));
+
+    std::pair<unsigned short, FMStructDescRec *> temp_pair(which_event, global_format_map[which_event]);
+    formats_list_.push_back(temp_pair);
     
 }
 

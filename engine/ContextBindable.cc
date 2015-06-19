@@ -57,23 +57,6 @@ ContextBindable::remove_referrer (Context *c)
   referrers_.erase (find (referrers_.begin(), referrers_.end(), c));
 }
 
-ContextBindable::ContextBindable (const char* my_name, Context* parent, Domain* d,
-                                  handler_tag_FMStructDescRec * format_list) :
-  Proactive (format_list),
-  domain_ (d),
-  parent_ (parent),
-  is_placeholder_ (true),
-  attributes_ (NULL),
-  my_name_(strdup(my_name))
-{
-  /*
-   *  Insert into the global object map
-   */
-  stamp_pair sp (get_timestamp(), this);
-  objectId::global_object_map.insert (object_map_pair (this->obj_id, sp));
-  if (parent != 0)
-	add_referrer (parent);
-}
 
 ContextBindable::ContextBindable (const char* my_name, Context* parent, Domain* d) :
   Proactive (),
@@ -116,7 +99,6 @@ ContextBindable::~ContextBindable()
 void
 ContextBindable::make_real()
 {
-  set_up_stones();  
   is_placeholder_ = false;
   if (attributes_ == NULL)
     attributes_ = create_attr_list();
@@ -130,8 +112,12 @@ ContextBindable::send_event(BaseEventWrapper* ev, unsigned short which_event)
   if (domain_ != 0)
     domain_->send_wrapped_event(ev);
   
-    
- Proactive::send_event_(ev->event(), which_event);
+// This is a lazy hack on my part so that I don't have to go in and make it so that the Entity Creation
+// and desturction send events only trigger the domain send.  What can I say, it's one line of code
+// versus a half hour to an hour of replacing functions carefully...so sue me, I'm trying to publish.
+  if (which_event != ENTITY_CREATE_DESTROY)
+    Proactive::send_event_(ev->event(), which_event);
+
 }
 bool
 ContextBindable::is_placeholder()

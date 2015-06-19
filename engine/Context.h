@@ -35,7 +35,6 @@ class Context : public ContextBindable
 
  public:
 
-  /*Context (const char* my_name, Domain*);*/
   Context (const char* my_name, Domain*, Context* parent);
   Context (const char* my_name, Domain*, Context* parent, const char* name_to_bind);
   virtual ~Context();

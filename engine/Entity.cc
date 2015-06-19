@@ -28,24 +28,13 @@ extern "C" {
 
 
 Entity::Entity (const char* my_name, Domain* d, Context* parent) :
-  ContextBindable (my_name, parent, d, entity_DescRecs ),
-  data_size_ (0),
-  data_ (NULL),
-  data_type_ (Attr_Undefined)
-{
-  domain_->add_entity_to_list(this);
-}
-
-Entity::Entity (const char * my_name, Domain * d, Context * parent, int what_data_holder) :
   ContextBindable (my_name, parent, d),
-  data_size_ (0),
-  data_ (NULL),
-  data_type_ (Attr_Undefined)
+  pds_entity_char_data_t_ptr(NULL),
+  pds_entity_int_data_t_ptr(NULL),
+  pds_entity_float_data_t_ptr(NULL)
 {
   domain_->add_entity_to_list(this);
-  if
 }
-
 
 Entity::~Entity()
 {
@@ -70,31 +59,67 @@ Entity::~Entity()
 void
 Entity::make_real()
 {
+  pdsTrace_out (pdsengineVerbose "Entity make real called");
+  set_up_stone(ENTITY_BIND_UNBIND);  
+  set_up_stone(ENTITY_DATA_CHANGE_CHAR);
+  set_up_stone(ENTITY_DATA_CHANGE_INT);
+  set_up_stone(ENTITY_DATA_CHANGE_FLOAT);
   ContextBindable::make_real();
 }
 
 
-const pds_entity_data_t
-Entity::get_data() const
+pds_entity_char_data_t_ptr
+Entity::get_char_data() const
 {
-  pds_entity_data_t rval;
-  rval.data = data_;
-  rval.data_size = data_size_;
-  rval.data_type = data_type_;
-  return rval;
+  return char_data;
+}
+
+pds_entity_int_data_t_ptr
+Entity::get_int_data() const
+{
+  return int_data;
+}
+
+pds_entity_float_data_t_ptr
+Entity::get_float_data() const
+{
+  return float_data;
 }
 
 void
-Entity::set_data (void *new_data, unsigned long len, attr_value_type type)
+Entity::set_data (char *new_data, unsigned long len)
 {  
-  free (data_);
-  data_ = (unsigned char*) malloc (len + 1);
-  memcpy (data_, new_data, len);
-  data_[len] = 0;
+  if(char_data->data)
+    free (char_data->data);
+  char_data->data = (unsigned char*) malloc (len + 1);
+  memcpy (char_data->data, new_data, len);
+  char_data->data[len] = '\0';
 
-  data_size_ = len;
-  data_type_ = type;
+  char_data->data_size = len;
 }
+
+void
+Entity::set_data (int *new_data, size_t len)
+{  
+  if(int_data->data)
+    free (int_data->data);
+  int_data->data = (int *) malloc (sizeof(int) * len);
+  memcpy (int_data->data, new_data, (sizeof(int) * len));
+
+  int_data->data_size = len;
+}
+
+void
+Entity::set_data (float *new_data, size_t len)
+{  
+  if(float_data->data)
+    free (float_data->data);
+  float_data->data = (float *) malloc (sizeof(float) * len);
+  memcpy (float_data->data, new_data, (sizeof(float) * len));
+
+  float_data->data_size = len;
+}
+
 
 void
 Entity::unbound_from (Context *c)
@@ -115,13 +140,33 @@ Entity::send_creation_event()
 }
 
 void 
-Entity::send_data_event()
+Entity::send_char_data_event()
 {
-  pds_entity_data_change_ntf evt;
+  pds_entity_char_data_change_ntf evt;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
-  evt.entity_data = get_data();
+  evt.entity_data = get_char_data();
   EntityEventWrapper wrap (evt);
-  send_event (&wrap, ENTITY_DATA_CHANGE);
+  send_event (&wrap, ENTITY_DATA_CHANGE_CHAR);
+}
+
+void 
+Entity::send_int_data_event()
+{
+  pds_entity_int_data_change_ntf evt;
+  evt.entity_id = objectId::make_pds_entity_id (domain_, this);
+  evt.entity_data = get_int_data();
+  EntityEventWrapper wrap (evt);
+  send_event (&wrap, ENTITY_DATA_CHANGE_INT);
+}
+
+void 
+Entity::send_float_data_event()
+{
+  pds_entity_float_data_change_ntf evt;
+  evt.entity_id = objectId::make_pds_entity_id (domain_, this);
+  evt.entity_data = get_float_data();
+  EntityEventWrapper wrap (evt);
+  send_event (&wrap, ENTITY_DATA_CHANGE_FLOAT);
 }
 
 void 

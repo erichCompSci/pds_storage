@@ -23,27 +23,32 @@ class Entity : public ContextBindable
  public:
 
   Entity (const char* my_name, Domain* d, Context* parent);
-  Entity (const char* my_name, Domain* d, Context* parent, int what_data_holder);
   virtual ~Entity();
 
   virtual void make_real();
 
-  void set_data (void *, unsigned long, attr_value_type);
-  const pds_entity_data_t get_data() const;
+  void set_data (char *, unsigned long);
+  void set_data (int *, size_t);
+  void set_data (float *, size_t);
+  pds_entity_char_data_t_ptr get_char_data() const;
+  pds_entity_int_data_t_ptr get_int_data() const;
+  pds_entity_float_data_t_ptr get_float_data() const;
   virtual void unbound_from (Context *);
 
   virtual void send_creation_event();
-  virtual void send_data_event();
+  virtual void send_char_data_event();
+  virtual void send_int_data_event();
+  virtual void send_float_data_event();
   virtual void send_bind_event();
   virtual void send_unbind_event();
   virtual void send_deletion_event();
   virtual void send_attr_event();
 
- public:
+ private:
   
-  size_t data_size_;
-  unsigned char *data_;
-  attr_value_type data_type_;
+  pds_entity_char_data_t_ptr char_data;
+  pds_entity_int_data_t_ptr int_data;
+  pds_entity_float_data_t_ptr float_data;
 
 };
 

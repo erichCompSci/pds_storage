@@ -35,16 +35,18 @@ extern "C" {
 binding_pair Context::null_binding_pair (no_binding, NULL);
 
 Context::Context (const char* my_name, Domain* d, Context* p) :
-  ContextBindable (my_name, p, d, context_DescRecs )
+  ContextBindable (my_name, p, d)
 {
-  set_up_stones();
+  set_up_stone(CONTEXT_BIND_UNBIND);
+  set_up_stone(CONTEXT_CREATE_DESTROY);
   d->add_context_to_list(this);
 }
 
 Context::Context (const char* my_name, Domain *d, Context* p, const char* name) :
-  ContextBindable (my_name, p, d, context_DescRecs )
+  ContextBindable (my_name, p, d)
 {
-  set_up_stones();
+  set_up_stone(CONTEXT_BIND_UNBIND);
+  set_up_stone(CONTEXT_CREATE_DESTROY);
   p->bind (name, binding_pair (context_binding, this));
   d->add_context_to_list(this);
 }

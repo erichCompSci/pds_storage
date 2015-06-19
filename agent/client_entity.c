@@ -579,11 +579,11 @@ pds_set_entity_attributes_by_id (pds_domain_id_t d_id,
 
 
 static int
-send_get_data_msg (entity_data_msg_ptr msg, pds_entity_data_t *edata, pds_service pds)
+send_get_char_data_msg (entity_char_data_msg_ptr msg, pds_entity_char_data_t *edata, pds_service pds)
 {
-  entity_data_msg return_msg;
+  entity_char_data_msg return_msg;
 
-  pds_request (GET_ENTITY_DATA_RPC_NAME, pds, msg, &return_msg);
+  pds_request (GET_ENTITY_CHAR_DATA_RPC_NAME, pds, msg, &return_msg);
 
   if (return_msg.status == -1)
     return -1;
@@ -595,25 +595,60 @@ send_get_data_msg (entity_data_msg_ptr msg, pds_entity_data_t *edata, pds_servic
 
 
 int
-pds_get_entity_data (pds_domain_id_t d_id,
+pds_get_entity_char_data (pds_domain_id_t d_id,
                     const char *name,
                     pds_context_id_t c_id,
-                    pds_entity_data_t *edata,
+                    pds_entity_char_data_t *edata,
                     int opt_mask)
 {
-  entity_data_msg msg;
+  entity_char_data_msg msg;
   pds_service wps = pds_service_of_id (d_id.id);
 
   msg.domain_id = d_id;
   msg.context_id = c_id;
-  msg.edata = null_pds_entity_data;
+  msg.edata = null_pds_entity_char_data;
   msg.entity_id = null_pds_entity_id;
   msg.entity_name = name;
   msg.options = opt_mask;
 
-  return send_get_data_msg (&msg, edata, wps);
+  return send_get_char_data_msg (&msg, edata, wps);
 }
 
+static int
+send_get_int_data_msg (entity_int_data_msg_ptr msg, pds_entity_int_data_t *edata, pds_service pds)
+{
+  entity_int_data_msg return_msg;
+
+  pds_request (GET_ENTITY_CHAR_DATA_RPC_NAME, pds, msg, &return_msg);
+
+  if (return_msg.status == -1)
+    return -1;
+
+  *edata = return_msg.edata;
+
+  return 1;
+}
+
+
+int
+pds_get_entity_int_data (pds_domain_id_t d_id,
+                    const char *name,
+                    pds_context_id_t c_id,
+                    pds_entity_int_data_t *edata,
+                    int opt_mask)
+{
+  entity_int_data_msg msg;
+  pds_service wps = pds_service_of_id (d_id.id);
+
+  msg.domain_id = d_id;
+  msg.context_id = c_id;
+  msg.edata = null_pds_entity_int_data;
+  msg.entity_id = null_pds_entity_id;
+  msg.entity_name = name;
+  msg.options = opt_mask;
+
+  return send_get_int_data_msg (&msg, edata, wps);
+}
 
 int
 pds_get_entity_data_by_id (pds_domain_id_t d_id,
