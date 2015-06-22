@@ -199,7 +199,7 @@ pds_find_matching_domains (pds_service s,
 			  const char *domain_type,
 			  int domain_version,
 			  const char *application_name,
-                          pds_domain_id_t *matches);
+                          pds_domain_id_t **matches);
 
   /* @{ */
   /*! Set/get the attributes of a domain.  The given attribute list replaces the previous attribute list. 
@@ -321,17 +321,30 @@ pds_get_binding_list_id (pds_domain_id_t d_id, pds_context_id_t c_id, int opt_ma
     \param d_id The domain ID in which to create the entity.
     \param fullname The "trailing component" of the full context name.  Must not be NULL; i.e. must contain at least one name component. 
     \param c_id The context on which to base the \a fullname argument.
-    \param edata A pointer to a \c pds_entity_data_t structure.  Pass NULL if no entity data is to be stored.
+    \param edata A pointer to a \c pds_entity_type_data_t structure.  Pass NULL if no entity data is to be stored.
     \param attribute_list An \c attr_list to be associated with the entity.  Pass NULL if no attributes are to be stored.
     \return Returns the ID of the newly created entity, or \c null_pds_entity_id if the operation is unsuccessful.
   */
 pds_entity_id_t
-pds_create_entity (pds_domain_id_t d_id,
+pds_create_entity_char (pds_domain_id_t d_id,
                   const char *fullname,
                   pds_context_id_t c_id,
-                  pds_entity_data_t *edata,
+                  pds_entity_char_data_t *edata,
                   attr_list attribute_list);
 
+pds_entity_id_t
+pds_create_entity_int (pds_domain_id_t d_id,
+                  const char *fullname,
+                  pds_context_id_t c_id,
+                  pds_entity_int_data_t *edata,
+                  attr_list attribute_list);
+
+pds_entity_id_t
+pds_create_entity_float (pds_domain_id_t d_id,
+                  const char *fullname,
+                  pds_context_id_t c_id,
+                  pds_entity_float_data_t *edata,
+                  attr_list attribute_list);
   /*!
     Remove an entity from the given domain.  Relative/absolute naming applies with the \a fullname and \a c_id parameters as described in the context API.  
     \param d_id The domain ID from which to delete the entity.
@@ -423,15 +436,17 @@ pds_register_for_domain_changes (CManager cm,
     \param c_id The context on which to base \a name.  Pass pds_null_context_id if \a name is an absolute name.
     \param func_ptr A pointer to a handler function for change events.
     \param client_data A pointer to a data structure that will be passed to the event handler each time an update occurs.  For more information, see the ECho documentation.
+    \param which_channel An integer flag detailing what type of channel and data type the registration is for
     \return Returns an \c ECSinkHandle from ECho.  If unsuccessful, returns NULL.
   */
 EVaction
-pds_register_for_entity_changes (CManager cm,
+pds_register_for_entity_changes_by_channel (CManager cm,
                                 pds_domain_id_t d_id,
 				const char *name,
 				pds_context_id_t c_id,
 				EVSimpleHandlerFunc func_ptr,
-				void *client_data);
+				void *client_data,
+        int which_channel);
 
   /*!
     Register for any changes on the given context.  The handler function specified by \a func_ptr is called with entity update events.  
@@ -441,15 +456,17 @@ pds_register_for_entity_changes (CManager cm,
     \param c_id The context on which to base \a name.  Pass pds_null_context_id if \a name is an absolute name.
     \param func_ptr A pointer to a handler function for change events.
     \param client_data A pointer to a data structure that will be passed to the event handler each time an update occurs.  For more information, see the ECho documentation.
+    \param which_channel An integer flag detailing which type of channel and data the registration is for 
     \return Returns an \c ECSinkHandle from ECho.  If unsuccessful, returns NULL.
   */
 EVaction
-pds_register_for_context_changes (CManager cm,
+pds_register_for_context_changes_by_channel (CManager cm,
                                   pds_domain_id_t d_id,
                                   const char *name,
                                   pds_context_id_t c_id,
                                   EVSimpleHandlerFunc func_ptr,
-                                  void *client_data);
+                                  void *client_data,
+                                  int which_channel);
 
   /*!
     Cancel the registration for a particular sink handle.
@@ -469,13 +486,25 @@ pds_cancel_changes_registration (EVaction);
     \return Returns 1 if the operation is successful, -1 otherwise.
   */
 int
-pds_get_entity_data (pds_domain_id_t d_id,
+pds_get_entity_char_data (pds_domain_id_t d_id,
                     const char *name,
                     pds_context_id_t c_id,
-                    pds_entity_data_t *edata,
+                    pds_entity_char_data_t *edata,
                     int opt_mask);
 
+int
+pds_get_entity_int_data (pds_domain_id_t d_id,
+                    const char *name,
+                    pds_context_id_t c_id,
+                    pds_entity_int_data_t *edata,
+                    int opt_mask);
 
+int
+pds_get_entity_float_data (pds_domain_id_t d_id,
+                    const char *name,
+                    pds_context_id_t c_id,
+                    pds_entity_float_data_t *edata,
+                    int opt_mask);
   /*!
     Return the entity data for a particular entity.  The entity is identified by its entity ID.
     \param d_id The domain where the entity-name binding exists.
@@ -485,9 +514,13 @@ pds_get_entity_data (pds_domain_id_t d_id,
     \return Returns 1 if the operation is successful, -1 otherwise.
   */
 int
-pds_get_entity_data_by_id (pds_domain_id_t d_id, pds_entity_id_t e_id, pds_entity_data_t *edata, int opt_mask);
+pds_get_entity_char_data_by_id (pds_domain_id_t d_id, pds_entity_id_t e_id, pds_entity_char_data_t *edata, int opt_mask);
 
+int
+pds_get_entity_int_data_by_id (pds_domain_id_t d_id, pds_entity_id_t e_id, pds_entity_int_data_t *edata, int opt_mask);
 
+int
+pds_get_entity_float_data_by_id (pds_domain_id_t d_id, pds_entity_id_t e_id, pds_entity_float_data_t *edata, int opt_mask);
   /*!
     Set the entity data for a particular entity.
     \param d_id The domain where the entity-name binding exists.
@@ -498,23 +531,40 @@ pds_get_entity_data_by_id (pds_domain_id_t d_id, pds_entity_id_t e_id, pds_entit
     \return Returns 1 if the operation is successful, -1 otherwise.
   */
 int
-pds_set_entity_data (pds_domain_id_t d_id,
+pds_set_entity_char_data (pds_domain_id_t d_id,
                     const char *name,
                     pds_context_id_t c_id,
-                    pds_entity_data_t *edata,
+                    pds_entity_char_data_t *edata,
+                    int opt_mask);
+int
+pds_set_entity_int_data (pds_domain_id_t d_id,
+                    const char *name,
+                    pds_context_id_t c_id,
+                    pds_entity_int_data_t *edata,
+                    int opt_mask);
+int
+pds_set_entity_float_data (pds_domain_id_t d_id,
+                    const char *name,
+                    pds_context_id_t c_id,
+                    pds_entity_float_data_t *edata,
                     int opt_mask);
   
   /*!
     Set the entity data for a particular entity.  The entity is identified by its entity ID.
     \param d_id The domain where the entity-name binding exists.
     \param e_id The ID of the entity to be modified.
-    \param edata The address of a structure containing the entity data to store.  
+    \param edata The address of a structure containing the entity data to store, unique to the type of stored data.  
     \param opt_mask TBA.
     \return Returns 1 if the operation is successful, -1 otherwise.
   */
 int
-pds_set_entity_data_by_id (pds_domain_id_t d_id, pds_entity_id_t e_id, pds_entity_data_t *edata, int opt_mask);
+pds_set_entity_char_data_by_id (pds_domain_id_t d_id, pds_entity_id_t e_id, pds_entity_char_data_t *edata, int opt_mask);
 
+int
+pds_set_entity_int_data_by_id (pds_domain_id_t d_id, pds_entity_id_t e_id, pds_entity_int_data_t *edata, int opt_mask);
+
+int
+pds_set_entity_float_data_by_id (pds_domain_id_t d_id, pds_entity_id_t e_id, pds_entity_float_data_t *edata, int opt_mask);
   /*!
     Get the entity attributes for a particular entity. 
     \param d_id The domain where the entity-name binding exists.

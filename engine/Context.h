@@ -9,11 +9,26 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "get_hash_map.h"
+//#include "get_hash_map.h"
+#include <unordered_map>
+#include <string>
 
 #include "ContextBindable.h"
 
   
+class Cstring_hash
+{
+ public:
+  size_t operator()(const char * p)const
+  {
+    size_t hashed_value = 0;
+    std::string for_hash(p);
+    std::hash<std::string> hashed_function;
+    hashed_value = hashed_function(for_hash);
+    return hashed_value;
+  }
+};
+
 class Cstring_eq
 { 
  public:
@@ -28,7 +43,7 @@ class Domain;
 
 typedef pair<binding_type, ContextBindable*> binding_pair;
 
-typedef hash_map<const char *, binding_pair, hash<const char *>, Cstring_eq> bindingMap;
+typedef std::unordered_map<const char *, binding_pair, Cstring_hash, Cstring_eq> bindingMap;
 
 class Context : public ContextBindable
 {

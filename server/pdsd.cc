@@ -60,20 +60,20 @@ bool keep_going = true;
 extern void register_handlers (CManager cm);
 extern attr_list get_contact_list();
 extern void set_server_addr();
-extern int bulk_load_from_URL (const char* url);
-extern int dump_content_wrapper();
+//extern int bulk_load_from_URL (const char* url);
+//extern int dump_content_wrapper();
 
 extern "C" int handle_http_request (CMConnection cmc, CMTransport transport, 
 				    char *buffer, long length);
-extern char* dump_repository_path_;
+//extern char* dump_repository_path_;
 static char* xml_file_name_ = 0;
 
 extern void
 shutdown_server()
 {
   keep_going = false;
-  CheckpointThread::stop(NULL);
-  CleaningThread::stop(NULL);
+  //CheckpointThread::stop(NULL);
+  //CleaningThread::stop(NULL);
   CMrpc_shutdown();
   pdsTrace_out (pdsdVerbose, "pdsd shutting down");
   CManager_close (server_cm);
@@ -82,7 +82,7 @@ shutdown_server()
 extern "C" void
 sigusr1_handler (int arg)
 {
-  dump_content_wrapper();
+  //dump_content_wrapper();
 }
 void usage(char* prog)
 {
@@ -101,13 +101,15 @@ void usage(char* prog)
 extern "C" int
 clean_thread(void*arg)
 {
-  return CleaningThread::start(arg);
+  //return CleaningThread::start(arg);
+  return 1;
 }
 
 extern "C" int
 checkpoint_thread(void*arg)
 {
-  return CheckpointThread::start(arg);
+  //return CheckpointThread::start(arg);
+  return 1;
 }
 
 extern int
@@ -179,12 +181,12 @@ main (int argc, char **argv)
           strcpy(xml_file_name_ , argv[2]);          
 		      argv++;
         }
-      else if (argv[1][1] == 'p') 
+      /*else if (argv[1][1] == 'p') 
         {        
           dump_repository_path_ = (char*) malloc(strlen(argv[2]) + 1);
           strcpy(dump_repository_path_, argv[2]);
 		  argv++;
-        }
+        }*/
       else
         {
 	    fprintf(stderr, "Unknown argument \"%s\"\n", argv[1]);
@@ -245,7 +247,7 @@ main (int argc, char **argv)
 
   if (verbose)
     {
-      dump_attr_list (CMget_contact_list(server_cm));
+      //dump_attr_list (CMget_contact_list(server_cm));
     }
 
 
@@ -262,14 +264,14 @@ main (int argc, char **argv)
 
   // check if the -f option was set
   if (xml_file_name_ != 0) {
-    if (! bulk_load_from_URL (xml_file_name_))
+   /* if (! bulk_load_from_URL (xml_file_name_))
       {
         pdsTrace_out (pdsdVerbose, "bulk load failed");
       }
     else
       {
         pdsTrace_out (pdsdVerbose, "bulk load succeeded");
-      }
+      }*/
     /* unset the repo path after load is finished */
     free(xml_file_name_ );
     xml_file_name_ = 0;
@@ -281,16 +283,16 @@ main (int argc, char **argv)
   it could be useful in other applications
   */
   {
-      pthread_t gc_thread, cp_thread;
-      pthread_create(&gc_thread, NULL, (void*(*)(void*))clean_thread, 0);
+     // pthread_t gc_thread, cp_thread;
+     // pthread_create(&gc_thread, NULL, (void*(*)(void*))clean_thread, 0);
       //pthread_create(&cp_thread, NULL, (void*(*)(void*))checkpoint_thread, 0);
   }
 
   /*
    *  Add the HTTP non-CM message handler
    */
-  CMregister_non_CM_message_handler (0x20544547, handle_http_request);
-  CMregister_non_CM_message_handler (0x47455420, handle_http_request);
+  //CMregister_non_CM_message_handler (0x20544547, handle_http_request);
+  //CMregister_non_CM_message_handler (0x47455420, handle_http_request);
 
   CMrun_network (server_cm);
 }

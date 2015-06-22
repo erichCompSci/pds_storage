@@ -35,19 +35,12 @@ pds_lookup_string (pds_domain_id_t domain_id,
                   const char* fullname,
                   char **value)
 {
-  pds_entity_data_t d;
+  pds_entity_char_data_t d;
   
   d.data = NULL;
   d.data_size = 0;
-  d.data_type = Attr_Undefined;
 
-  if (pds_get_entity_data (domain_id, fullname, null_pds_context_id, &d, 0) != 1)
-    {
-      value = NULL;
-      return -1;
-    }
-
-  if (d.data_type != Attr_String)
+  if (pds_get_entity_char_data (domain_id, fullname, null_pds_context_id, &d, 0) != 1)
     {
       value = NULL;
       return -1;
@@ -70,16 +63,15 @@ pds_bind_string (pds_domain_id_t domain_id,
                 const char* fullname,
                 const char* value)
 {
-  pds_entity_data_t d;
+  pds_entity_char_data_t d;
   int opt_mask = 0;
   
-  d.data_type = Attr_String;
   d.data_size = strlen (value);
   d.data = (unsigned char*) value;
 
   opt_mask |= CreateObjIfNotFound;
 
-  return pds_set_entity_data (domain_id, fullname, null_pds_context_id, &d, opt_mask);
+  return pds_set_entity_char_data (domain_id, fullname, null_pds_context_id, &d, opt_mask);
 }
 
 int
@@ -87,19 +79,12 @@ pds_lookup_int (pds_domain_id_t domain_id,
                const char* fullname,
                int* value)
 {
-  pds_entity_data_t d;
+  pds_entity_int_data_t d;
 
   d.data = NULL;
   d.data_size = 0;
-  d.data_type = Attr_Undefined;
 
-  if (pds_get_entity_data (domain_id, fullname, null_pds_context_id, &d, 0) != 1)
-    {
-      value = NULL;
-      return -1;
-    }
-
-  if (d.data_type != Attr_Int4 && d.data_type != Attr_Int8)
+  if (pds_get_entity_int_data (domain_id, fullname, null_pds_context_id, &d, 0) != 1)
     {
       value = NULL;
       return -1;
@@ -115,16 +100,15 @@ pds_bind_int (pds_domain_id_t domain_id,
              const char* fullname,
              int value)
 {
-  pds_entity_data_t d;
+  pds_entity_int_data_t d;
   int opt_mask = 0;
   
-  d.data_type = Attr_Int4;
   d.data_size = sizeof(int);
   d.data = (unsigned char*) &value;
 
   opt_mask |= CreateObjIfNotFound;
 
-  return pds_set_entity_data (domain_id, fullname, null_pds_context_id, &d, opt_mask);
+  return pds_set_entity_int_data (domain_id, fullname, null_pds_context_id, &d, opt_mask);
 }
 
 
@@ -133,19 +117,12 @@ pds_lookup_blob (pds_domain_id_t domain_id,
                 const char* fullname,
                 char** value)
 {
-  pds_entity_data_t d;
+  pds_entity_char_data_t d;
 
   d.data = NULL;
   d.data_size = 0;
-  d.data_type = Attr_Undefined;
 
-  if (pds_get_entity_data (domain_id, fullname, null_pds_context_id, &d, 0) != 1)
-    {
-      value = NULL;
-      return -1;
-    }
-
-  if (d.data_type != Attr_Opaque)
+  if (pds_get_entity_char_data (domain_id, fullname, null_pds_context_id, &d, 0) != 1)
     {
       value = NULL;
       return -1;
@@ -163,16 +140,15 @@ pds_bind_blob (pds_domain_id_t domain_id,
               char *value,
              unsigned int length)
 {
-  pds_entity_data_t d;
+  pds_entity_char_data_t d;
   int opt_mask = 0;
   
-  d.data_type = Attr_Opaque;
   d.data_size = length;
   d.data = (unsigned char*) value;
 
   opt_mask |= CreateObjIfNotFound;
 
-  return pds_set_entity_data (domain_id, fullname, null_pds_context_id, &d, opt_mask);
+  return pds_set_entity_char_data (domain_id, fullname, null_pds_context_id, &d, opt_mask);
 }
 
 /*

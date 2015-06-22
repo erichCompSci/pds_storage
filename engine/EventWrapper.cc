@@ -10,20 +10,26 @@ BaseEventWrapper::~BaseEventWrapper()
   event_ = 0;
 }
 /*********************************************/
-EntityEventWrapper::EntityEventWrapper(pds_entity_change_event& evt)
-  : BaseEventWrapper(&evt),
-    entity_type (evt.type),
-    descript ("Old entity change event")
-{
-}
-
-EntityEventWrapper::EntityEventWrapper(pds_entity_data_change_ntf& evt)
+EntityEventWrapper::EntityEventWrapper(pds_entity_char_data_change_ntf& evt)
   : BaseEventWrapper(&evt),
     entity_type (PDS_ENTITY_CHANGE_DATA),
-    descript ("Entity data change event")
+    descript ("Entity char data change event")
 {
 }
 
+EntityEventWrapper::EntityEventWrapper(pds_entity_int_data_change_ntf& evt)
+  : BaseEventWrapper(&evt),
+    entity_type (PDS_ENTITY_CHANGE_DATA),
+    descript ("Entity int data change event")
+{
+}
+
+EntityEventWrapper::EntityEventWrapper(pds_entity_float_data_change_ntf& evt)
+  : BaseEventWrapper(&evt),
+    entity_type (PDS_ENTITY_CHANGE_DATA),
+    descript ("Entity float data change event")
+{
+}
 
 EntityEventWrapper::EntityEventWrapper(pds_entity_exist_change_ntf& evt)
   : BaseEventWrapper(&evt),

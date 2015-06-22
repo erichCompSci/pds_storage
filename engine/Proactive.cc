@@ -109,7 +109,7 @@ Proactive::set_aggregate_stone(char * cod_func, unsigned int which_type)
   }
   
   //Set up storage stone
-  FMStructDescList storage_list[] = { formats_list_[which_target].fm_format, NULL };
+  FMStructDescList storage_list[] = { formats_list_[which_target].second, NULL };
   char * action_spec = create_e_rolling_bucket_action_spec(storage_list, 5, cod_func);
   if(!action_spec)
   {
@@ -125,7 +125,7 @@ Proactive::set_aggregate_stone(char * cod_func, unsigned int which_type)
   EVfree_source (source_handles_[which_target]);
 
   //Generate new source handle connecting to storage stone
-  source_handles_[which_target] = EVcreate_submit_handle( server_cm_, s, formats_list_[which_target].fm_format);
+  source_handles_[which_target] = EVcreate_submit_handle( server_cm_, s, formats_list_[which_target].second);
 
   if(!source_handles_[which_target])
   {
@@ -140,7 +140,7 @@ Proactive::set_aggregate_stone(char * cod_func, unsigned int which_type)
 void 
 Proactive::send_event_ (void *ev, unsigned short which_event)
 {
-  int which_source = determine_correct_stone(which_event);
+  int which_source = determine_stone_set_up(which_event);
   EVsubmit( source_handles_[which_source], ev, NULL );
 }
 

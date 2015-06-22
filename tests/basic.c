@@ -28,7 +28,7 @@ int main (int argc, char *argv[])
   char *pds_host;
   int val1 = 99, val2 = 98;
   char *str = "This is the first test string I will store.";
-  pds_entity_data_t tt;
+  pds_entity_char_data_t tt;
   char **bindings;
   int i2;
   atom_t VAL1_ATOM, VAL2_ATOM;
@@ -38,7 +38,6 @@ int main (int argc, char *argv[])
 
   tt.data = (unsigned char*)str;
   tt.data_size = strlen (str);
-  tt.data_type = Attr_String;
 
   pds_host = getenv ("PDS_SERVER_HOST");
   if (pds_host == NULL) pds_host = getenv ("HOSTNAME");
@@ -85,7 +84,7 @@ int main (int argc, char *argv[])
   printf ("[ added attributes ]");
   fflush (0);
 
-  eid1 = pds_create_entity (new_domain_id, "newEntity", null_pds_context_id, &tt, attrs);
+  eid1 = pds_create_entity_char (new_domain_id, "newEntity", null_pds_context_id, &tt, attrs);
   printf ("[ created entity %s]", eid1.id);
   fflush (0);
 

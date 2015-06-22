@@ -158,15 +158,6 @@ typedef struct _context_exist_change_ntf
 
 
 
-typedef struct _pds_entity_change_event_struct
-{
-  int type;
-  const char *desc;
-  const char *fullname;
-  pds_entity_id_t entity_id;
-  pds_entity_data_t entity_data;
-} pds_entity_change_event, *pds_entity_change_event_ptr;
-
 typedef struct _pds_context_change_event_struct
 {
   int type;

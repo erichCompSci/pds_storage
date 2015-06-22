@@ -23,7 +23,9 @@
 extern pds_entity_id_t null_pds_entity_id;
 extern pds_context_id_t null_pds_context_id;
 extern pds_domain_id_t null_pds_domain_id;
-extern pds_entity_data_t null_pds_entity_data;
+extern pds_entity_char_data_t null_pds_entity_char_data;
+extern pds_entity_int_data_t null_pds_entity_int_data;
+extern pds_entity_float_data_t null_pds_entity_float_data;
 
 extern int
 pds_request (const char* rpc_name, pds_service pds, void* in_msg, void* out_msg);
@@ -43,6 +45,7 @@ send_aggregate_entity_msg (add_bucket_entity_msg_ptr msg, pds_service pds)
   pds_request (ADD_AGGREGATE_ENTITY_RPC, pds, msg, &return_msg);
   return return_msg.status;
 }
+
 int
 pds_aggregate_entity (pds_domain_id_t d_id, char * cod_func, pds_entity_id_t the_entity, int which_type)
 {
@@ -58,13 +61,13 @@ pds_aggregate_entity (pds_domain_id_t d_id, char * cod_func, pds_entity_id_t the
 }
 
 pds_entity_id_t
-pds_create_entity (pds_domain_id_t d_id,
+pds_create_entity_char (pds_domain_id_t d_id,
 		  const char *newname,
                   pds_context_id_t c_id,
-		  pds_entity_data_t *edata,
+		  pds_entity_char_data_t *edata,
 		  attr_list attribute_list)
 {
-  create_entity_msg msg;
+  create_entity_char_msg msg;
   return_entity_id_msg return_msg;
   pds_entity_id_t new_id;
   pds_service wps;
@@ -78,10 +81,72 @@ pds_create_entity (pds_domain_id_t d_id,
   if (edata != NULL)
     msg.edata = *edata;
   else
-    msg.edata = null_pds_entity_data;
+    msg.edata = null_pds_entity_char_data;
 
   wps = pds_service_of_id (d_id.id);
-  pds_request (CREATE_ENTITY_RPC_NAME, wps, &msg, &return_msg);
+  pds_request (CREATE_ENTITY_CHAR_RPC_NAME, wps, &msg, &return_msg);
+
+  free (msg.encoded_attr_list);
+  new_id = return_msg.entity_id;
+  return new_id;
+}
+
+pds_entity_id_t
+pds_create_entity_int (pds_domain_id_t d_id,
+		  const char *newname,
+                  pds_context_id_t c_id,
+		  pds_entity_int_data_t *edata,
+		  attr_list attribute_list)
+{
+  create_entity_int_msg msg;
+  return_entity_id_msg return_msg;
+  pds_entity_id_t new_id;
+  pds_service wps;
+
+  msg.encoded_attr_list = attr_list_to_string (attribute_list);
+  msg.domain_id = d_id;
+  msg.name = newname;
+  msg.context_id = c_id;
+  msg.options = 0;
+
+  if (edata != NULL)
+    msg.edata = *edata;
+  else
+    msg.edata = null_pds_entity_int_data;
+
+  wps = pds_service_of_id (d_id.id);
+  pds_request (CREATE_ENTITY_INT_RPC_NAME, wps, &msg, &return_msg);
+
+  free (msg.encoded_attr_list);
+  new_id = return_msg.entity_id;
+  return new_id;
+}
+
+pds_entity_id_t
+pds_create_entity_float (pds_domain_id_t d_id,
+		  const char *newname,
+                  pds_context_id_t c_id,
+		  pds_entity_float_data_t *edata,
+		  attr_list attribute_list)
+{
+  create_entity_float_msg msg;
+  return_entity_id_msg return_msg;
+  pds_entity_id_t new_id;
+  pds_service wps;
+
+  msg.encoded_attr_list = attr_list_to_string (attribute_list);
+  msg.domain_id = d_id;
+  msg.name = newname;
+  msg.context_id = c_id;
+  msg.options = 0;
+
+  if (edata != NULL)
+    msg.edata = *edata;
+  else
+    msg.edata = null_pds_entity_float_data;
+
+  wps = pds_service_of_id (d_id.id);
+  pds_request (CREATE_ENTITY_FLOAT_RPC_NAME, wps, &msg, &return_msg);
 
   free (msg.encoded_attr_list);
   new_id = return_msg.entity_id;
@@ -299,16 +364,10 @@ pds_register_for_entity_changes_by_channel (CManager cm,
 
   switch(which_channel) 
   {
-     case ENTITY_CREATE_DESTROY_CHAR:
-        format_list = entity_char_exist_change_ntf_formats;
+/*     case ENTITY_CREATE_DESTROY:
+        format_list = entity_exist_change_ntf_formats;
         break;
-     case ENTITY_CREATE_DESTROY_INT:
-        format_list = entity_int_exist_change_ntf_formats;
-        break;
-     case ENTITY_CREATE_DESTROY_FLOAT:
-        format_list = entity_float_exist_change_ntf_formats;
-        break;
-
+*/
      case ENTITY_BIND_UNBIND:
         format_list = entity_u_bind_change_ntf_formats;
         break;
@@ -339,7 +398,7 @@ pds_register_for_entity_changes_by_channel (CManager cm,
               which_channel);
 }
 
-
+/*
 EVaction
 pds_register_for_entity_changes_by_format (CManager cm,
                                            pds_domain_id_t d_id,
@@ -379,7 +438,7 @@ pds_register_for_entity_changes_by_format (CManager cm,
 			  client_data,
               which_channel);
 }
-
+*/
 
 EVaction
 pds_register_for_context_changes_by_channel (CManager cm,
@@ -614,12 +673,31 @@ pds_get_entity_char_data (pds_domain_id_t d_id,
   return send_get_char_data_msg (&msg, edata, wps);
 }
 
+int
+pds_get_entity_char_data_by_id (pds_domain_id_t d_id,
+                          pds_entity_id_t e_id,
+                          pds_entity_char_data_t *edata,
+                          int opt_mask)
+{
+  entity_char_data_msg msg;
+  pds_service wps = pds_service_of_id (d_id.id);
+
+  msg.domain_id = d_id;
+  msg.context_id = null_pds_context_id;
+  msg.edata = null_pds_entity_char_data;
+  msg.entity_id = e_id;
+  msg.entity_name = NULL;
+  msg.options = opt_mask;
+
+  return send_get_char_data_msg (&msg, edata, wps);
+}
+
 static int
 send_get_int_data_msg (entity_int_data_msg_ptr msg, pds_entity_int_data_t *edata, pds_service pds)
 {
   entity_int_data_msg return_msg;
 
-  pds_request (GET_ENTITY_CHAR_DATA_RPC_NAME, pds, msg, &return_msg);
+  pds_request (GET_ENTITY_INT_DATA_RPC_NAME, pds, msg, &return_msg);
 
   if (return_msg.status == -1)
     return -1;
@@ -651,48 +729,103 @@ pds_get_entity_int_data (pds_domain_id_t d_id,
 }
 
 int
-pds_get_entity_data_by_id (pds_domain_id_t d_id,
+pds_get_entity_int_data_by_id (pds_domain_id_t d_id,
                           pds_entity_id_t e_id,
-                          pds_entity_data_t *edata,
+                          pds_entity_int_data_t *edata,
                           int opt_mask)
 {
-  entity_data_msg msg;
+  entity_int_data_msg msg;
   pds_service wps = pds_service_of_id (d_id.id);
 
   msg.domain_id = d_id;
   msg.context_id = null_pds_context_id;
-  msg.edata = null_pds_entity_data;
+  msg.edata = null_pds_entity_int_data;
   msg.entity_id = e_id;
   msg.entity_name = NULL;
   msg.options = opt_mask;
 
-  return send_get_data_msg (&msg, edata, wps);
+  return send_get_int_data_msg (&msg, edata, wps);
+}
+
+static int
+send_get_float_data_msg (entity_float_data_msg_ptr msg, pds_entity_float_data_t *edata, pds_service pds)
+{
+  entity_float_data_msg return_msg;
+
+  pds_request (GET_ENTITY_FLOAT_DATA_RPC_NAME, pds, msg, &return_msg);
+
+  if (return_msg.status == -1)
+    return -1;
+
+  *edata = return_msg.edata;
+
+  return 1;
+}
+
+
+int
+pds_get_entity_float_data (pds_domain_id_t d_id,
+                    const char *name,
+                    pds_context_id_t c_id,
+                    pds_entity_float_data_t *edata,
+                    int opt_mask)
+{
+  entity_float_data_msg msg;
+  pds_service wps = pds_service_of_id (d_id.id);
+
+  msg.domain_id = d_id;
+  msg.context_id = c_id;
+  msg.edata = null_pds_entity_float_data;
+  msg.entity_id = null_pds_entity_id;
+  msg.entity_name = name;
+  msg.options = opt_mask;
+
+  return send_get_float_data_msg (&msg, edata, wps);
+}
+
+int
+pds_get_entity_float_data_by_id (pds_domain_id_t d_id,
+                          pds_entity_id_t e_id,
+                          pds_entity_float_data_t *edata,
+                          int opt_mask)
+{
+  entity_float_data_msg msg;
+  pds_service wps = pds_service_of_id (d_id.id);
+
+  msg.domain_id = d_id;
+  msg.context_id = null_pds_context_id;
+  msg.edata = null_pds_entity_float_data;
+  msg.entity_id = e_id;
+  msg.entity_name = NULL;
+  msg.options = opt_mask;
+
+  return send_get_float_data_msg (&msg, edata, wps);
 }
 
 
 static int
-send_set_data_msg (entity_data_msg_ptr msg, pds_entity_data_t *edata, pds_service pds)
+send_set_char_data_msg (entity_char_data_msg_ptr msg, pds_entity_char_data_t *edata, pds_service pds)
 {
   return_status_msg return_msg;
 
   if (edata != NULL)
     msg->edata = *edata;
   else
-    msg->edata = null_pds_entity_data;
+    msg->edata = null_pds_entity_char_data;
 
-  pds_request (SET_ENTITY_DATA_RPC_NAME, pds, msg, &return_msg);
+  pds_request (SET_ENTITY_CHAR_DATA_RPC_NAME, pds, msg, &return_msg);
   return return_msg.status;
 }
 
 
 int
-pds_set_entity_data (pds_domain_id_t d_id,
+pds_set_entity_char_data (pds_domain_id_t d_id,
                     const char *name,
                     pds_context_id_t c_id,
-                    pds_entity_data_t *edata,
+                    pds_entity_char_data_t *edata,
                     int opt_mask)
 {
-  entity_data_msg msg;
+  entity_char_data_msg msg;
   pds_service wps = pds_service_of_id (d_id.id);
   
   msg.domain_id = d_id;
@@ -701,17 +834,17 @@ pds_set_entity_data (pds_domain_id_t d_id,
   msg.entity_name = name;
   msg.options = opt_mask;
 
-  return send_set_data_msg (&msg, edata, wps);
+  return send_set_char_data_msg (&msg, edata, wps);
 }
 
 
 int
-pds_set_entity_data_by_id (pds_domain_id_t d_id,
+pds_set_entity_char_data_by_id (pds_domain_id_t d_id,
                           pds_entity_id_t e_id,
-                          pds_entity_data_t *edata,
+                          pds_entity_char_data_t *edata,
                           int opt_mask)
 {
-  entity_data_msg msg;
+  entity_char_data_msg msg;
   pds_service wps = pds_service_of_id (d_id.id);
 
   msg.domain_id = d_id;
@@ -721,10 +854,118 @@ pds_set_entity_data_by_id (pds_domain_id_t d_id,
   msg.context_id = null_pds_context_id;
   msg.options = opt_mask;
 
-  return send_set_data_msg (&msg, edata, wps);
+  return send_set_char_data_msg (&msg, edata, wps);
+}
+
+static int
+send_set_int_data_msg (entity_int_data_msg_ptr msg, pds_entity_int_data_t *edata, pds_service pds)
+{
+  return_status_msg return_msg;
+
+  if (edata != NULL)
+    msg->edata = *edata;
+  else
+    msg->edata = null_pds_entity_int_data;
+
+  pds_request (SET_ENTITY_INT_DATA_RPC_NAME, pds, msg, &return_msg);
+  return return_msg.status;
 }
 
 
+int
+pds_set_entity_int_data (pds_domain_id_t d_id,
+                    const char *name,
+                    pds_context_id_t c_id,
+                    pds_entity_int_data_t *edata,
+                    int opt_mask)
+{
+  entity_int_data_msg msg;
+  pds_service wps = pds_service_of_id (d_id.id);
+  
+  msg.domain_id = d_id;
+  msg.entity_id = null_pds_entity_id;
+  msg.context_id = c_id;
+  msg.entity_name = name;
+  msg.options = opt_mask;
+
+  return send_set_int_data_msg (&msg, edata, wps);
+}
+
+
+int
+pds_set_entity_int_data_by_id (pds_domain_id_t d_id,
+                          pds_entity_id_t e_id,
+                          pds_entity_int_data_t *edata,
+                          int opt_mask)
+{
+  entity_int_data_msg msg;
+  pds_service wps = pds_service_of_id (d_id.id);
+
+  msg.domain_id = d_id;
+  msg.entity_id = e_id;
+  
+  msg.entity_name = NULL;
+  msg.context_id = null_pds_context_id;
+  msg.options = opt_mask;
+
+  return send_set_int_data_msg (&msg, edata, wps);
+}
+
+static int
+send_set_float_data_msg (entity_float_data_msg_ptr msg, pds_entity_float_data_t *edata, pds_service pds)
+{
+  return_status_msg return_msg;
+
+  if (edata != NULL)
+    msg->edata = *edata;
+  else
+    msg->edata = null_pds_entity_float_data;
+
+  pds_request (SET_ENTITY_FLOAT_DATA_RPC_NAME, pds, msg, &return_msg);
+  return return_msg.status;
+}
+
+
+int
+pds_set_entity_float_data (pds_domain_id_t d_id,
+                    const char *name,
+                    pds_context_id_t c_id,
+                    pds_entity_float_data_t *edata,
+                    int opt_mask)
+{
+  entity_float_data_msg msg;
+  pds_service wps = pds_service_of_id (d_id.id);
+  
+  msg.domain_id = d_id;
+  msg.entity_id = null_pds_entity_id;
+  msg.context_id = c_id;
+  msg.entity_name = name;
+  msg.options = opt_mask;
+
+  return send_set_float_data_msg (&msg, edata, wps);
+}
+
+
+int
+pds_set_entity_float_data_by_id (pds_domain_id_t d_id,
+                          pds_entity_id_t e_id,
+                          pds_entity_float_data_t *edata,
+                          int opt_mask)
+{
+  entity_float_data_msg msg;
+  pds_service wps = pds_service_of_id (d_id.id);
+
+  msg.domain_id = d_id;
+  msg.entity_id = e_id;
+  
+  msg.entity_name = NULL;
+  msg.context_id = null_pds_context_id;
+  msg.options = opt_mask;
+
+  return send_set_float_data_msg (&msg, edata, wps);
+}
+
+/*FIXME: Need to get this back into the API with the new architecture
 pds_entity_id_t*
 pds_find_matching_entities (pds_domain_id_t d_id,
                            const char* name,
@@ -753,7 +994,7 @@ pds_find_matching_entities (pds_domain_id_t d_id,
   return list;
 }
 
-
+*/
 pds_entity_id_t*
 pds_find_matching_entities_by_name (pds_domain_id_t d_id,
 				   const char *fullname,

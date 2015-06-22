@@ -74,6 +74,7 @@ register_formats()
   CMrpc_register_rpc_request (client_cm, REMOVE_DOMAIN_RPC_NAME, NULL,
                               remove_domain_msg_formats, 
                               return_status_msg_formats);
+
   CMrpc_register_rpc_request (client_cm, FIND_MATCHING_DOMAINS_RPC_NAME, NULL, 
                              create_domain_msg_formats, 
                              matching_domains_msg_formats);
@@ -173,9 +174,10 @@ register_formats()
                               context_attributes_msg_formats, 
                               return_status_msg_formats);
 
+/*FIXME: Need to fix this to work with the new architecture
   CMrpc_register_rpc_request (client_cm, FIND_MATCHING_ENTITIES_RPC_NAME, NULL, 
                              create_entity_msg_formats, 
-                             matching_entities_msg_formats);
+                             matching_entities_msg_formats); */
 
   CMrpc_register_rpc_request (client_cm, LOAD_FROM_URL_RPC_NAME, NULL, 
                               load_from_URL_msg_formats,
@@ -469,7 +471,7 @@ pds_find_matching_domains (pds_service wps,
 			  const char *domain_type,
 			  int domain_version,
 			  const char *application_name,
-                          pds_domain_id_t *matches)
+                          pds_domain_id_t **matches)
 {
   create_domain_msg msg;
   matching_domains_msg return_msg;
@@ -482,10 +484,10 @@ pds_find_matching_domains (pds_service wps,
   
   pds_request (FIND_MATCHING_DOMAINS_RPC_NAME, wps, &msg, &return_msg);
 
-  matches = (pds_domain_id_t*) calloc (return_msg.domain_count, sizeof (pds_domain_id_t));
+  *matches = (pds_domain_id_t*) calloc (return_msg.domain_count, sizeof (pds_domain_id_t));
   for (i = 0; i < return_msg.domain_count; i++)
     {
-      matches[i] = return_msg.domain_list[i];
+      *matches[i] = return_msg.domain_list[i];
     }
 
   free (return_msg.domain_list);

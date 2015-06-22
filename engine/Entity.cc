@@ -29,9 +29,9 @@ extern "C" {
 
 Entity::Entity (const char* my_name, Domain* d, Context* parent) :
   ContextBindable (my_name, parent, d),
-  pds_entity_char_data_t_ptr(NULL),
-  pds_entity_int_data_t_ptr(NULL),
-  pds_entity_float_data_t_ptr(NULL)
+  char_data(NULL),
+  int_data(NULL),
+  float_data(NULL)
 {
   domain_->add_entity_to_list(this);
 }
@@ -59,7 +59,7 @@ Entity::~Entity()
 void
 Entity::make_real()
 {
-  pdsTrace_out (pdsengineVerbose "Entity make real called");
+  pdsTrace_out (pdsengineVerbose, "Entity make real called");
   set_up_stone(ENTITY_BIND_UNBIND);  
   set_up_stone(ENTITY_DATA_CHANGE_CHAR);
   set_up_stone(ENTITY_DATA_CHANGE_INT);
@@ -86,9 +86,17 @@ Entity::get_float_data() const
   return float_data;
 }
 
+//FIXME: Memory leaks are rampart here probably when the entity dies
 void
-Entity::set_data (char *new_data, unsigned long len)
+Entity::set_data (unsigned char *new_data, unsigned long len)
 {  
+  if(!char_data)
+  {
+    char_data = (pds_entity_char_data_t_ptr) malloc (sizeof(pds_entity_char_data_t));
+    char_data->data = NULL;
+    char_data->data_size = 0;
+  }
+
   if(char_data->data)
     free (char_data->data);
   char_data->data = (unsigned char*) malloc (len + 1);
@@ -98,20 +106,45 @@ Entity::set_data (char *new_data, unsigned long len)
   char_data->data_size = len;
 }
 
+//FIXME: Memory leaks are rampart here probably when the entity dies
 void
 Entity::set_data (int *new_data, size_t len)
 {  
+  if(!int_data)
+  {
+    int_data = (pds_entity_int_data_t_ptr) malloc (sizeof(pds_entity_int_data_t));
+    int_data->data = NULL;
+    int_data->data_size = 0;
+  }
+
   if(int_data->data)
     free (int_data->data);
+  printf("The size of len is:%d\n", len);
   int_data->data = (int *) malloc (sizeof(int) * len);
+  *int_data->data = 7;
+  if(!int_data->data)
+  {
+    fprintf(stderr, "Failed to malloc correctly...\n");
+  }
+  else
+    printf("The value of int_data->data is: %d\n", (*(int_data->data)));
+
+  printf("The size of int * len: %d\n", ((sizeof(int) * len)));
   memcpy (int_data->data, new_data, (sizeof(int) * len));
 
   int_data->data_size = len;
 }
 
+//FIXME: Memory leaks are rampart here probably when the entity dies
 void
 Entity::set_data (float *new_data, size_t len)
 {  
+  if(!float_data)
+  {
+    float_data = (pds_entity_float_data_t_ptr) malloc (sizeof(pds_entity_float_data_t));
+    float_data->data = NULL;
+    float_data->data_size = 0;
+  }
   if(float_data->data)
     free (float_data->data);
   float_data->data = (float *) malloc (sizeof(float) * len);
@@ -134,7 +167,6 @@ Entity::send_creation_event()
   pds_entity_exist_change_ntf evt;
   evt.type = PDS_ENTITY_CHANGE_CREATION;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
-  evt.entity_data = get_data();
   EntityEventWrapper wrap (evt);
   send_event (&wrap, ENTITY_CREATE_DESTROY );
 }
@@ -144,7 +176,7 @@ Entity::send_char_data_event()
 {
   pds_entity_char_data_change_ntf evt;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
-  evt.entity_data = get_char_data();
+  evt.char_data = (*(get_char_data()));
   EntityEventWrapper wrap (evt);
   send_event (&wrap, ENTITY_DATA_CHANGE_CHAR);
 }
@@ -154,7 +186,7 @@ Entity::send_int_data_event()
 {
   pds_entity_int_data_change_ntf evt;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
-  evt.entity_data = get_int_data();
+  evt.int_data = (*(get_int_data()));
   EntityEventWrapper wrap (evt);
   send_event (&wrap, ENTITY_DATA_CHANGE_INT);
 }
@@ -164,7 +196,7 @@ Entity::send_float_data_event()
 {
   pds_entity_float_data_change_ntf evt;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
-  evt.entity_data = get_float_data();
+  evt.float_data = (*(get_float_data()));
   EntityEventWrapper wrap (evt);
   send_event (&wrap, ENTITY_DATA_CHANGE_FLOAT);
 }
@@ -195,7 +227,6 @@ Entity::send_deletion_event()
   pds_entity_exist_change_ntf evt;
   evt.type = PDS_ENTITY_CHANGE_DELETION;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
-  make_entity_data_null (&(evt.entity_data));
   EntityEventWrapper wrap (evt);
   send_event (&wrap, ENTITY_CREATE_DESTROY);
 }

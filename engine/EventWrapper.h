@@ -31,8 +31,9 @@ private:
 class EntityEventWrapper: public BaseEventWrapper
 {
 public:
-  EntityEventWrapper(pds_entity_change_event& evt);
-  EntityEventWrapper(pds_entity_data_change_ntf& evt);
+  EntityEventWrapper(pds_entity_char_data_change_ntf& evt);
+  EntityEventWrapper(pds_entity_int_data_change_ntf & evt);
+  EntityEventWrapper(pds_entity_float_data_change_ntf & evt);
   EntityEventWrapper(pds_entity_exist_change_ntf& evt);
   EntityEventWrapper(pds_entity_u_bind_change_ntf& evt);
   virtual const char* full_name();

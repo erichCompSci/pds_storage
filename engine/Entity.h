@@ -27,7 +27,7 @@ class Entity : public ContextBindable
 
   virtual void make_real();
 
-  void set_data (char *, unsigned long);
+  void set_data (unsigned char *, unsigned long);
   void set_data (int *, size_t);
   void set_data (float *, size_t);
   pds_entity_char_data_t_ptr get_char_data() const;

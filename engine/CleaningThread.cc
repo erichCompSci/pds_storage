@@ -42,7 +42,7 @@ public:
             const char* name = (*bi).first;
             if (strcmp(name, _heartbeat_entry_name.c_str()) == 0) {
               Entity * entity = (Entity*) (*bi).second.second;
-              pds_entity_data_t data = entity->get_data();
+              pds_entity_char_data_t data = (*(entity->get_char_data()));
               if (strncmp(timeout.c_str(), (const char*)data.data, data.data_size) >= 0)
                 return true;
               else 

@@ -33,7 +33,7 @@ int main (int argc, char *argv[])
   attr_list contact_attrs;
   char *pds_host;
   char *str = "New data, changed to this string.";
-  pds_entity_data_t tt;
+  pds_entity_char_data_t tt;
   char **bindings;
   int i2;
   atom_t VAL1_ATOM, VAL2_ATOM;
@@ -43,7 +43,6 @@ int main (int argc, char *argv[])
 
   tt.data = (unsigned char*)str;
   tt.data_size = strlen (str);
-  tt.data_type = Attr_String;
 
   pds_host = getenv ("PDS_SERVER_HOST");
   if (pds_host == NULL) pds_host = getenv ("HOSTNAME");
@@ -84,7 +83,7 @@ int main (int argc, char *argv[])
 
   cid1 = pds_get_root_context (new_domain_id);
 
-  if((pds_set_entity_data (new_domain_id, "/newEntity", cid1, &tt, 0)) > 0 )
+  if((pds_set_entity_char_data (new_domain_id, "/newEntity", cid1, &tt, 0)) > 0 )
   {
     printf("Successfully set the new data, should see something in the other program.\n");
   }

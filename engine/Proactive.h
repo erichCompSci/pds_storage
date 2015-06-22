@@ -14,19 +14,22 @@ extern "C"
 #include "engine/storage_stone.h"
 #include "agent/pdsdefs.h"
 #include <vector>
-#include <pair>
+#include <utility>
+#include <map>
+
+extern std::map<int, FMStructDescRec *> global_format_map;
 
 
 class Proactive
 {
  public:
 
-  virtual void set_up_stones();
+  virtual void set_up_stone(int which_event);
   virtual EVstone add_target( attr_list attrs, EVstone remote_stone, unsigned short which_event );
   virtual void send_event_ (void *ev, unsigned short which_event);
 
  private:
-  int determine_correct_stone(unsigned short which_event);
+  int determine_stone_set_up(unsigned short which_event);
   std::vector<EVstone> stones_;
   std::vector<EVaction> splits_;
   std::vector<EVsource> source_handles_;
@@ -34,15 +37,15 @@ class Proactive
  public:
 
   static void use_this_CM (CManager cm);
+  int set_aggregate_stone (char * cod_func,unsigned int which_type);
 
 
  protected:
 
   Proactive ();
   virtual ~Proactive();
-  int set_aggregate_stone (char * cod_func,unsigned int which_type);
 
-  std::vector<std::pair<unsigned short, FMStructDescRec *>> formats_list_;
+  std::vector<std::pair<unsigned short, FMStructDescRec *> > formats_list_;
   static CManager server_cm_;
 
 };  

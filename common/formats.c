@@ -8,7 +8,6 @@
 #include "atl.h"
 
 #include "formats.h"
-#include <map>
 
 #define FMFieldList_Terminator {(char*)0, (char*)0, 0, 0}
 #define FMStructDescList_Terminator {NULL, NULL}
@@ -252,9 +251,9 @@ FMField pds_entity_char_data_t_flds[] =
 
 FMField pds_entity_int_data_t_flds[] =
 {
-  { "data", "int[data_size]", sizeof (int),
+  { "data", "integer[data_size]", sizeof (int),
     FMOffset (pds_entity_int_data_t_ptr, data) },
-  { "data_size", "integer" sizeof(int),
+  { "data_size", "integer", sizeof(int),
     FMOffset (pds_entity_int_data_t_ptr, data_size) },
   { NULL, NULL, 0, 0}
 };
@@ -567,7 +566,7 @@ FMField create_entity_char_msg_flds[] =
     FMOffset (create_entity_char_msg_ptr, context_id) },
   { "name", "string", sizeof(char*), 
    FMOffset (create_entity_char_msg_ptr, name)},
-  { "edata", "pds_entity_data_t", sizeof(pds_entity_data_t), 
+  { "edata", "pds_entity_char_data_t", sizeof(pds_entity_char_data_t), 
    FMOffset (create_entity_char_msg_ptr, edata)},
   { "encoded_attr_list", "string", sizeof (char*),
     FMOffset (create_entity_char_msg_ptr, encoded_attr_list) },
@@ -598,7 +597,7 @@ FMField create_entity_int_msg_flds[] =
     FMOffset (create_entity_int_msg_ptr, context_id) },
   { "name", "string", sizeof(char*), 
    FMOffset (create_entity_int_msg_ptr, name)},
-  { "edata", "pds_entity_data_t", sizeof(pds_entity_data_t), 
+  { "edata", "pds_entity_int_data_t", sizeof(pds_entity_int_data_t), 
    FMOffset (create_entity_int_msg_ptr, edata)},
   { "encoded_attr_list", "string", sizeof (char*),
     FMOffset (create_entity_int_msg_ptr, encoded_attr_list) },
@@ -629,7 +628,7 @@ FMField create_entity_float_msg_flds[] =
     FMOffset (create_entity_float_msg_ptr, context_id) },
   { "name", "string", sizeof(char*), 
    FMOffset (create_entity_float_msg_ptr, name)},
-  { "edata", "pds_entity_data_t", sizeof(pds_entity_data_t), 
+  { "edata", "pds_entity_float_data_t", sizeof(pds_entity_float_data_t), 
    FMOffset (create_entity_float_msg_ptr, edata)},
   { "encoded_attr_list", "string", sizeof (char*),
     FMOffset (create_entity_float_msg_ptr, encoded_attr_list) },
@@ -1074,33 +1073,6 @@ FMStructDescRec shutdown_server_msg_formats[] =
 
 
 /*
- *  Entity change event definition
- */
-FMField entity_change_event_flds[] =
-{
-  { "change type", "integer", sizeof (int),
-    FMOffset (pds_entity_change_event_ptr, type) },
-  { "description", "string", sizeof (char*),
-    FMOffset (pds_entity_change_event_ptr, desc) },
-  { "fullname", "string", sizeof (char*),
-    FMOffset (pds_entity_change_event_ptr, fullname) },
-  { "entity_id", "pds_entity_id_t", sizeof (pds_entity_id_t),
-    FMOffset (pds_entity_change_event_ptr, entity_id) },
-  { "entity_data", "pds_entity_data_t", sizeof (pds_entity_data_t),
-    FMOffset (pds_entity_change_event_ptr, entity_data) },
-  
-  {(char*) 0, (char *) 0, 0, 0}
-};
-    
-FMStructDescRec entity_change_event_formats[] =
-{
-  { "entity_change_event", entity_change_event_flds, sizeof(pds_entity_change_event) },
-  { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t) },
-  { "pds_entity_data_t", pds_entity_data_t_flds, sizeof(pds_entity_data_t) },
-  FMStructDescList_Terminator
-};
-
-/*
  *  context change event definitions
  */
 FMField context_change_event_flds[] =
@@ -1167,11 +1139,6 @@ FMStructDescRec domain_change_event_formats[] =
   { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t) },
   FMStructDescList_Terminator
 };
-
-std::map<int, FMStructDescRec *> global_format_map = { {ENTITY_CREATE_DESTROY, entity_exist_change_ntf_formats },            {ENTITY_BIND_UNBIND, entity_u_bind_change_ntf_formats},
-                                                       {ENTITY_DATA_CHANGE_CHAR, entity_char_data_change_ntf_formats },      {ENTITY_DATA_CHANGE_INT, entity_int_data_change_ntf_formats},
-                                                       {ENTITY_DATA_CHANGE_FLOAT, entity_float_data_change_ntf_formats},     {CONTEXT_BIND_UNBIND, context_u_bind_change_ntf_formats},
-                                                       {CONTEXT_CREATE_DESTROY, context_exist_change_ntf_formats},           {DOMAIN_CHANGE, domain_change_event_formats}}
 
 /*
  *
