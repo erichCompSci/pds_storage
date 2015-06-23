@@ -52,7 +52,7 @@ Domain::Domain (const char* name, const char* type, const int version, const cha
     attributes_ (create_attr_list()),
     root_(0)
 {
-  root_ = new Context ("/", this, 0);
+  root_ = new Context ("/", this, 0); 
   set_up_stone(DOMAIN_CHANGE);
   domain_name_ = (name == NULL ? NULL : strdup (name));
   domain_type_ = (type == NULL ? NULL : strdup (type));

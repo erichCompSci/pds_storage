@@ -120,20 +120,16 @@ Entity::set_data (int *new_data, size_t len)
 
   if(int_data->data)
     free (int_data->data);
-  printf("The size of len is:%d\n", len);
+
   int_data->data = (int *) malloc (sizeof(int) * len);
-  *(int_data->data) = 7;
   if(!int_data->data)
   {
     fprintf(stderr, "Failed to malloc correctly...\n");
   }
-  else
-    printf("The value of int_data->data is: %d\n", (*(int_data->data)));
 
-  printf("The size of int * len: %d\n", ((sizeof(int) * len)));
   memcpy (int_data->data, new_data, (sizeof(int) * len));
-
   int_data->data_size = len;
+
 }
 
 //FIXME: Memory leaks are rampart here probably when the entity dies

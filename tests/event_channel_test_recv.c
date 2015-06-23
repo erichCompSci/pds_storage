@@ -42,9 +42,13 @@ entity_char_data_change_event_handler (CManager cm, void* event, void* client_da
   pds_entity_char_data_change_ntf_ptr evt = (pds_entity_char_data_change_ntf_ptr) event;
   printf("-------------------------\n");
   printf("Entity data change handler called\n");
+
   pds_entity_char_data_t new_data = evt->char_data;
+  char * printable = (char *) malloc (new_data.data_size + 1);
+  memcpy(printable, new_data.data, new_data.data_size);
+  printable[new_data.data_size] = '\0';
   
-  printf("The new data string for %s is:\n%s\n", evt->entity_id.id, new_data.data);
+  printf("The new data string for %s is:\n%s\n", evt->entity_id.id, printable);
   printf("-------------------------\n");
 
   return 1;
@@ -53,12 +57,17 @@ entity_char_data_change_event_handler (CManager cm, void* event, void* client_da
 int
 entity_int_data_change_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
 {
+  int i;
   pds_entity_int_data_change_ntf_ptr evt = (pds_entity_int_data_change_ntf_ptr) event;
   printf("-------------------------\n");
   printf("Entity data change handler called\n");
   pds_entity_int_data_t new_data = evt->int_data;
   
-  printf("The new int data for %s is:\n%d\n", evt->entity_id.id, (*(new_data.data)));
+  printf("The new int data for %s is:", evt->entity_id.id );
+  for(i = 0; i < (new_data.data_size - 1); ++i)
+    printf(" %d,", new_data.data[i]); 
+  printf( " %d\n", new_data.data[i]);
+
   printf("-------------------------\n");
 
   return 1;
@@ -67,12 +76,17 @@ entity_int_data_change_event_handler (CManager cm, void* event, void* client_dat
 int
 entity_float_data_change_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
 {
+  int i;
   pds_entity_float_data_change_ntf_ptr evt = (pds_entity_float_data_change_ntf_ptr) event;
   printf("-------------------------\n");
   printf("Entity data change handler called\n");
   pds_entity_float_data_t new_data = evt->float_data;
   
-  printf("The new float data for %s is:\n%f\n", evt->entity_id.id, (*(new_data.data)));
+  printf("The new float data for %s is:", evt->entity_id.id );
+  for(i = 0; i < (new_data.data_size - 1); ++i)
+    printf(" %f,", new_data.data[i]); 
+  printf( " %f\n", new_data.data[i]);
+
   printf("-------------------------\n");
 
   return 1;
@@ -189,12 +203,12 @@ int main (int argc, char *argv[])
   register_entity_channel(ENTITY_DATA_CHANGE_INT, "entity_int_data_change", entity_int_data_change_event_handler);
   register_entity_channel(ENTITY_DATA_CHANGE_FLOAT, "entity_float_data_change", entity_float_data_change_event_handler);
 
-  eid1 = pds_create_entity_int (new_domain_id, "/newEntity", null_pds_context_id, &it, NULL);
+  eid1 = pds_create_entity_char (new_domain_id, "/newEntity", null_pds_context_id, &tt, NULL);
   printf ("[ created entity %s]", eid1.id);
   fflush (0);
   
   
-  if(pds_set_entity_char_data (new_domain_id, "/newEntity", null_pds_context_id, &tt, 0) < 0)
+  if(pds_set_entity_float_data (new_domain_id, "/newEntity", null_pds_context_id, &ft, 0) < 0)
   {
     fprintf(stderr, "Failed to set float data for /newEntity\n");
   }

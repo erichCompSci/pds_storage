@@ -126,7 +126,6 @@ handle_open_domain (void* in_msg, void* out_msg, CMrpc_options opt)
 		      msg->domain_type,
 		      msg->domain_version,
 		      msg->application_name);
-      Proactive::initialize_format_map();
     }
 
   return_msg->domain_id = objectId::make_pds_domain_id (d);

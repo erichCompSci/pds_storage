@@ -16,6 +16,7 @@ std::map<int, FMStructDescRec *> Proactive::global_format_map;
 
 Proactive::Proactive ()
 {
+  Proactive::initialize_format_map();
 }
 
 Proactive::~Proactive()
@@ -161,6 +162,11 @@ void
 Proactive::send_event_ (void *ev, unsigned short which_event)
 {
   int which_source = determine_stone_set_up(which_event);
+  if(which_source < 0)
+  {
+    set_up_stone(which_event);
+    which_source = determine_stone_set_up(which_event);
+  }
   EVsubmit( source_handles_[which_source], ev, NULL );
 }
 
