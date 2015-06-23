@@ -69,15 +69,17 @@ int main (int argc, char *argv[])
      int total = 0;\n\
      for(i = 0; i < the_size; ++i)\n\
      {\n\
-       char * temp_char_ptr = EVdata_entity_data_change_event(i)->entity_data.data;\n\
-       int * temp_int_ptr = (int *)temp_char_ptr;\n\
+       int * temp_int_ptr;\n\
+       temp_int_ptr = EVdata_entity_int_data_change_event(i)->int_data.data;\n\
        total = total + (*temp_int_ptr);\n\ 
      }\n\
-     int fake = total / the_size;\n\
-     entity_data_change_event new_event;\n\
-     new_event->entity_data.data = &fake;\n\
-     new_event->entity_data.data_size = 1;\n\
-     EVsubmit(0, new_event);\n\0"; 
+     int fake;\n\
+     fake = total / the_size;\n\
+     entity_int_data_change_event * new_event;\n\
+     new_event = EVdata_entity_int_data_change_event(0);\n\
+     new_event->int_data.data = &fake;\n\
+     new_event->int_data.data_size = 1;\n\
+     EVsubmit(0, 0);\n\0"; 
 
 
   pds_host = getenv ("PDS_SERVER_HOST");

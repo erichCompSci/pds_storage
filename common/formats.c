@@ -119,7 +119,7 @@ FMField entity_char_data_change_ntf_flds[] =
 
 FMStructDescRec entity_char_data_change_ntf_formats[] =
   {
-    { "entity_data_change_event", entity_char_data_change_ntf_flds, sizeof(pds_entity_char_data_change_ntf), NULL },
+    { "entity_char_data_change_event", entity_char_data_change_ntf_flds, sizeof(pds_entity_char_data_change_ntf), NULL },
     { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
     { "pds_entity_char_data_t", pds_entity_char_data_t_flds, sizeof(pds_entity_char_data_t), NULL },
     { NULL, NULL }
@@ -134,7 +134,7 @@ FMField entity_int_data_change_ntf_flds[] =
 
 FMStructDescRec entity_int_data_change_ntf_formats[] =
   {
-    { "entity_data_change_event", entity_int_data_change_ntf_flds, sizeof(pds_entity_int_data_change_ntf), NULL },
+    { "entity_int_data_change_event", entity_int_data_change_ntf_flds, sizeof(pds_entity_int_data_change_ntf), NULL },
     { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
     { "pds_entity_int_data_t", pds_entity_int_data_t_flds, sizeof(pds_entity_int_data_t), NULL },
     { NULL, NULL }
@@ -149,7 +149,7 @@ FMField entity_float_data_change_ntf_flds[] =
 
 FMStructDescRec entity_float_data_change_ntf_formats[] =
   {
-    { "entity_data_change_event", entity_float_data_change_ntf_flds, sizeof(pds_entity_float_data_change_ntf), NULL },
+    { "entity_float_data_change_event", entity_float_data_change_ntf_flds, sizeof(pds_entity_float_data_change_ntf), NULL },
     { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
     { "pds_entity_float_data_t", pds_entity_float_data_t_flds, sizeof(pds_entity_float_data_t), NULL },
     { NULL, NULL }
