@@ -187,12 +187,12 @@ int main (int argc, char *argv[])
   register_entity_channel(ENTITY_DATA_CHANGE_INT, "entity_int_data_change", entity_int_data_change_event_handler);
   register_entity_channel(ENTITY_DATA_CHANGE_FLOAT, "entity_float_data_change", entity_float_data_change_event_handler);
 
-  eid1 = pds_create_entity_char (new_domain_id, "/newEntity", null_pds_context_id, &tt, NULL);
+  eid1 = pds_create_entity_int (new_domain_id, "/newEntity", null_pds_context_id, &it, NULL);
   printf ("[ created entity %s]", eid1.id);
   fflush (0);
   
   
-  if(pds_set_entity_float_data (new_domain_id, "/newEntity", null_pds_context_id, &ft, 0) < 0)
+  if(pds_set_entity_char_data (new_domain_id, "/newEntity", null_pds_context_id, &tt, 0) < 0)
   {
     fprintf(stderr, "Failed to set float data for /newEntity\n");
   }

@@ -35,7 +35,7 @@ IF(NOT DEFINED BUILD_SHARED_STATIC)
   SET( BUILD_SHARED_STATIC "BOTH")
 ENDIF(NOT DEFINED BUILD_SHARED_STATIC)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # use, i.e. don't skip the full RPATH for the build tree
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
@@ -79,8 +79,7 @@ ENDFOREACH()
 
 set (ENGINE_SRC_LIST Domain.cc Entity.cc Context.cc objectId.cc
 Proactive.cc ContextBindable.cc utils.c EventWrapper.cc CleaningThread.cc
-EngineGuard.cc Format_Map.cc 
-base64.c storage_stone.c)
+EngineGuard.cc base64.c storage_stone.c)
 FOREACH (ENGINE_SRC ${ENGINE_SRC_LIST})
     LIST (APPEND ENGINE_MASTER_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/engine/${ENGINE_SRC})
 ENDFOREACH()

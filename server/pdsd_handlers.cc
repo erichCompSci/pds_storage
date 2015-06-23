@@ -126,6 +126,7 @@ handle_open_domain (void* in_msg, void* out_msg, CMrpc_options opt)
 		      msg->domain_type,
 		      msg->domain_version,
 		      msg->application_name);
+      Proactive::initialize_format_map();
     }
 
   return_msg->domain_id = objectId::make_pds_domain_id (d);
@@ -334,6 +335,8 @@ handle_create_entity (void* in_msg, void* out_msg, CMrpc_options opt, unsigned s
     attr_merge_lists (new_entity->attributes_, temp_list);
     free_attr_list (temp_list);
 
+    int temp = *(msg_int->edata.data);
+    printf("The value of the incoming data is: %d\n", temp);
     new_entity->set_data(msg_int->edata.data, msg_int->edata.data_size);
     pdsTrace_out (pdsdVerbose, "submitting int data event");
     new_entity->send_int_data_event();

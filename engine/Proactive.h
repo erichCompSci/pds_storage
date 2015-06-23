@@ -17,7 +17,6 @@ extern "C"
 #include <utility>
 #include <map>
 
-extern std::map<int, FMStructDescRec *> global_format_map;
 
 
 class Proactive
@@ -38,7 +37,8 @@ class Proactive
 
   static void use_this_CM (CManager cm);
   int set_aggregate_stone (char * cod_func,unsigned int which_type);
-
+  static void initialize_format_map();
+  
 
  protected:
 
@@ -47,6 +47,7 @@ class Proactive
 
   std::vector<std::pair<unsigned short, FMStructDescRec *> > formats_list_;
   static CManager server_cm_;
+  static std::map<int, FMStructDescRec *> global_format_map;
 
 };  
 

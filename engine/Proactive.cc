@@ -12,9 +12,11 @@
 #include "common/formats.h"
 
 CManager Proactive::server_cm_ = static_cast<CManager> (0);
+std::map<int, FMStructDescRec *> Proactive::global_format_map;
 
 Proactive::Proactive ()
-{}
+{
+}
 
 Proactive::~Proactive()
 {
@@ -28,6 +30,24 @@ Proactive::~Proactive()
     EVfree_stone( server_cm_, stones_[i]);
   }
 
+}
+
+
+void
+Proactive::initialize_format_map()
+{
+  
+  if(Proactive::global_format_map.empty())
+  {
+    Proactive::global_format_map[ENTITY_CREATE_DESTROY] = entity_exist_change_ntf_formats;
+    Proactive::global_format_map[ENTITY_DATA_CHANGE_CHAR] = entity_char_data_change_ntf_formats;
+    Proactive::global_format_map[ENTITY_DATA_CHANGE_FLOAT] = entity_float_data_change_ntf_formats;
+    Proactive::global_format_map[ENTITY_DATA_CHANGE_INT] = entity_int_data_change_ntf_formats;
+    Proactive::global_format_map[ENTITY_BIND_UNBIND] = entity_u_bind_change_ntf_formats;
+    Proactive::global_format_map[CONTEXT_CREATE_DESTROY] = context_exist_change_ntf_formats; 
+    Proactive::global_format_map[CONTEXT_BIND_UNBIND] = context_u_bind_change_ntf_formats;
+    Proactive::global_format_map[DOMAIN_CHANGE] = domain_change_event_formats;
+  }
 }
 
 void

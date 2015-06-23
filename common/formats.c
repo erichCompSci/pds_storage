@@ -744,6 +744,7 @@ FMField entity_int_data_msg_flds[] =
   
   {(char *) 0, (char *) 0, 0, 0}
 };
+
 FMStructDescRec entity_int_data_msg_formats[] = 
   {
     { "entity_data_msg", entity_int_data_msg_flds, sizeof(entity_int_data_msg),

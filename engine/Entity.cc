@@ -112,6 +112,7 @@ Entity::set_data (int *new_data, size_t len)
 {  
   if(!int_data)
   {
+    pdsTrace_out (pdsengineVerbose, "PDS set int not allocated...allocating now");
     int_data = (pds_entity_int_data_t_ptr) malloc (sizeof(pds_entity_int_data_t));
     int_data->data = NULL;
     int_data->data_size = 0;
@@ -121,7 +122,7 @@ Entity::set_data (int *new_data, size_t len)
     free (int_data->data);
   printf("The size of len is:%d\n", len);
   int_data->data = (int *) malloc (sizeof(int) * len);
-  *int_data->data = 7;
+  *(int_data->data) = 7;
   if(!int_data->data)
   {
     fprintf(stderr, "Failed to malloc correctly...\n");
