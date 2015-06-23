@@ -913,7 +913,7 @@ handle_entity_data (T in_msg, void* out_msg, CMrpc_options opt, unsigned short w
         }
         
       }
-      else if(which_data = ENTITY_DATA_CHANGE_INT)
+      else if(which_data == ENTITY_DATA_CHANGE_INT)
       {
         if (((in_msg->options & GetDataBuffer) || !dataFlag) && target_entity->get_int_data()) {
           return_data_msg->edata.data = (P) target_entity->get_int_data()->data;
@@ -928,7 +928,7 @@ handle_entity_data (T in_msg, void* out_msg, CMrpc_options opt, unsigned short w
         }
         
       }
-      else if(which_data = ENTITY_DATA_CHANGE_FLOAT)
+      else if(which_data == ENTITY_DATA_CHANGE_FLOAT)
       {
         if (((in_msg->options & GetDataBuffer) || !dataFlag) && target_entity->get_float_data()) {
           return_data_msg->edata.data = (P) target_entity->get_float_data()->data;

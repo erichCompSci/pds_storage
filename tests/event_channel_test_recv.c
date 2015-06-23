@@ -121,7 +121,7 @@ int main (int argc, char *argv[])
   char *pds_host;
   char *str = "First stored string before any changes are made.";
   float temp_float = 6.3;
-  int temp_int = 59;
+  int temp_int[] = {59, 3, 46};
   pds_entity_char_data_t tt;
   pds_entity_int_data_t it;
   pds_entity_float_data_t ft;
@@ -135,8 +135,8 @@ int main (int argc, char *argv[])
   tt.data = (unsigned char*)str;
   tt.data_size = strlen (str);
 
-  it.data = &temp_int;
-  it.data_size = 1;
+  it.data = temp_int;
+  it.data_size = 3;
   
   ft.data = &temp_float;
   ft.data_size = 1;
