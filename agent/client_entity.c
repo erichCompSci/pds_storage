@@ -5,7 +5,7 @@
  */
 
 #include "../config.h"
-
+#include <stdio.h>
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif

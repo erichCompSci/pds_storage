@@ -382,7 +382,8 @@ handle_create_entity (void* in_msg, void* out_msg, CMrpc_options opt, unsigned s
     fprintf(stderr, "Error: the create entity was not one of the three types, should not be possible\n");
     return_msg->options = -1;
     return_msg->fullname = NULL;
-    return_msg->entity_id = { { '\0' } };
+    //    return_msg->entity_id = { { '\0' } };
+    make_entity_id_null (&(return_msg->entity_id));  
     return;
   }
     /* 
@@ -955,7 +956,7 @@ handle_entity_data (T in_msg, void* out_msg, CMrpc_options opt, unsigned short w
     } else {
 
       // Set the data
-      printf("The incoming data is: %f\n", (*in_msg->edata.data));
+      //printf("The incoming data is: %f\n", (*in_msg->edata.data));
 
       target_entity->set_data (in_msg->edata.data,
                                in_msg->edata.data_size);

@@ -578,7 +578,7 @@ FMField create_entity_char_msg_flds[] =
 
 FMStructDescRec create_entity_char_msg_formats[] = 
   {
-    { "create_entity_msg", create_entity_char_msg_flds, sizeof(create_entity_char_msg),
+    { "create_entity_char_msg", create_entity_char_msg_flds, sizeof(create_entity_char_msg),
       NULL },
     { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
       NULL },
@@ -609,7 +609,7 @@ FMField create_entity_int_msg_flds[] =
 
 FMStructDescRec create_entity_int_msg_formats[] = 
   {
-    { "create_entity_msg", create_entity_int_msg_flds, sizeof(create_entity_int_msg),
+    { "create_entity_int_msg", create_entity_int_msg_flds, sizeof(create_entity_int_msg),
       NULL },
     { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
       NULL },
@@ -640,7 +640,7 @@ FMField create_entity_float_msg_flds[] =
 
 FMStructDescRec create_entity_float_msg_formats[] = 
   {
-    { "create_entity_msg", create_entity_float_msg_flds, sizeof(create_entity_float_msg),
+    { "create_entity_float_msg", create_entity_float_msg_flds, sizeof(create_entity_float_msg),
       NULL },
     { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
       NULL },
@@ -710,7 +710,7 @@ FMField entity_char_data_msg_flds[] =
 };
 FMStructDescRec entity_char_data_msg_formats[] = 
   {
-    { "entity_data_msg", entity_char_data_msg_flds, sizeof(entity_char_data_msg),
+    { "entity_char_data_msg", entity_char_data_msg_flds, sizeof(entity_char_data_msg),
       NULL },
     { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
       NULL },
@@ -747,7 +747,7 @@ FMField entity_int_data_msg_flds[] =
 
 FMStructDescRec entity_int_data_msg_formats[] = 
   {
-    { "entity_data_msg", entity_int_data_msg_flds, sizeof(entity_int_data_msg),
+    { "entity_int_data_msg", entity_int_data_msg_flds, sizeof(entity_int_data_msg),
       NULL },
     { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
       NULL },
@@ -784,7 +784,7 @@ FMField entity_float_data_msg_flds[] =
 };
 FMStructDescRec entity_float_data_msg_formats[] = 
   {
-    { "entity_data_msg", entity_float_data_msg_flds, sizeof(entity_float_data_msg),
+    { "entity_float_data_msg", entity_float_data_msg_flds, sizeof(entity_float_data_msg),
       NULL },
     { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
       NULL },

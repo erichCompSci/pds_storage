@@ -135,7 +135,9 @@ int main (int argc, char *argv[])
   tt.data = (unsigned char*)str;
   tt.data_size = strlen (str);
 
-  it.data = temp_int;
+  //it.data = temp_int;
+  it.data = malloc (3*sizeof(int));
+  it.data[0] = 59; it.data[1]=3; it.data[2] = 46;
   it.data_size = 3;
   
   ft.data = &temp_float;
