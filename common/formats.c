@@ -127,16 +127,16 @@ FMStructDescRec entity_char_data_change_ntf_formats[] =
 
 FMField entity_int_data_change_ntf_flds[] = 
   {
-    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_int_data_change_ntf_ptr, entity_id) },
-    { "int_data", "pds_entity_int_data_t", sizeof(pds_entity_int_data_t), FMOffset(pds_entity_int_data_change_ntf_ptr, int_data) },
+
+    { "id", "char[32]", sizeof (unsigned char), FMOffset (pds_entity_int_data_change_ntf_ptr, id) },
+    { "data", "integer[data_size]", sizeof (int), FMOffset (pds_entity_int_data_change_ntf_ptr, data) },
+    { "data_size", "integer", sizeof(int), FMOffset (pds_entity_int_data_change_ntf_ptr, data_size) },
     { NULL, NULL, 0, 0 }
   };
 
 FMStructDescRec entity_int_data_change_ntf_formats[] =
   {
     { "entity_int_data_change_event", entity_int_data_change_ntf_flds, sizeof(pds_entity_int_data_change_ntf), NULL },
-    { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
-    { "pds_entity_int_data_t", pds_entity_int_data_t_flds, sizeof(pds_entity_int_data_t), NULL },
     { NULL, NULL }
   };
 

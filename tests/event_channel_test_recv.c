@@ -61,12 +61,11 @@ entity_int_data_change_event_handler (CManager cm, void* event, void* client_dat
   pds_entity_int_data_change_ntf_ptr evt = (pds_entity_int_data_change_ntf_ptr) event;
   printf("-------------------------\n");
   printf("Entity data change handler called\n");
-  pds_entity_int_data_t new_data = evt->int_data;
   
-  printf("The new int data for %s is:", evt->entity_id.id );
-  for(i = 0; i < (new_data.data_size - 1); ++i)
-    printf(" %d,", new_data.data[i]); 
-  printf( " %d\n", new_data.data[i]);
+  printf("The new int data for %s is:", evt->id );
+  for(i = 0; i < (evt->data_size - 1); ++i)
+    printf(" %d,", evt->data[i]); 
+  printf( " %d\n", evt->data[i]);
 
   printf("-------------------------\n");
 

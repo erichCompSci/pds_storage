@@ -182,8 +182,10 @@ void
 Entity::send_int_data_event()
 {
   pds_entity_int_data_change_ntf evt;
-  evt.entity_id = objectId::make_pds_entity_id (domain_, this);
-  evt.int_data = (*(get_int_data()));
+  pds_entity_id_t temp_id = objectId::make_pds_entity_id (domain_, this);
+  memcpy(evt.id, temp_id.id, PDS_ID_SIZE);
+  evt.data = get_int_data()->data;
+  evt.data_size = get_int_data()->data_size;
   EntityEventWrapper wrap (evt);
   send_event (&wrap, ENTITY_DATA_CHANGE_INT);
 }

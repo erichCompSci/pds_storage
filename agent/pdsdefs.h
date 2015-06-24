@@ -120,8 +120,9 @@ typedef struct _entity_char_data_change_ntf
 
 typedef struct _entity_int_data_change_ntf
 {
-  pds_entity_id_t entity_id;
-  pds_entity_int_data_t int_data;
+  unsigned char id[PDS_ID_SIZE];
+  int * data;
+  int data_size;
 } pds_entity_int_data_change_ntf, * pds_entity_int_data_change_ntf_ptr; 
 
 typedef struct _entity_float_data_change_ntf

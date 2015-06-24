@@ -28,9 +28,8 @@ entity_data_change_event_handler (CManager cm, void* event, void* client_data, a
   pds_entity_int_data_change_ntf_ptr evt = (pds_entity_int_data_change_ntf_ptr) event;
   printf("-------------------------\n");
   printf("Entity data change handler called\n");
-  pds_entity_int_data_t new_data = evt->int_data;
   
-  printf("The new data int for %s is: %d\n", evt->entity_id.id,(*((int *) new_data.data)));
+  printf("The new data int for %s is: %d\n", evt->id, evt->data[0]);
 
   printf("-------------------------\n");
 
@@ -72,18 +71,25 @@ int main (int argc, char *argv[])
        int * temp_int_ptr;\n\
        entity_int_data_change_event * old_event;\n\
        old_event = EVdata_entity_int_data_change_event(i);\n\
-       temp_int_ptr = &(old_event->int_data.data[0]);\n\
-       total = total + (*temp_int_ptr);\n\ 
+       temp_int_ptr = &(old_event->data[0]);\n\
+       total = total + (*temp_int_ptr);\n\
      }\n\
      int fake;\n\
      fake = total / the_size;\n\
-     printf(\"The value of fake is: \\%d\\n\", fake);\n\
-     entity_int_data_change_event * old_event = EVdata_entity_int_data_change_event(0);\n\ 
-     old_event->int_data.data = &fake;\n\
-     old_event->int_data.data_size = 1;\n\
-     EVsubmit_entity_int_data_change_event(0, 0);\n\0"; 
+     entity_int_data_change_event new_event;\n\
+     entity_int_data_change_event * old_event = EVdata_entity_int_data_change_event(0);\n\
+     new_event.data = (int *) malloc(sizeof(int) * (old_event->data_size));\n\
+     new_event.data_size = 1;\n\
+     new_event.data[0] = fake;\n\
+     new_event.id = (char *) malloc(sizeof(char) * 32);\n\
+     for(i = 0; i < 32; ++i)\n\
+     {\n\
+        new_event.id[i] = old_event->id[i];\n\
+     }\n\
+     EVsubmit(0, new_event);\n\0";
 
 
+     
   pds_host = getenv ("PDS_SERVER_HOST");
   if (pds_host == NULL) pds_host = getenv ("HOSTNAME");
   if (pds_host == NULL) {
