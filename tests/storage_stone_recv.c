@@ -78,10 +78,17 @@ int main (int argc, char *argv[])
      int fake;\n\
      fake = total / the_size;\n\
      printf(\"The value of fake is: \\%d\\n\", fake);\n\
+     entity_int_data_change_event new_event;\n\
      entity_int_data_change_event * old_event = EVdata_entity_int_data_change_event(0);\n\ 
-     old_event->int_data.data = &fake;\n\
-     old_event->int_data.data_size = 1;\n\
-     EVsubmit_entity_int_data_change_event(0, 0);\n\0"; 
+     new_event.int_data.data = (int *) malloc (sizeof(int));\n\
+     new_event.int_data.data_size = 1;\n\
+     new_event.int_data.data[0] = fake;\n\
+     new_event.entity_id.id = (char *) malloc (sizeof(char) * 32);\n\
+     for(i = 0; i < 32; ++i)\n\
+     {\n\
+       new_event.entity_id.id[i] = old_event->entity_id.id[i];\n\
+     }\n\
+     EVsubmit(0, new_event);\n\0"; 
 
 
   pds_host = getenv ("PDS_SERVER_HOST");
