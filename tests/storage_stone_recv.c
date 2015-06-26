@@ -80,10 +80,8 @@ int main (int argc, char *argv[])
      printf(\"The value of fake is: \\%d\\n\", fake);\n\
      entity_int_data_change_event new_event;\n\
      entity_int_data_change_event * old_event = EVdata_entity_int_data_change_event(0);\n\ 
-     new_event.int_data.data = (int *) malloc (sizeof(int));\n\
      new_event.int_data.data_size = 1;\n\
      new_event.int_data.data[0] = fake;\n\
-     new_event.entity_id.id = (char *) malloc (sizeof(char) * 32);\n\
      for(i = 0; i < 32; ++i)\n\
      {\n\
        new_event.entity_id.id[i] = old_event->entity_id.id[i];\n\
