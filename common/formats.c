@@ -268,8 +268,6 @@ FMField pds_entity_float_data_t_flds[] =
 };
 
 
-
-
 FMField matching_domains_msg_flds[] =
 {
   { "domain_list", "pds_domain_id_t[domain_count]", sizeof (pds_domain_id_t),
