@@ -39,12 +39,23 @@ typedef struct _pds_domain_id_t_struct
 /*! Typedef for entity data stored in PDS.  The structure contains a pointer to the data buffer, 
  *  the size of the data buffer, and an attr_value indicating the type of the data. 
  */
-typedef struct _pds_entity_data_t_struct
+typedef struct _pds_entity_char_data_t_struct
 {
   unsigned char *data;
   int data_size;
-  attr_value_type data_type;
-} pds_entity_data_t, *pds_entity_data_t_ptr;
+} pds_entity_char_data_t, *pds_entity_char_data_t_ptr;
+
+typedef struct _pds_entity_int_data_t_struct
+{
+  int * data;
+  int data_size;
+} pds_entity_int_data_t, * pds_entity_int_data_t_ptr;
+
+typedef struct _pds_entity_float_data_t_struct
+{
+  float * data;
+  int data_size;
+} pds_entity_float_data_t, * pds_entity_float_data_t_ptr;
 
 /*
  *
@@ -101,11 +112,23 @@ typedef struct _handler_tag_FMDescRec
 
 
 
-typedef struct _entity_data_change_ntf
+typedef struct _entity_char_data_change_ntf
 {
   pds_entity_id_t entity_id;
-  pds_entity_data_t entity_data;
-} pds_entity_data_change_ntf, * pds_entity_data_change_ntf_ptr; 
+  pds_entity_char_data_t char_data;
+} pds_entity_char_data_change_ntf, * pds_entity_char_data_change_ntf_ptr; 
+
+typedef struct _entity_int_data_change_ntf
+{
+  pds_entity_id_t entity_id;
+  pds_entity_int_data_t int_data;
+} pds_entity_int_data_change_ntf, * pds_entity_int_data_change_ntf_ptr; 
+
+typedef struct _entity_float_data_change_ntf
+{
+  pds_entity_id_t entity_id;
+  pds_entity_float_data_t float_data;
+} pds_entity_float_data_change_ntf, * pds_entity_float_data_change_ntf_ptr; 
 
 typedef struct _entity_u_bind_change_ntf
 {
@@ -117,7 +140,6 @@ typedef struct _entity_exist_change_ntf
 {
   int type;
   pds_entity_id_t entity_id;
-  pds_entity_data_t entity_data;
 } pds_entity_exist_change_ntf, * pds_entity_exist_change_ntf_ptr;
 
 typedef struct _context_u_bind_change_ntf
@@ -135,15 +157,6 @@ typedef struct _context_exist_change_ntf
 } pds_context_exist_change_ntf, * pds_context_exist_change_ntf_ptr;
 
 
-
-typedef struct _pds_entity_change_event_struct
-{
-  int type;
-  const char *desc;
-  const char *fullname;
-  pds_entity_id_t entity_id;
-  pds_entity_data_t entity_data;
-} pds_entity_change_event, *pds_entity_change_event_ptr;
 
 typedef struct _pds_context_change_event_struct
 {

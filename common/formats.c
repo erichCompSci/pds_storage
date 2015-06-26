@@ -108,21 +108,53 @@ FMStructDescRec xpath_query_request_msg_formats[] =
       NULL },
     FMStructDescList_Terminator
   };
+
 /* Erich's code */
-FMField entity_data_change_ntf_flds[] = 
+FMField entity_char_data_change_ntf_flds[] = 
   {
-    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_data_change_ntf_ptr, entity_id) },
-    { "entity_data", "pds_entity_data_t", sizeof(pds_entity_data_t), FMOffset(pds_entity_data_change_ntf_ptr, entity_data) },
+    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_char_data_change_ntf_ptr, entity_id) },
+    { "char_data", "pds_entity_char_data_t", sizeof(pds_entity_char_data_t), FMOffset(pds_entity_char_data_change_ntf_ptr, char_data) },
     { NULL, NULL, 0, 0 }
   };
 
-FMStructDescRec entity_data_change_ntf_formats[] =
+FMStructDescRec entity_char_data_change_ntf_formats[] =
   {
-    { "entity_data_change_event", entity_data_change_ntf_flds, sizeof(pds_entity_data_change_ntf), NULL },
+    { "entity_char_data_change_event", entity_char_data_change_ntf_flds, sizeof(pds_entity_char_data_change_ntf), NULL },
     { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
-    { "pds_entity_data_t", pds_entity_data_t_flds, sizeof(pds_entity_data_t), NULL },
+    { "pds_entity_char_data_t", pds_entity_char_data_t_flds, sizeof(pds_entity_char_data_t), NULL },
     { NULL, NULL }
   };
+
+FMField entity_int_data_change_ntf_flds[] = 
+  {
+    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_int_data_change_ntf_ptr, entity_id) },
+    { "int_data", "pds_entity_int_data_t", sizeof(pds_entity_int_data_t), FMOffset(pds_entity_int_data_change_ntf_ptr, int_data) },
+    { NULL, NULL, 0, 0 }
+  };
+
+FMStructDescRec entity_int_data_change_ntf_formats[] =
+  {
+    { "entity_int_data_change_event", entity_int_data_change_ntf_flds, sizeof(pds_entity_int_data_change_ntf), NULL },
+    { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
+    { "pds_entity_int_data_t", pds_entity_int_data_t_flds, sizeof(pds_entity_int_data_t), NULL },
+    { NULL, NULL }
+  };
+
+FMField entity_float_data_change_ntf_flds[] = 
+  {
+    { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_float_data_change_ntf_ptr, entity_id) },
+    { "float_data", "pds_entity_float_data_t", sizeof(pds_entity_float_data_t), FMOffset(pds_entity_float_data_change_ntf_ptr, float_data) },
+    { NULL, NULL, 0, 0 }
+  };
+
+FMStructDescRec entity_float_data_change_ntf_formats[] =
+  {
+    { "entity_float_data_change_event", entity_float_data_change_ntf_flds, sizeof(pds_entity_float_data_change_ntf), NULL },
+    { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
+    { "pds_entity_float_data_t", pds_entity_float_data_t_flds, sizeof(pds_entity_float_data_t), NULL },
+    { NULL, NULL }
+  };
+
 
 FMField entity_u_bind_change_ntf_flds[] = 
   {
@@ -142,7 +174,6 @@ FMField entity_exist_change_ntf_flds[] =
   {
     { "type", "integer", sizeof(int), FMOffset(pds_entity_exist_change_ntf_ptr, type) },
     { "entity_id", "pds_entity_id_t", sizeof(pds_entity_id_t), FMOffset(pds_entity_exist_change_ntf_ptr, entity_id) },
-    { "entity_data", "pds_entity_data_t", sizeof(pds_entity_data_t), FMOffset(pds_entity_exist_change_ntf_ptr, entity_data) },
     { NULL, NULL, 0, 0 }
   };
 
@@ -150,7 +181,6 @@ FMStructDescRec entity_exist_change_ntf_formats[] =
   {
     { "entity_exist_change_event", entity_exist_change_ntf_flds, sizeof(pds_entity_exist_change_ntf), NULL },
     { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t), NULL },
-    { "pds_entity_data_t", pds_entity_data_t_flds, sizeof(pds_entity_data_t), NULL },
     { NULL, NULL }
   };
 
@@ -210,22 +240,31 @@ FMStructDescRec get_binding_list_msg_formats[] =
     FMStructDescList_Terminator
   };
 
-FMField pds_entity_data_t_flds[] =
+FMField pds_entity_char_data_t_flds[] =
 {
   { "data", "char[data_size]", sizeof (unsigned char),
-    FMOffset (pds_entity_data_t_ptr, data) },
+    FMOffset (pds_entity_char_data_t_ptr, data) },
   { "data_size", "integer", sizeof (int),
-    FMOffset (pds_entity_data_t_ptr, data_size) },
-  { "data_type", "integer", sizeof (int),
-    FMOffset (pds_entity_data_t_ptr, data_type) },
-
+    FMOffset (pds_entity_char_data_t_ptr, data_size) },
   {(char*) 0, (char*) 0, 0, 0 }
 };
 
-FMStructDescRec pds_entity_data_t_formats[] =
+FMField pds_entity_int_data_t_flds[] =
 {
-  {"pds_entity_data", pds_entity_data_t_flds, sizeof(pds_entity_data_t), NULL },
-  { NULL, NULL }
+  { "data", "integer[data_size]", sizeof (int),
+    FMOffset (pds_entity_int_data_t_ptr, data) },
+  { "data_size", "integer", sizeof(int),
+    FMOffset (pds_entity_int_data_t_ptr, data_size) },
+  { NULL, NULL, 0, 0}
+};
+
+FMField pds_entity_float_data_t_flds[] =
+{
+  { "data", "float[data_size]", sizeof (float),
+    FMOffset (pds_entity_float_data_t_ptr, data) },
+  { "data_size", "integer", sizeof(int),
+    FMOffset (pds_entity_float_data_t_ptr, data_size) },
+  { NULL, NULL, 0, 0 }
 };
 
 
@@ -517,37 +556,98 @@ FMStructDescRec create_context_msg_formats[] =
   };
 
 
-FMField create_entity_msg_flds[] = 
+FMField create_entity_char_msg_flds[] = 
 {
   { "domain id", "pds_domain_id_t", sizeof (pds_domain_id_t),
-    FMOffset (create_entity_msg_ptr, domain_id) },
+    FMOffset (create_entity_char_msg_ptr, domain_id) },
   { "context id", "pds_context_id_t", sizeof (pds_context_id_t),
-    FMOffset (create_entity_msg_ptr, context_id) },
+    FMOffset (create_entity_char_msg_ptr, context_id) },
   { "name", "string", sizeof(char*), 
-   FMOffset (create_entity_msg_ptr, name)},
-  { "edata", "pds_entity_data_t", sizeof(pds_entity_data_t), 
-   FMOffset (create_entity_msg_ptr, edata)},
+   FMOffset (create_entity_char_msg_ptr, name)},
+  { "edata", "pds_entity_char_data_t", sizeof(pds_entity_char_data_t), 
+   FMOffset (create_entity_char_msg_ptr, edata)},
   { "encoded_attr_list", "string", sizeof (char*),
-    FMOffset (create_entity_msg_ptr, encoded_attr_list) },
+    FMOffset (create_entity_char_msg_ptr, encoded_attr_list) },
   { "options", "integer", sizeof (int),
-    FMOffset (create_entity_msg_ptr, options) },
+    FMOffset (create_entity_char_msg_ptr, options) },
   
   {(char *) 0, (char *) 0, 0, 0}
 };
 
-FMStructDescRec create_entity_msg_formats[] = 
+FMStructDescRec create_entity_char_msg_formats[] = 
   {
-    { "create_entity_msg", create_entity_msg_flds, sizeof(create_entity_msg),
+    { "create_entity_char_msg", create_entity_char_msg_flds, sizeof(create_entity_char_msg),
       NULL },
     { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
       NULL },
     { "pds_context_id_t", pds_context_id_t_flds, sizeof(pds_context_id_t),
       NULL },
-    { "pds_entity_data_t", pds_entity_data_t_flds, sizeof(pds_entity_data_t),
+    { "pds_entity_char_data_t", pds_entity_char_data_t_flds, sizeof(pds_entity_char_data_t),
       NULL },
     FMStructDescList_Terminator
   };
 
+FMField create_entity_int_msg_flds[] = 
+{
+  { "domain id", "pds_domain_id_t", sizeof (pds_domain_id_t),
+    FMOffset (create_entity_int_msg_ptr, domain_id) },
+  { "context id", "pds_context_id_t", sizeof (pds_context_id_t),
+    FMOffset (create_entity_int_msg_ptr, context_id) },
+  { "name", "string", sizeof(char*), 
+   FMOffset (create_entity_int_msg_ptr, name)},
+  { "edata", "pds_entity_int_data_t", sizeof(pds_entity_int_data_t), 
+   FMOffset (create_entity_int_msg_ptr, edata)},
+  { "encoded_attr_list", "string", sizeof (char*),
+    FMOffset (create_entity_int_msg_ptr, encoded_attr_list) },
+  { "options", "integer", sizeof (int),
+    FMOffset (create_entity_int_msg_ptr, options) },
+  
+  {(char *) 0, (char *) 0, 0, 0}
+};
+
+FMStructDescRec create_entity_int_msg_formats[] = 
+  {
+    { "create_entity_int_msg", create_entity_int_msg_flds, sizeof(create_entity_int_msg),
+      NULL },
+    { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
+      NULL },
+    { "pds_context_id_t", pds_context_id_t_flds, sizeof(pds_context_id_t),
+      NULL },
+    { "pds_entity_int_data_t", pds_entity_int_data_t_flds, sizeof(pds_entity_int_data_t),
+      NULL },
+    FMStructDescList_Terminator
+  };
+
+FMField create_entity_float_msg_flds[] = 
+{
+  { "domain id", "pds_domain_id_t", sizeof (pds_domain_id_t),
+    FMOffset (create_entity_float_msg_ptr, domain_id) },
+  { "context id", "pds_context_id_t", sizeof (pds_context_id_t),
+    FMOffset (create_entity_float_msg_ptr, context_id) },
+  { "name", "string", sizeof(char*), 
+   FMOffset (create_entity_float_msg_ptr, name)},
+  { "edata", "pds_entity_float_data_t", sizeof(pds_entity_float_data_t), 
+   FMOffset (create_entity_float_msg_ptr, edata)},
+  { "encoded_attr_list", "string", sizeof (char*),
+    FMOffset (create_entity_float_msg_ptr, encoded_attr_list) },
+  { "options", "integer", sizeof (int),
+    FMOffset (create_entity_float_msg_ptr, options) },
+  
+  {(char *) 0, (char *) 0, 0, 0}
+};
+
+FMStructDescRec create_entity_float_msg_formats[] = 
+  {
+    { "create_entity_float_msg", create_entity_float_msg_flds, sizeof(create_entity_float_msg),
+      NULL },
+    { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
+      NULL },
+    { "pds_context_id_t", pds_context_id_t_flds, sizeof(pds_context_id_t),
+      NULL },
+    { "pds_entity_float_data_t", pds_entity_float_data_t_flds, sizeof(pds_entity_float_data_t),
+      NULL },
+    FMStructDescList_Terminator
+  };
 
 FMField entity_attributes_msg_flds[] = 
 {
@@ -585,30 +685,30 @@ FMStructDescRec entity_attributes_msg_formats[] =
   };
 
 
-FMField entity_data_msg_flds[] = 
+FMField entity_char_data_msg_flds[] = 
 {
   { "status", "integer", sizeof (int),
-    FMOffset (entity_data_msg_ptr, status) },
+    FMOffset (entity_char_data_msg_ptr, status) },
   { "operation", "integer", sizeof (int),
-    FMOffset (entity_data_msg_ptr, operation) },
+    FMOffset (entity_char_data_msg_ptr, operation) },
   { "domain id", "pds_domain_id_t", sizeof (pds_domain_id_t),
-    FMOffset (entity_data_msg_ptr, domain_id) },
+    FMOffset (entity_char_data_msg_ptr, domain_id) },
   { "context id", "pds_context_id_t", sizeof (pds_context_id_t),
-    FMOffset (entity_data_msg_ptr, context_id) },
+    FMOffset (entity_char_data_msg_ptr, context_id) },
   { "entity id", "pds_entity_id_t", sizeof (pds_entity_id_t),
-    FMOffset (entity_data_msg_ptr, entity_id) },
+    FMOffset (entity_char_data_msg_ptr, entity_id) },
   { "entity_name", "string", sizeof (char*),
-    FMOffset (entity_data_msg_ptr, entity_name) },
-  { "edata", "pds_entity_data_t", sizeof(pds_entity_data_t), 
-   FMOffset (entity_data_msg_ptr, edata)},
+    FMOffset (entity_char_data_msg_ptr, entity_name) },
+  { "edata", "pds_entity_char_data_t", sizeof(pds_entity_char_data_t), 
+   FMOffset (entity_char_data_msg_ptr, edata)},
   { "options", "integer", sizeof (int),
-    FMOffset (entity_data_msg_ptr, options) },
+    FMOffset (entity_char_data_msg_ptr, options) },
   
   {(char *) 0, (char *) 0, 0, 0}
 };
-FMStructDescRec entity_data_msg_formats[] = 
+FMStructDescRec entity_char_data_msg_formats[] = 
   {
-    { "entity_data_msg", entity_data_msg_flds, sizeof(entity_data_msg),
+    { "entity_char_data_msg", entity_char_data_msg_flds, sizeof(entity_char_data_msg),
       NULL },
     { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
       NULL },
@@ -616,11 +716,84 @@ FMStructDescRec entity_data_msg_formats[] =
       NULL },
     { "pds_context_id_t", pds_context_id_t_flds, sizeof(pds_context_id_t),
       NULL },
-    { "pds_entity_data_t", pds_entity_data_t_flds, sizeof(pds_entity_data_t),
+    { "pds_entity_char_data_t", pds_entity_char_data_t_flds, sizeof(pds_entity_char_data_t),
       NULL },
     FMStructDescList_Terminator
   };
 
+FMField entity_int_data_msg_flds[] = 
+{
+  { "status", "integer", sizeof (int),
+    FMOffset (entity_int_data_msg_ptr, status) },
+  { "operation", "integer", sizeof (int),
+    FMOffset (entity_int_data_msg_ptr, operation) },
+  { "domain id", "pds_domain_id_t", sizeof (pds_domain_id_t),
+    FMOffset (entity_int_data_msg_ptr, domain_id) },
+  { "context id", "pds_context_id_t", sizeof (pds_context_id_t),
+    FMOffset (entity_int_data_msg_ptr, context_id) },
+  { "entity id", "pds_entity_id_t", sizeof (pds_entity_id_t),
+    FMOffset (entity_int_data_msg_ptr, entity_id) },
+  { "entity_name", "string", sizeof (char*),
+    FMOffset (entity_int_data_msg_ptr, entity_name) },
+  { "edata", "pds_entity_int_data_t", sizeof(pds_entity_int_data_t), 
+   FMOffset (entity_int_data_msg_ptr, edata)},
+  { "options", "integer", sizeof (int),
+    FMOffset (entity_int_data_msg_ptr, options) },
+  
+  {(char *) 0, (char *) 0, 0, 0}
+};
+
+FMStructDescRec entity_int_data_msg_formats[] = 
+  {
+    { "entity_int_data_msg", entity_int_data_msg_flds, sizeof(entity_int_data_msg),
+      NULL },
+    { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
+      NULL },
+    { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t),
+      NULL },
+    { "pds_context_id_t", pds_context_id_t_flds, sizeof(pds_context_id_t),
+      NULL },
+    { "pds_entity_int_data_t", pds_entity_int_data_t_flds, sizeof(pds_entity_int_data_t),
+      NULL },
+    FMStructDescList_Terminator
+  };
+
+
+FMField entity_float_data_msg_flds[] = 
+{
+  { "status", "integer", sizeof (int),
+    FMOffset (entity_float_data_msg_ptr, status) },
+  { "operation", "integer", sizeof (int),
+    FMOffset (entity_float_data_msg_ptr, operation) },
+  { "domain id", "pds_domain_id_t", sizeof (pds_domain_id_t),
+    FMOffset (entity_float_data_msg_ptr, domain_id) },
+  { "context id", "pds_context_id_t", sizeof (pds_context_id_t),
+    FMOffset (entity_float_data_msg_ptr, context_id) },
+  { "entity id", "pds_entity_id_t", sizeof (pds_entity_id_t),
+    FMOffset (entity_float_data_msg_ptr, entity_id) },
+  { "entity_name", "string", sizeof (char*),
+    FMOffset (entity_float_data_msg_ptr, entity_name) },
+  { "edata", "pds_entity_float_data_t", sizeof(pds_entity_float_data_t), 
+   FMOffset (entity_float_data_msg_ptr, edata)},
+  { "options", "integer", sizeof (int),
+    FMOffset (entity_float_data_msg_ptr, options) },
+  
+  {(char *) 0, (char *) 0, 0, 0}
+};
+FMStructDescRec entity_float_data_msg_formats[] = 
+  {
+    { "entity_float_data_msg", entity_float_data_msg_flds, sizeof(entity_float_data_msg),
+      NULL },
+    { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t),
+      NULL },
+    { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t),
+      NULL },
+    { "pds_context_id_t", pds_context_id_t_flds, sizeof(pds_context_id_t),
+      NULL },
+    { "pds_entity_float_data_t", pds_entity_float_data_t_flds, sizeof(pds_entity_float_data_t),
+      NULL },
+    FMStructDescList_Terminator
+  };
 
 FMField unbind_msg_flds[] = 
 {
@@ -899,33 +1072,6 @@ FMStructDescRec shutdown_server_msg_formats[] =
 
 
 /*
- *  Entity change event definition
- */
-FMField entity_change_event_flds[] =
-{
-  { "change type", "integer", sizeof (int),
-    FMOffset (pds_entity_change_event_ptr, type) },
-  { "description", "string", sizeof (char*),
-    FMOffset (pds_entity_change_event_ptr, desc) },
-  { "fullname", "string", sizeof (char*),
-    FMOffset (pds_entity_change_event_ptr, fullname) },
-  { "entity_id", "pds_entity_id_t", sizeof (pds_entity_id_t),
-    FMOffset (pds_entity_change_event_ptr, entity_id) },
-  { "entity_data", "pds_entity_data_t", sizeof (pds_entity_data_t),
-    FMOffset (pds_entity_change_event_ptr, entity_data) },
-  
-  {(char*) 0, (char *) 0, 0, 0}
-};
-    
-FMStructDescRec entity_change_event_formats[] =
-{
-  { "entity_change_event", entity_change_event_flds, sizeof(pds_entity_change_event) },
-  { "pds_entity_id_t", pds_entity_id_t_flds, sizeof(pds_entity_id_t) },
-  { "pds_entity_data_t", pds_entity_data_t_flds, sizeof(pds_entity_data_t) },
-  FMStructDescList_Terminator
-};
-
-/*
  *  context change event definitions
  */
 FMField context_change_event_flds[] =
@@ -991,27 +1137,6 @@ FMStructDescRec domain_change_event_formats[] =
   { "domain_change_event", domain_change_event_flds, sizeof(pds_domain_change_event) },
   { "pds_domain_id_t", pds_domain_id_t_flds, sizeof(pds_domain_id_t) },
   FMStructDescList_Terminator
-};
-
-handler_tag_FMStructDescRec entity_DescRecs[] = 
-{
-  { ENTITY_CREATE_DESTROY, entity_exist_change_ntf_formats},
-  { ENTITY_BIND_UNBIND, entity_u_bind_change_ntf_formats},
-  { ENTITY_DATA_CHANGE, entity_data_change_ntf_formats }, 
-  { 0, NULL }
-};
-
-handler_tag_FMStructDescRec context_DescRecs[] =
-{
-  { CONTEXT_BIND_UNBIND, context_u_bind_change_ntf_formats},
-  { CONTEXT_CREATE_DESTROY, context_exist_change_ntf_formats},
-  { 0, NULL }
-};
-
-handler_tag_FMStructDescRec domain_DescRecs[] =
-{
-  { DOMAIN_CHANGE, domain_change_event_formats},
-  { 0, NULL }
 };
 
 /*

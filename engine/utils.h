@@ -30,7 +30,11 @@ void
 make_domain_id_null (pds_domain_id_t* id);
 
 void
-make_entity_data_null (pds_entity_data_t* d);
+make_entity_char_data_null (pds_entity_char_data_t* d);
+void
+make_entity_int_data_null (pds_entity_int_data_t* d);
+void
+make_entity_float_data_null (pds_entity_float_data_t* d);
 
 void
 make_entity_id_null (pds_entity_id_t* id);

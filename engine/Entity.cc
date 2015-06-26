@@ -28,14 +28,13 @@ extern "C" {
 
 
 Entity::Entity (const char* my_name, Domain* d, Context* parent) :
-  ContextBindable (my_name, parent, d, entity_DescRecs ),
-  data_size_ (0),
-  data_ (NULL),
-  data_type_ (Attr_Undefined)
+  ContextBindable (my_name, parent, d),
+  char_data(NULL),
+  int_data(NULL),
+  float_data(NULL)
 {
   domain_->add_entity_to_list(this);
 }
-
 
 Entity::~Entity()
 {
@@ -60,31 +59,97 @@ Entity::~Entity()
 void
 Entity::make_real()
 {
+  pdsTrace_out (pdsengineVerbose, "Entity make real called");
+  set_up_stone(ENTITY_BIND_UNBIND);  
+  set_up_stone(ENTITY_DATA_CHANGE_CHAR);
+  set_up_stone(ENTITY_DATA_CHANGE_INT);
+  set_up_stone(ENTITY_DATA_CHANGE_FLOAT);
   ContextBindable::make_real();
 }
 
 
-const pds_entity_data_t
-Entity::get_data() const
+pds_entity_char_data_t_ptr
+Entity::get_char_data() const
 {
-  pds_entity_data_t rval;
-  rval.data = data_;
-  rval.data_size = data_size_;
-  rval.data_type = data_type_;
-  return rval;
+  return char_data;
 }
 
+pds_entity_int_data_t_ptr
+Entity::get_int_data() const
+{
+  return int_data;
+}
+
+pds_entity_float_data_t_ptr
+Entity::get_float_data() const
+{
+  return float_data;
+}
+
+//FIXME: Memory leaks are rampart here probably when the entity dies
 void
-Entity::set_data (void *new_data, unsigned long len, attr_value_type type)
+Entity::set_data (unsigned char *new_data, unsigned long len)
 {  
-  free (data_);
-  data_ = (unsigned char*) malloc (len + 1);
-  memcpy (data_, new_data, len);
-  data_[len] = 0;
+  if(!char_data)
+  {
+    char_data = (pds_entity_char_data_t_ptr) malloc (sizeof(pds_entity_char_data_t));
+    char_data->data = NULL;
+    char_data->data_size = 0;
+  }
 
-  data_size_ = len;
-  data_type_ = type;
+  if(char_data->data)
+    free (char_data->data);
+  char_data->data = (unsigned char*) malloc (len + 1);
+  memcpy (char_data->data, new_data, len);
+  char_data->data[len] = '\0';
+
+  char_data->data_size = len;
 }
+
+//FIXME: Memory leaks are rampart here probably when the entity dies
+void
+Entity::set_data (int *new_data, size_t len)
+{  
+  if(!int_data)
+  {
+    pdsTrace_out (pdsengineVerbose, "PDS set int not allocated...allocating now");
+    int_data = (pds_entity_int_data_t_ptr) malloc (sizeof(pds_entity_int_data_t));
+    int_data->data = NULL;
+    int_data->data_size = 0;
+  }
+
+  if(int_data->data)
+    free (int_data->data);
+
+  int_data->data = (int *) malloc (sizeof(int) * len);
+  if(!int_data->data)
+  {
+    fprintf(stderr, "Failed to malloc correctly...\n");
+  }
+
+  memcpy (int_data->data, new_data, (sizeof(int) * len));
+  int_data->data_size = len;
+
+}
+
+//FIXME: Memory leaks are rampart here probably when the entity dies
+void
+Entity::set_data (float *new_data, size_t len)
+{  
+  if(!float_data)
+  {
+    float_data = (pds_entity_float_data_t_ptr) malloc (sizeof(pds_entity_float_data_t));
+    float_data->data = NULL;
+    float_data->data_size = 0;
+  }
+  if(float_data->data)
+    free (float_data->data);
+  float_data->data = (float *) malloc (sizeof(float) * len);
+  memcpy (float_data->data, new_data, (sizeof(float) * len));
+
+  float_data->data_size = len;
+}
+
 
 void
 Entity::unbound_from (Context *c)
@@ -99,19 +164,38 @@ Entity::send_creation_event()
   pds_entity_exist_change_ntf evt;
   evt.type = PDS_ENTITY_CHANGE_CREATION;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
-  evt.entity_data = get_data();
   EntityEventWrapper wrap (evt);
   send_event (&wrap, ENTITY_CREATE_DESTROY );
 }
 
 void 
-Entity::send_data_event()
+Entity::send_char_data_event()
 {
-  pds_entity_data_change_ntf evt;
+  pds_entity_char_data_change_ntf evt;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
-  evt.entity_data = get_data();
+  evt.char_data = (*(get_char_data()));
   EntityEventWrapper wrap (evt);
-  send_event (&wrap, ENTITY_DATA_CHANGE);
+  send_event (&wrap, ENTITY_DATA_CHANGE_CHAR);
+}
+
+void 
+Entity::send_int_data_event()
+{
+  pds_entity_int_data_change_ntf evt;
+  evt.entity_id = objectId::make_pds_entity_id (domain_, this);
+  evt.int_data = (*(get_int_data()));
+  EntityEventWrapper wrap (evt);
+  send_event (&wrap, ENTITY_DATA_CHANGE_INT);
+}
+
+void 
+Entity::send_float_data_event()
+{
+  pds_entity_float_data_change_ntf evt;
+  evt.entity_id = objectId::make_pds_entity_id (domain_, this);
+  evt.float_data = (*(get_float_data()));
+  EntityEventWrapper wrap (evt);
+  send_event (&wrap, ENTITY_DATA_CHANGE_FLOAT);
 }
 
 void 
@@ -140,7 +224,6 @@ Entity::send_deletion_event()
   pds_entity_exist_change_ntf evt;
   evt.type = PDS_ENTITY_CHANGE_DELETION;
   evt.entity_id = objectId::make_pds_entity_id (domain_, this);
-  make_entity_data_null (&(evt.entity_data));
   EntityEventWrapper wrap (evt);
   send_event (&wrap, ENTITY_CREATE_DESTROY);
 }

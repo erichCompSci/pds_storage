@@ -48,12 +48,12 @@ vector <Domain*> Domain::global_domain_list_;
 
 
 Domain::Domain (const char* name, const char* type, const int version, const char* app)
-  : Proactive (domain_DescRecs),
+  : Proactive (),
     attributes_ (create_attr_list()),
     root_(0)
 {
-  root_ = new Context ("/", this, 0);
-  set_up_stones();
+  root_ = new Context ("/", this, 0); 
+  set_up_stone(DOMAIN_CHANGE);
   domain_name_ = (name == NULL ? NULL : strdup (name));
   domain_type_ = (type == NULL ? NULL : strdup (type));
   domain_version_ = version;

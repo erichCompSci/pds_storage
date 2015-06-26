@@ -35,40 +35,58 @@ int domain_event_handler (CManager cm, void* event, void* client_data, attr_list
 }
   
 
+
 int
-entity_create_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
+entity_char_data_change_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
 {
-  pds_entity_exist_change_ntf_ptr evt = (pds_entity_exist_change_ntf_ptr) event;
+  pds_entity_char_data_change_ntf_ptr evt = (pds_entity_char_data_change_ntf_ptr) event;
   printf("-------------------------\n");
-  printf("Entity existance handler called\n"); 
-  if(evt->type == PDS_ENTITY_CHANGE_CREATION)
-  {
-    printf("Entity: %s\t was created\n", evt->entity_id.id);
-  }
-  else if(evt->type == PDS_ENTITY_CHANGE_DELETION)
-  {
-    printf("Entity: %s\t was destroyed\n", evt->entity_id.id);
-  }
-  else
-  {
-    printf("Error: create event handled but neither created nor destroyed\n");
-    return 0;
-  }
+  printf("Entity data change handler called\n");
+
+  pds_entity_char_data_t new_data = evt->char_data;
+  char * printable = (char *) malloc (new_data.data_size + 1);
+  memcpy(printable, new_data.data, new_data.data_size);
+  printable[new_data.data_size] = '\0';
+  
+  printf("The new data string for %s is:\n%s\n", evt->entity_id.id, printable);
   printf("-------------------------\n");
 
   return 1;
 }
 
 int
-entity_data_change_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
+entity_int_data_change_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
 {
-  pds_entity_data_change_ntf_ptr evt = (pds_entity_data_change_ntf_ptr) event;
+  int i;
+  pds_entity_int_data_change_ntf_ptr evt = (pds_entity_int_data_change_ntf_ptr) event;
   printf("-------------------------\n");
   printf("Entity data change handler called\n");
-  pds_entity_data_t new_data = evt->entity_data;
+  pds_entity_int_data_t new_data = evt->int_data;
   
-  assert(new_data.data_type == Attr_String && "Error: data type is supposed to be a string");
-  printf("The new data string for %s is:\n%s\n", evt->entity_id.id, new_data.data);
+  printf("The new int data for %s is:", evt->entity_id.id );
+  for(i = 0; i < (new_data.data_size - 1); ++i)
+    printf(" %d,", new_data.data[i]); 
+  printf( " %d\n", new_data.data[i]);
+
+  printf("-------------------------\n");
+
+  return 1;
+}
+
+int
+entity_float_data_change_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
+{
+  int i;
+  pds_entity_float_data_change_ntf_ptr evt = (pds_entity_float_data_change_ntf_ptr) event;
+  printf("-------------------------\n");
+  printf("Entity data change handler called\n");
+  pds_entity_float_data_t new_data = evt->float_data;
+  
+  printf("The new float data for %s is:", evt->entity_id.id );
+  for(i = 0; i < (new_data.data_size - 1); ++i)
+    printf(" %f,", new_data.data[i]); 
+  printf( " %f\n", new_data.data[i]);
+
   printf("-------------------------\n");
 
   return 1;
@@ -116,7 +134,11 @@ int main (int argc, char *argv[])
   attr_list contact_attrs;
   char *pds_host;
   char *str = "First stored string before any changes are made.";
-  pds_entity_data_t tt;
+  float temp_float = 6.3;
+  int temp_int[] = {59, 3, 46};
+  pds_entity_char_data_t tt;
+  pds_entity_int_data_t it;
+  pds_entity_float_data_t ft;
   char **bindings;
   int i2;
   atom_t VAL1_ATOM, VAL2_ATOM;
@@ -126,7 +148,14 @@ int main (int argc, char *argv[])
 
   tt.data = (unsigned char*)str;
   tt.data_size = strlen (str);
-  tt.data_type = Attr_String;
+
+  //it.data = temp_int;
+  it.data = malloc (3*sizeof(int));
+  it.data[0] = 59; it.data[1]=3; it.data[2] = 46;
+  it.data_size = 3;
+  
+  ft.data = &temp_float;
+  ft.data_size = 1;
 
   pds_host = getenv ("PDS_SERVER_HOST");
   if (pds_host == NULL) pds_host = getenv ("HOSTNAME");
@@ -166,31 +195,28 @@ int main (int argc, char *argv[])
 
 
   cid1 = pds_get_root_context (new_domain_id);
-  printf("After the open_domain call and got the root context\n");
-  //printf ("Got root context: %d\n", cid1);
-  
-  //attrs = create_attr_list();
-  //printf ("created attr list...\n");
 
-  /*VAL1_ATOM = attr_atom_from_string("PDS_TEST_VAL1");
-  VAL2_ATOM = attr_atom_from_string("PDS_TEST_VAL2");
-  add_int_attr (attrs, VAL1_ATOM, val1);
-  add_int_attr (attrs, VAL2_ATOM, val2);
-  printf ("[ added attributes ]");
-  fflush (0);
-  */
-
-  printf("Before registering the domain\n");
   register_domain(); 
 
-  register_entity_channel(ENTITY_CREATE_DESTROY, "entity_create_destroy", entity_create_event_handler);
   register_entity_channel(ENTITY_BIND_UNBIND, "entity_bind_unbind", entity_bind_unbind_event_handler);
-  register_entity_channel(ENTITY_DATA_CHANGE, "entity_data_change", entity_data_change_event_handler);
+  register_entity_channel(ENTITY_DATA_CHANGE_CHAR, "entity_data_change", entity_char_data_change_event_handler);
+  register_entity_channel(ENTITY_DATA_CHANGE_INT, "entity_int_data_change", entity_int_data_change_event_handler);
+  register_entity_channel(ENTITY_DATA_CHANGE_FLOAT, "entity_float_data_change", entity_float_data_change_event_handler);
 
-  eid1 = pds_create_entity (new_domain_id, "/newEntity", null_pds_context_id, &tt, NULL);
+  eid1 = pds_create_entity_char (new_domain_id, "/newEntity", null_pds_context_id, &tt, NULL);
   printf ("[ created entity %s]", eid1.id);
   fflush (0);
+  
+  
+  if(pds_set_entity_float_data (new_domain_id, "/newEntity", null_pds_context_id, &ft, 0) < 0)
+  {
+    fprintf(stderr, "Failed to set float data for /newEntity\n");
+  }
 
+  if(pds_set_entity_int_data (new_domain_id, "/newEntity", null_pds_context_id, &it, 0) < 0)
+  {
+    fprintf(stderr, "Failed to set int data for /newEntity\n");
+  }
 
   printf("Finished waiting for events...\n");
   CMrun_network(cm);

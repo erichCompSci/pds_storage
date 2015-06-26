@@ -225,6 +225,7 @@ Entity*
 doEntityLoad(Domain* target_domain, Context* target_context, 
              xmlDocPtr doc, xmlNodePtr entityNode)
 {    
+ /*
   xmlChar* entityName = xmlGetProp(entityNode, EntityNameTag);
   xmlChar* attrType   = xmlGetProp(entityNode, dataTypeTag);    
   
@@ -276,6 +277,8 @@ doEntityLoad(Domain* target_domain, Context* target_context,
   doAttributeLoad(new_entity, doc, child);
 
   return new_entity;
+  */
+  return NULL;
 }
 //----------------------------------------------------------
 void doAttributeLoad(ContextBindable* c, xmlDocPtr doc, xmlNodePtr cur)

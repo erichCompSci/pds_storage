@@ -10,10 +10,25 @@
 #include <cstring>
 
 #include "get_hash_map.h"
+//#include <unordered_map>
+//#include <string>
 
 #include "ContextBindable.h"
 
   
+/*class Cstring_hash
+{
+ public:
+  size_t operator()(const char * p)const
+  {
+    size_t hashed_value = 0;
+    std::string for_hash(p);
+    std::hash<std::string> hashed_function;
+    hashed_value = hashed_function(for_hash);
+    return hashed_value;
+  }
+};*/
+
 class Cstring_eq
 { 
  public:
@@ -35,7 +50,6 @@ class Context : public ContextBindable
 
  public:
 
-  /*Context (const char* my_name, Domain*);*/
   Context (const char* my_name, Domain*, Context* parent);
   Context (const char* my_name, Domain*, Context* parent, const char* name_to_bind);
   virtual ~Context();

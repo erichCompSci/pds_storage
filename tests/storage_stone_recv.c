@@ -25,21 +25,12 @@ CManager cm;
 int
 entity_data_change_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
 {
-  pds_entity_data_change_ntf_ptr evt = (pds_entity_data_change_ntf_ptr) event;
+  pds_entity_int_data_change_ntf_ptr evt = (pds_entity_int_data_change_ntf_ptr) event;
   printf("-------------------------\n");
   printf("Entity data change handler called\n");
-  pds_entity_data_t new_data = evt->entity_data;
+  pds_entity_int_data_t new_data = evt->int_data;
   
-  if(new_data.data_type == Attr_Int4)
-  {
-    printf("The new data int for %s is: %d\n", evt->entity_id.id,(*((int *) new_data.data)));
-  }
-  else if(new_data.data_type == Attr_Float4)
-  {
-    printf("The new data float for %s is: %d\n", evt->entity_id.id, (*((float *) new_data.data)));
-  }
-  else
-    printf("Unrecognized value...\n");
+  printf("The new data int for %s is: %d\n", evt->entity_id.id,(*((int *) new_data.data)));
 
   printf("-------------------------\n");
 
@@ -63,7 +54,7 @@ int main (int argc, char *argv[])
   attr_list contact_attrs;
   char *pds_host;
   int temp = 1;
-  pds_entity_data_t tt;
+  pds_entity_int_data_t tt;
   char **bindings;
   int i2;
   atom_t VAL1_ATOM, VAL2_ATOM;
@@ -71,28 +62,31 @@ int main (int argc, char *argv[])
   if (cmdline_parser (argc, argv, &args_info) != 0) exit(1);
   if (args_info.hostname_given) printf ("hostname is %s\n", args_info.hostname_arg);
 
-  tt.data = (unsigned char*)(&temp);
-  tt.data_size = 3;
-  tt.data_type = Attr_Int4;
-
+  tt.data = &temp;
+  tt.data_size = 1;
 
   char * cod_func = "int i;\n\
-     float total = 0;\n\
+     int total = 0;\n\
      for(i = 0; i < the_size; ++i)\n\
      {\n\
-       entity_data_change_event * temp_ent_ptr = EVdata_entity_data_change_event(i);\n\
-       pds_entity_data test = temp_ent_ptr->entity_data;\n\
-       char * temp_char_ptr = test.data;\n\
-       int * temp_int_ptr = (int *)temp_char_ptr;\n\
-       total = total + (*temp_int_ptr);\n\
+       int * temp_int_ptr;\n\
+       entity_int_data_change_event * old_event;\n\
+       old_event = EVdata_entity_int_data_change_event(i);\n\
+       temp_int_ptr = &(old_event->int_data.data[0]);\n\
+       total = total + (*temp_int_ptr);\n\ 
      }\n\
-     float median = 6.3;\n\
-     entity_data_change_event new_event;\n\
-     new_event.entity_data.data = (char *) malloc(sizeof(char) * 4);\n\
-     new_event.entity_data.data[0] = median;\n\
-     new_event.entity_data.data_size = 4;\n\
-     new_event.entity_data.data_type = 9;\n\
-     EVsubmit(0,new_event);\n\0"; 
+     int fake;\n\
+     fake = total / the_size;\n\
+     printf(\"The value of fake is: \\%d\\n\", fake);\n\
+     entity_int_data_change_event new_event;\n\
+     entity_int_data_change_event * old_event = EVdata_entity_int_data_change_event(0);\n\ 
+     new_event.int_data.data_size = 1;\n\
+     new_event.int_data.data[0] = fake;\n\
+     for(i = 0; i < 32; ++i)\n\
+     {\n\
+       new_event.entity_id.id[i] = old_event->entity_id.id[i];\n\
+     }\n\
+     EVsubmit(0, new_event);\n\0"; 
 
 
   pds_host = getenv ("PDS_SERVER_HOST");
@@ -134,16 +128,16 @@ int main (int argc, char *argv[])
 
   cid1 = pds_get_root_context (new_domain_id);
 
-  register_entity_channel(ENTITY_DATA_CHANGE, "entity_data_change", entity_data_change_event_handler);
+  register_entity_channel(ENTITY_DATA_CHANGE_INT, "entity_data_change", entity_data_change_event_handler);
 
 
-  eid1 = pds_create_entity (new_domain_id, "/newEntity", null_pds_context_id, &tt, NULL);
+  eid1 = pds_create_entity_int (new_domain_id, "/newEntity", null_pds_context_id, &tt, NULL);
   printf ("[ created entity %s]", eid1.id);
   fflush (0);
 
   /* We have to create the entity before we call this function.  It's just not smart enough
    * and I'm not sure this is necessary functionality so I'm punting for now. */
-  if(!pds_aggregate_entity(new_domain_id, cod_func, eid1, ENTITY_DATA_CHANGE))
+  if(!pds_aggregate_entity(new_domain_id, cod_func, eid1, ENTITY_DATA_CHANGE_INT))
   {
     fprintf(stderr, "Error: pds_aggregate_entity failed\n");
     return 1;

@@ -25,7 +25,9 @@
 pds_entity_id_t null_pds_entity_id = { { '\0' } };
 pds_context_id_t null_pds_context_id = { { '\0' } };
 pds_domain_id_t null_pds_domain_id = { { '\0'}  };
-pds_entity_data_t null_pds_entity_data = { NULL, 0, Attr_Undefined };
+pds_entity_char_data_t null_pds_entity_char_data = { NULL, 0 };
+pds_entity_int_data_t null_pds_entity_int_data = { NULL, 0 };
+pds_entity_float_data_t null_pds_entity_float_data = { NULL, 0 };
 
 typedef struct _pds_service_struct
 {
@@ -72,6 +74,7 @@ register_formats()
   CMrpc_register_rpc_request (client_cm, REMOVE_DOMAIN_RPC_NAME, NULL,
                               remove_domain_msg_formats, 
                               return_status_msg_formats);
+
   CMrpc_register_rpc_request (client_cm, FIND_MATCHING_DOMAINS_RPC_NAME, NULL, 
                              create_domain_msg_formats, 
                              matching_domains_msg_formats);
@@ -97,8 +100,16 @@ register_formats()
                              resolve_name_msg_formats, 
                              binding_list_msg_formats);
 
-  CMrpc_register_rpc_request (client_cm, CREATE_ENTITY_RPC_NAME, NULL, 
-                             create_entity_msg_formats, 
+  CMrpc_register_rpc_request (client_cm, CREATE_ENTITY_CHAR_RPC_NAME, NULL, 
+                             create_entity_char_msg_formats, 
+                             return_entity_id_msg_formats);
+
+  CMrpc_register_rpc_request (client_cm, CREATE_ENTITY_INT_RPC_NAME, NULL, 
+                             create_entity_int_msg_formats, 
+                             return_entity_id_msg_formats);
+
+  CMrpc_register_rpc_request (client_cm, CREATE_ENTITY_FLOAT_RPC_NAME, NULL, 
+                             create_entity_float_msg_formats, 
                              return_entity_id_msg_formats);
 
   CMrpc_register_rpc_request (client_cm, REMOVE_ENTITY_RPC_NAME, NULL, 
@@ -131,26 +142,42 @@ register_formats()
                              entity_attributes_msg_formats, 
                              return_status_msg_formats);
 
-  CMrpc_register_rpc_request (client_cm, GET_ENTITY_DATA_RPC_NAME, NULL, 
-                             entity_data_msg_formats, 
-                             entity_data_msg_formats);
+  CMrpc_register_rpc_request (client_cm, GET_ENTITY_CHAR_DATA_RPC_NAME, NULL, 
+                             entity_char_data_msg_formats, 
+                             entity_char_data_msg_formats);
 
-  CMrpc_register_rpc_request (client_cm, SET_ENTITY_DATA_RPC_NAME, NULL, 
-                             entity_data_msg_formats, 
+  CMrpc_register_rpc_request (client_cm, GET_ENTITY_INT_DATA_RPC_NAME, NULL, 
+                             entity_int_data_msg_formats, 
+                             entity_int_data_msg_formats);
+
+  CMrpc_register_rpc_request (client_cm, GET_ENTITY_FLOAT_DATA_RPC_NAME, NULL, 
+                             entity_float_data_msg_formats, 
+                             entity_float_data_msg_formats);
+
+  CMrpc_register_rpc_request (client_cm, SET_ENTITY_CHAR_DATA_RPC_NAME, NULL, 
+                             entity_char_data_msg_formats, 
+                             return_status_msg_formats);
+
+  CMrpc_register_rpc_request (client_cm, SET_ENTITY_INT_DATA_RPC_NAME, NULL, 
+                             entity_int_data_msg_formats, 
+                             return_status_msg_formats);
+
+  CMrpc_register_rpc_request (client_cm, SET_ENTITY_FLOAT_DATA_RPC_NAME, NULL, 
+                             entity_float_data_msg_formats, 
                              return_status_msg_formats);
 
   CMrpc_register_rpc_request (client_cm, GET_CONTEXT_ATTRIBUTES_RPC_NAME, NULL, 
                               context_attributes_msg_formats, 
                               context_attributes_msg_formats);
 
-
   CMrpc_register_rpc_request (client_cm, SET_CONTEXT_ATTRIBUTES_RPC_NAME, NULL, 
                               context_attributes_msg_formats, 
                               return_status_msg_formats);
 
+/*FIXME: Need to fix this to work with the new architecture
   CMrpc_register_rpc_request (client_cm, FIND_MATCHING_ENTITIES_RPC_NAME, NULL, 
                              create_entity_msg_formats, 
-                             matching_entities_msg_formats);
+                             matching_entities_msg_formats); */
 
   CMrpc_register_rpc_request (client_cm, LOAD_FROM_URL_RPC_NAME, NULL, 
                               load_from_URL_msg_formats,
@@ -444,7 +471,7 @@ pds_find_matching_domains (pds_service wps,
 			  const char *domain_type,
 			  int domain_version,
 			  const char *application_name,
-                          pds_domain_id_t *matches)
+                          pds_domain_id_t **matches)
 {
   create_domain_msg msg;
   matching_domains_msg return_msg;
@@ -457,10 +484,10 @@ pds_find_matching_domains (pds_service wps,
   
   pds_request (FIND_MATCHING_DOMAINS_RPC_NAME, wps, &msg, &return_msg);
 
-  matches = (pds_domain_id_t*) calloc (return_msg.domain_count, sizeof (pds_domain_id_t));
+  *matches = (pds_domain_id_t*) calloc (return_msg.domain_count, sizeof (pds_domain_id_t));
   for (i = 0; i < return_msg.domain_count; i++)
     {
-      matches[i] = return_msg.domain_list[i];
+      *matches[i] = return_msg.domain_list[i];
     }
 
   free (return_msg.domain_list);

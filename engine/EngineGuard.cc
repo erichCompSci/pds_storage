@@ -14,7 +14,7 @@ static int _init = 0;
 /* This API is defined in load.cc
    its main purpose is to invalidate the
    cache XML document */
-extern void  reset_xml_doc();
+//extern void  reset_xml_doc();
 /***********************************************
   Function:
 
@@ -65,7 +65,7 @@ WriterGuard::WriterGuard()
   pthread_rwlock_wrlock(&_rw_lock);
   /* invalidate the cache XML document */
 #ifndef NO_XML
-  reset_xml_doc();
+  //reset_xml_doc();
 #endif
 }
 /***********************************************

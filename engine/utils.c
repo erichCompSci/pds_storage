@@ -27,11 +27,24 @@ make_domain_id_null (pds_domain_id_t* id)
 }
 
 void
-make_entity_data_null (pds_entity_data_t* d)
+make_entity_char_data_null (pds_entity_char_data_t* d)
 {
   d->data = (unsigned char*)NULL;
   d->data_size = 0;
-  d->data_type = Attr_Undefined;
+}
+
+void
+make_entity_int_data_null (pds_entity_int_data_t* d)
+{
+  d->data = (int*)NULL;
+  d->data_size = 0;
+}
+
+void
+make_entity_float_data_null (pds_entity_float_data_t* d)
+{
+  d->data = (float*)NULL;
+  d->data_size = 0;
 }
 
 void

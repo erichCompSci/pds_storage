@@ -30,13 +30,15 @@ pdsTrace_out(const unsigned long trace_type, char const *format, ...);
  * and client
  */
 
-#define ENTITY_CREATE_DESTROY 1
-#define ENTITY_BIND_UNBIND 2
-#define ENTITY_DATA_CHANGE 3
-#define ENTITY_ATTR_CHANGE 4
-#define CONTEXT_BIND_UNBIND 5
-#define CONTEXT_CREATE_DESTROY 6
-#define DOMAIN_CHANGE 7
+#define ENTITY_CREATE_DESTROY         1
+#define ENTITY_BIND_UNBIND            4
+#define ENTITY_DATA_CHANGE_CHAR       5
+#define ENTITY_DATA_CHANGE_INT        6
+#define ENTITY_DATA_CHANGE_FLOAT      7
+#define ENTITY_ATTR_CHANGE            8
+#define CONTEXT_BIND_UNBIND           9
+#define CONTEXT_CREATE_DESTROY       10
+#define DOMAIN_CHANGE                11
 
 
 
@@ -58,12 +60,18 @@ pdsTrace_out(const unsigned long trace_type, char const *format, ...);
 #define UNBIND_ENTITY_RPC_NAME           "unbind entity"
 #define GET_ROOT_CONTEXT_RPC_NAME        "get root context"
 #define REMOVE_CONTEXT_RPC_NAME          "remove context"
-#define CREATE_ENTITY_RPC_NAME           "create entity"
+#define CREATE_ENTITY_CHAR_RPC_NAME      "create char entity"
+#define CREATE_ENTITY_INT_RPC_NAME       "create int entity"
+#define CREATE_ENTITY_FLOAT_RPC_NAME     "create float entity"
 #define EVPATH_OP_RPC_NAME               "evpath operation"
 #define SET_ENTITY_ATTRIBUTES_RPC_NAME   "set entity attributes"
 #define GET_ENTITY_ATTRIBUTES_RPC_NAME   "get entity attributes"
-#define SET_ENTITY_DATA_RPC_NAME         "set entity data"
-#define GET_ENTITY_DATA_RPC_NAME         "get entity data"
+#define SET_ENTITY_CHAR_DATA_RPC_NAME    "set entity char data"
+#define SET_ENTITY_INT_DATA_RPC_NAME     "set entity int data"
+#define SET_ENTITY_FLOAT_DATA_RPC_NAME   "set entity float data"
+#define GET_ENTITY_CHAR_DATA_RPC_NAME    "get entity char data"
+#define GET_ENTITY_INT_DATA_RPC_NAME     "get entity int data"
+#define GET_ENTITY_FLOAT_DATA_RPC_NAME   "get entity float data"
 #define SET_CONTEXT_ATTRIBUTES_RPC_NAME  "set context attributes"
 #define GET_CONTEXT_ATTRIBUTES_RPC_NAME  "get context attributes"
 #define FIND_MATCHING_DOMAINS_RPC_NAME   "matching domains"
@@ -191,15 +199,36 @@ typedef struct _return_entity_id_msg_struct
   int options;
 } return_entity_id_msg, *return_entity_id_msg_ptr;
 
-typedef struct _create_entity_msg_struct
+typedef struct _create_entity_char_msg_struct
 {
   pds_domain_id_t domain_id;
   pds_context_id_t context_id;
   const char *name;
-  pds_entity_data_t edata;
+  pds_entity_char_data_t edata;
   char *encoded_attr_list;
   int options;
-} create_entity_msg, *create_entity_msg_ptr;
+} create_entity_char_msg, *create_entity_char_msg_ptr;
+
+typedef struct _create_entity_int_msg_struct
+{
+  pds_domain_id_t domain_id;
+  pds_context_id_t context_id;
+  const char *name;
+  pds_entity_int_data_t edata;
+  char *encoded_attr_list;
+  int options;
+} create_entity_int_msg, *create_entity_int_msg_ptr;
+
+typedef struct _create_entity_float_msg_struct
+{
+  pds_domain_id_t domain_id;
+  pds_context_id_t context_id;
+  const char *name;
+  pds_entity_float_data_t edata;
+  char *encoded_attr_list;
+  int options;
+} create_entity_float_msg, *create_entity_float_msg_ptr;
+
 
 typedef struct _remove_entity_msg_struct
 {
@@ -232,7 +261,7 @@ typedef struct _entity_attributes_msg_struct
 
 
 
-typedef struct _entity_data_msg_struct
+typedef struct _entity_char_data_msg_struct
 {
   int status;
   int operation;
@@ -240,10 +269,34 @@ typedef struct _entity_data_msg_struct
   pds_context_id_t context_id;
   pds_entity_id_t entity_id;
   const char *entity_name;
-  pds_entity_data_t edata;
+  pds_entity_char_data_t edata;
   int options;
-} entity_data_msg, *entity_data_msg_ptr;
+} entity_char_data_msg, *entity_char_data_msg_ptr;
 
+typedef struct _entity_int_data_msg_struct
+{
+  int status;
+  int operation;
+  pds_domain_id_t domain_id;
+  pds_context_id_t context_id;
+  pds_entity_id_t entity_id;
+  const char *entity_name;
+  pds_entity_int_data_t edata;
+  int options;
+} entity_int_data_msg, *entity_int_data_msg_ptr;
+
+
+typedef struct _entity_float_data_msg_struct
+{
+  int status;
+  int operation;
+  pds_domain_id_t domain_id;
+  pds_context_id_t context_id;
+  pds_entity_id_t entity_id;
+  const char *entity_name;
+  pds_entity_float_data_t edata;
+  int options;
+} entity_float_data_msg, *entity_float_data_msg_ptr;
 
 typedef struct _return_context_id_msg_struct
 {
@@ -362,8 +415,9 @@ typedef struct _xpath_query_results_msg_struct
 extern FMField pds_entity_id_t_flds[];
 extern FMField pds_context_id_t_flds[];
 extern FMField pds_domain_id_t_flds[];
-extern FMField pds_entity_data_t_flds[];
-extern FMStructDescRec pds_entity_data_t_formats[];
+extern FMField pds_entity_char_data_t_flds[];
+extern FMField pds_entity_int_data_t_flds[];
+extern FMField pds_entity_float_data_t_flds[];
 
 extern FMField unbind_msg_flds[];
 extern FMStructDescRec unbind_msg_formats[];
@@ -381,8 +435,12 @@ extern FMField resolve_name_msg_flds[];
 extern FMStructDescRec resolve_name_msg_formats[];
 extern FMField create_context_msg_flds[];
 extern FMStructDescRec create_context_msg_formats[];
-extern FMField create_entity_msg_flds[];
-extern FMStructDescRec create_entity_msg_formats[];
+extern FMField create_entity_char_msg_flds[];
+extern FMField create_entity_int_msg_flds[];
+extern FMField create_entity_float_msg_flds[];
+extern FMStructDescRec create_entity_char_msg_formats[];
+extern FMStructDescRec create_entity_int_msg_formats[];
+extern FMStructDescRec create_entity_float_msg_formats[];
 extern FMField remove_domain_msg_flds[];
 extern FMStructDescRec remove_domain_msg_formats[];
 extern FMField remove_entity_msg_flds[];
@@ -413,8 +471,12 @@ extern FMField evpath_op_msg_flds[];
 extern FMStructDescRec evpath_op_msg_formats[];
 extern FMField entity_attributes_msg_flds[];
 extern FMStructDescRec entity_attributes_msg_formats[];
-extern FMField entity_data_msg_flds[];
-extern FMStructDescRec entity_data_msg_formats[];
+extern FMField entity_char_data_msg_flds[];
+extern FMField entity_int_data_msg_flds[];
+extern FMField entity_float_data_msg_flds[];
+extern FMStructDescRec entity_char_data_msg_formats[];
+extern FMStructDescRec entity_int_data_msg_formats[];
+extern FMStructDescRec entity_float_data_msg_formats[];
 extern FMField matching_domains_msg_flds[];
 extern FMStructDescRec matching_domains_msg_formats[];
 extern FMField matching_entities_msg_flds[];
@@ -438,8 +500,12 @@ extern FMStructDescRec xpath_query_results_msg_formats[];
 extern FMField xpath_query_request_msg_flds[];
 extern FMStructDescRec xpath_query_request_msg_formats[];
 
-extern FMField entity_data_change_ntf_flds[];
-extern FMStructDescRec entity_data_change_ntf_formats[];
+extern FMField entity_char_data_change_ntf_flds[];
+extern FMField entity_int_data_change_ntf_flds[];
+extern FMField entity_float_data_change_ntf_flds[];
+extern FMStructDescRec entity_char_data_change_ntf_formats[];
+extern FMStructDescRec entity_int_data_change_ntf_formats[];
+extern FMStructDescRec entity_float_data_change_ntf_formats[];
 extern FMField entity_u_bind_change_ntf_flds[];
 extern FMStructDescRec entity_u_bind_change_ntf_formats[];
 extern FMField entity_exist_change_ntf_flds[];

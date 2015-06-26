@@ -31,9 +31,17 @@ int main (int argc, char *argv[])
   pds_context_id_t cid1;
   pds_entity_id_t eid1;
   attr_list contact_attrs;
+
   char *pds_host;
   char *str = "New data, changed to this string.";
-  pds_entity_data_t tt;
+
+  int temp_int = 67;
+  float temp_float[] = {35, 49, 56};
+
+  pds_entity_char_data_t tt;
+  pds_entity_int_data_t it;
+  pds_entity_float_data_t ft;
+
   char **bindings;
   int i2;
   atom_t VAL1_ATOM, VAL2_ATOM;
@@ -43,7 +51,12 @@ int main (int argc, char *argv[])
 
   tt.data = (unsigned char*)str;
   tt.data_size = strlen (str);
-  tt.data_type = Attr_String;
+
+  it.data = &temp_int;
+  it.data_size = 1;
+  
+  ft.data = temp_float;
+  ft.data_size = 3;
 
   pds_host = getenv ("PDS_SERVER_HOST");
   if (pds_host == NULL) pds_host = getenv ("HOSTNAME");
@@ -84,12 +97,22 @@ int main (int argc, char *argv[])
 
   cid1 = pds_get_root_context (new_domain_id);
 
-  if((pds_set_entity_data (new_domain_id, "/newEntity", cid1, &tt, 0)) > 0 )
+  if((pds_set_entity_char_data (new_domain_id, "/newEntity", cid1, &tt, 0)) > 0 )
   {
-    printf("Successfully set the new data, should see something in the other program.\n");
+    printf("Successfully set the new char data, should see something in the other program.\n");
   }
   else
-    printf ("Failed to set the new data\n");
+    printf ("Failed to set the new char data\n");
+
+  if((pds_set_entity_int_data (new_domain_id, "/newEntity", cid1, &it, 0)) > 0 )
+    printf("Successfully set the new char data, should see something in the other program.\n");
+  else
+    printf ("Failed to set the new int data\n");
+
+  if((pds_set_entity_float_data (new_domain_id, "/newEntity", cid1, &ft, 0)) > 0 )
+    printf("Successfully set the new float data, should see something in the other program.\n");
+  else
+    printf ("Failed to set the new float data\n");
 
   fflush (0);
 

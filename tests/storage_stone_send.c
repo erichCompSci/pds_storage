@@ -32,7 +32,7 @@ int main (int argc, char *argv[])
   pds_entity_id_t eid1;
   attr_list contact_attrs;
   char *pds_host;
-  pds_entity_data_t tt;
+  pds_entity_int_data_t tt;
   char **bindings;
   int i2;
   atom_t VAL1_ATOM, VAL2_ATOM;
@@ -79,14 +79,13 @@ int main (int argc, char *argv[])
 
   cid1 = pds_get_root_context (new_domain_id);
 
-  tt.data_size = 4;
-  tt.data_type = Attr_Int4;
+  tt.data_size = 1;
   for (int j = 2; j < 15; ++j)
   {
-    int temp_int = j;
-    tt.data = (unsigned char *)(&temp_int);
+    int temp_int = j*10;
+    tt.data = &temp_int;
 
-    if((pds_set_entity_data (new_domain_id, "/newEntity", cid1, &tt, 0)) > 0 )
+    if((pds_set_entity_int_data (new_domain_id, "/newEntity", cid1, &tt, 0)) > 0 )
     {
       printf("Successfully set the new data, should see something in the other program.\n");
     }
