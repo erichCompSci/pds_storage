@@ -3,11 +3,10 @@ cmake_policy(VERSION 2.8.3)
 project(ffs)
 
 IF( NOT CMAKE_BUILD_TYPE )
-SET( CMAKE_BUILD_TYPE "Debug" )
+SET( CMAKE_BUILD_TYPE "RelWithDebInfo" )
 ENDIF()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
 MESSAGE(STATUS "Looking for GNU gengetopt")
 FIND_PROGRAM(GENGETOPT gengetopt
@@ -21,6 +20,7 @@ include(CreateLibtoolFile)
 include(AddLibtoolLibrary)
 include(FindCERCSProject)
 include(CERCS_package)
+include(ExternalProject)
 
 CHECK_TYPE_SIZE("double" SIZEOF_DOUBLE)
 CHECK_TYPE_SIZE("float" SIZEOF_FLOAT)
@@ -34,8 +34,6 @@ CHECK_TYPE_SIZE("size_t" SIZEOF_SIZE_T)
 IF(NOT DEFINED BUILD_SHARED_STATIC)
   SET( BUILD_SHARED_STATIC "BOTH")
 ENDIF(NOT DEFINED BUILD_SHARED_STATIC)
-
-#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # use, i.e. don't skip the full RPATH for the build tree
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
@@ -77,14 +75,17 @@ FOREACH (AGENT_SRC ${AGENT_SRC_LIST})
     LIST (APPEND AGENT_MASTER_SRC_LIST agent/${AGENT_SRC})
 ENDFOREACH()
 
-set (ENGINE_SRC_LIST Domain.cc Entity.cc Context.cc objectId.cc
-Proactive.cc ContextBindable.cc utils.c EventWrapper.cc CleaningThread.cc
-EngineGuard.cc base64.c storage_stone.c)
+set (ENGINE_SRC_LIST Domain.cc Entity.cc Context.cc load.cc objectId.cc Proactive.cc ContextBindable.cc utils.c EventWrapper.cc CleaningThread.cc EngineGuard.cc CheckpointThread.cc XmlDumpVisitor.cc TreeTraverse.cc base64.c)
 FOREACH (ENGINE_SRC ${ENGINE_SRC_LIST})
     LIST (APPEND ENGINE_MASTER_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/engine/${ENGINE_SRC})
 ENDFOREACH()
 
 
+
+
+IF( NOT CMAKE_BUILD_TYPE )
+    SET( CMAKE_BUILD_TYPE "RelWithDebInfo" )
+ENDIF()
 
 set (PDSAGENT_MASTER_SRC_LIST ${COMMON_MASTER_SRC_LIST} ${AGENT_MASTER_SRC_LIST})
 
@@ -96,6 +97,37 @@ FIND_CERCS_PROJECT (cmrpc LIBRARY cmrpc INCLUDES cmrpc.h REQUIRED ${CERCS_USE_IN
 FIND_CERCS_PROJECT (evpath LIBRARY evpath INCLUDES evpath.h REQUIRED ${CERCS_USE_INSTALLED})
 FIND_CERCS_PROJECT(dill LIBRARY dill INCLUDES dill.h ${CERCS_USE_INSTALLED})
 FIND_PACKAGE(LibXml2)
+if (NOT ${LIBXML2_FOUND}) 
+   unset (LIBXML2_FOUND)
+   MESSAGE (STATUS "LibXML2 not found, will download and build)")
+   MESSAGE (STATUS "   YOU MUST HAVE WRITE PERMISSIONS TO THE CMAKE_INSTALL_PREFIX DIRECTORY OR THE BUILD WILL FAIL!")
+   set(libxml2_release "2.9")
+   set(libxml2_patch_version 0)
+   set(libxml2_url "ftp://xmlsoft.org/libxml2/libxml2-sources-${libxml2_release}.${libxml2_patch_version}.tar.gz")
+   set(libxml2_md5 "7da7af8f62e111497d5a2b61d01bd811")
+
+   ExternalProject_Add(project_libxml2
+     DEPENDS ${_XML2_DEPENDS}
+     URL ${libxml2_url}
+     URL_MD5 ${libxml2_md5}
+     INSTALL_DIR  ${CMAKE_INSTALL_PREFIX}
+     BUILD_IN_SOURCE 1
+     CONFIGURE_COMMAND ./configure --without-python --prefix=${CMAKE_INSTALL_PREFIX}
+     BUILD_COMMAND make
+     INSTALL_COMMAND make install
+   )
+   set(  LIBXML2_LIBRARIES libxml2)
+   include_directories(${CMAKE_INSTALL_PREFIX}/include/)
+
+   ExternalProject_Get_Property(project_libxml2 install_dir)
+
+
+   add_library(libxml2 STATIC IMPORTED)
+   set_property(TARGET libxml2 PROPERTY IMPORTED_LOCATION
+       ${install_dir}/lib/libxml2.a)
+   add_dependencies(libxml2 project_libxml2)
+
+endif()
 FIND_PACKAGE (Threads)
 
 list (APPEND INC_DIRS ${EVPATH_INCLUDE_DIR} ${CERCS_ENV_INCLUDE_DIR} ${ATL_INCLUDE_DIR} ${FFS_INCLUDE_DIR} ${CMRPC_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR})

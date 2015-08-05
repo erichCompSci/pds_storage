@@ -1,0 +1,13 @@
+Experiment Details
+
+In the experiment, we will test the difference between two systems...
+  The first system will be without the storage stone, it will on a single node consist of
+    a) 1 client_modify instance which will create the instance if its the 0 value client_modify (unique number passed as an argument)
+    b) nproc - 1 nodes that will listen for a final aggregated value
+  There will be a special node which will host both the pds server and the aggregate stone...we may move him off node to underline the 
+  storage stone highlight
+
+  The second system will have the storage stone, in a single node we will still have a) and b) from above, but
+    c) We will subscribe directly to the output channel and the modify client will publish directly to that channel
+    d) One of the client_nodes will set up the storage stone...identified by the unique number passed as an argument
+    e) 
