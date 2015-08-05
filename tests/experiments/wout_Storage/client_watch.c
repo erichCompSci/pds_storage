@@ -82,7 +82,7 @@ void register_domain()
 
 void register_entity_channel(int which_channel, char * print_msg, EVSimpleHandlerFunc handler_func )
 {
-  pds_register_for_entity_changes_by_channel(cm, new_domain_id, "/experimental/final", null_pds_context_id, handler_func, 0, which_channel);
+  pds_register_for_entity_changes_by_channel(cm, new_domain_id, "/experimental/pool", null_pds_context_id, handler_func, 0, which_channel);
   printf("Registered for: %s\n", print_msg ? print_msg : "NULL");
 }
 
