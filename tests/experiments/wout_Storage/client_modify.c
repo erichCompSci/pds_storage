@@ -22,6 +22,8 @@
 #include "common/formats.h"
 #include "cmdline.h"
 
+#define PDS_CONNECT_FILE "/net/hu21/elohrman/pds_connect"
+
 const float RANGE_RAND = 10.0;
 const float LOWER_RAND_BOUND = 10.0;
 
@@ -92,7 +94,20 @@ int main (int argc, char *argv[])
   ft.data_size = 1;
 
   pds_host = getenv ("PDS_SERVER_HOST");
-  if (pds_host == NULL) pds_host = getenv ("HOSTNAME");
+
+  if (!pds_host && !access(PDS_CONNECT_FILE, F_OK))
+  {
+      char hostname[128];
+      FILE * temp_ptr = fopen(PDS_CONNECT_FILE, "r");
+      fscanf(temp_ptr, "%s", hostname);
+      printf("Hostname is: %s\n", hostname);
+      fclose(temp_ptr);
+      pds_host = strdup(hostname);
+  }
+
+  if (pds_host == NULL) 
+      pds_host = getenv ("HOSTNAME");
+
   if (pds_host == NULL) {
       char hostname[128];
       if (gethostname(&hostname[0], sizeof(hostname)) == 0) {

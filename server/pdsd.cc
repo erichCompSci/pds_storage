@@ -51,6 +51,9 @@ extern "C"
 #include "engine/Domain.h"
 #include "engine/CleaningThread.h"
 #include "engine/CheckpointThread.h"
+
+#define PDS_CONNECT_FILE "/net/hu21/elohrman/pds_connect"
+
 int debug_flag;
 CManager server_cm;
 int verbose = 0;
@@ -293,6 +296,14 @@ main (int argc, char **argv)
    */
   //CMregister_non_CM_message_handler (0x20544547, handle_http_request);
   //CMregister_non_CM_message_handler (0x47455420, handle_http_request);
+  char hostname[128];
+  if(!gethostname(hostname, sizeof(hostname)))
+  {
+    FILE * temp_file = fopen(PDS_CONNECT_FILE, "w");
+    fprintf(temp_file, "%s", hostname);
+    fclose(temp_file);
+  } 
+
 
   CMrun_network (server_cm);
 }

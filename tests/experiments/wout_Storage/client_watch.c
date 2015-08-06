@@ -18,6 +18,8 @@
 #include "agent/pds.h"
 #include "common/formats.h"
 
+#define PDS_CONNECT_FILE "/net/hu21/elohrman/pds_connect"
+
 pds_domain_id_t new_domain_id;
 CManager cm;
 
@@ -102,7 +104,20 @@ int main (int argc, char *argv[])
   atom_t VAL1_ATOM, VAL2_ATOM;
 
   pds_host = getenv ("PDS_SERVER_HOST");
-  if (pds_host == NULL) pds_host = getenv ("HOSTNAME");
+
+  if (!pds_host && !access(PDS_CONNECT_FILE, F_OK))
+  {
+      char hostname[128];
+      FILE * temp_ptr = fopen(PDS_CONNECT_FILE, "r");
+      fscanf(temp_ptr, "%s", hostname);
+      printf("Hostname is: %s\n", hostname);
+      fclose(temp_ptr);
+      pds_host = strdup(hostname);
+  }
+
+  if (pds_host == NULL) 
+      pds_host = getenv ("HOSTNAME");
+
   if (pds_host == NULL) {
       char hostname[128];
       if (gethostname(&hostname[0], sizeof(hostname)) == 0) {
