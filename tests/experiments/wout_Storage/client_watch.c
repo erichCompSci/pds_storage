@@ -71,7 +71,11 @@ entity_float_data_change_event_handler (CManager cm, void* event, void* client_d
     }
     
     average = total / 5;
-    printf("The average for group %d is: %f\n", group_id, average);
+    if(!log_average(average))
+    {
+      fprintf(stderr, "Error: could not log to file!\n");
+    }
+
   }
   else
   {
@@ -127,15 +131,17 @@ int main (int argc, char *argv[])
   char **bindings;
   char receive_group[20];
   char * the_host;
+  char log_name[200];
+  char unique_id[10];
   int i2;
   atom_t VAL1_ATOM, VAL2_ATOM;
 
-  if(argc != 2)
+  if(argc != 3)
   {
-    fprintf(stderr, "Usage: client_watch group_id where group_id is [123]\n");
+    fprintf(stderr, "Usage: client_watch proc_id group_id where proc_id is unique non-negative int and group_id is [123]\n");
     exit(1);
   }
-  group_id = atoi(argv[1]);
+  group_id = atoi(argv[2]);
   if(group_id != 1 && group_id != 2 && group_id != 3)
   {
     fprintf(stderr, "Error: group_id should be one, two, or three.  It is: %d\n", group_id);
@@ -143,10 +149,16 @@ int main (int argc, char *argv[])
   }
 
   strcpy(receive_group, "/experimental/pool");
-  strcat(receive_group, argv[1]);
+  strcat(receive_group, argv[2]);
 
   pds_host = getenv ("PDS_SERVER_HOST");
   the_host = getenv("HOSTNAME");
+
+  if(the_host == NULL)
+  {
+    fprintf(stderr, "Host environmental variable not set!\n");
+    exit(1);
+  }
 
   if (!pds_host && !access(PDS_CONNECT_FILE, F_OK))
   {
@@ -170,8 +182,18 @@ int main (int argc, char *argv[])
       }
   }
 
+  //Create the log name from the input 
+  strcpy(log_name, the_host);
+  strcat(log_name, "_");
+  strcat(log_name, argv[1]);
+  strcat(log_name, "_");
+  strcat(log_name, argv[2]);
   
-  initialize_log(
+  if(!initialize_log(log_name))
+  {
+    fprintf(stderr, "Error: log not initialized, quitting!\n");
+    exit(1);
+  }
 
   contact_attrs = create_attr_list();
   set_attr (contact_attrs,

@@ -3,14 +3,16 @@
 static FILE * log_fd;
 char * proc_ident;
 
-int initialize_log(char * log_name, char * unique_ident)
+int initialize_log(char * log_name)
 {
   char temp_ptr[250];
   strcpy(temp_ptr, LOG_DUMP_DIR);
   strcat(temp_ptr, log_name);
   strcat(temp_ptr, ".expr");
 
-  proc_ident = strdup(unique_ident);
+  proc_ident = strdup(log_name);
+
+  printf("Log file path: %s\n", temp_ptr);
 
   log_fd = fopen(temp_ptr, "w");
   if (!log_fd || !proc_ident)

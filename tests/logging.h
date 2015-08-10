@@ -6,13 +6,14 @@
 #include <string.h>
 
 #define PDS_CONNECT_FILE "/net/hu21/elohrman/pds_connect"
-#define LOG_DUMP_DIR "/net/hu21/elohrman/build_pds_storage/dump_dir"
+//Point the below to the build_directory/dump_dir
+#define LOG_DUMP_DIR "/net/hu21/elohrman/build_pds_storage/dump_dir/"
 
 // All of these return 0 on failure, 1 on success
 
 // Initialize log stuff.
 // The unique identifier will probably be node_name:group_id:proc_id
-int initialize_log(char * log_name, char * unique_ident);
+int initialize_log(char * log_name);
 
 // Log the floating average
 int log_average(float average);
