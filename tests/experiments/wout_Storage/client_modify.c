@@ -37,7 +37,9 @@ pds_entity_id_t eid1;
 attr_list contact_attrs;
 pds_entity_float_data_t ft;
 float curr_float;
-int proc_id;
+int proc_id, group_id;
+//Hardcoded size, if we change the entity name this has to change too
+char send_group[20];
 
 float get_rand_float() { return RANGE_RAND * ((float) rand() / (float)RAND_MAX) + LOWER_RAND_BOUND; }
 
@@ -49,10 +51,10 @@ alarm_handler(int sig)
   curr_float = get_rand_float();  
   ft.data = &curr_float;
   ft.data_size = 1;
-  
-  if((pds_set_entity_float_data(new_domain_id, "/experimental/pool", cid1, &ft, 0)) <= 0 ) 
+
+  if((pds_set_entity_float_data(new_domain_id, send_group, cid1, &ft, 0)) <= 0 ) 
   {
-    fprintf(stderr, "Error: client_modify #%d could not set /experimental/pool data\n", proc_id);
+    fprintf(stderr, "Error: client_modify #%d:%d could not set /experimental/pool data\n", proc_id, group_id);
   }
   
   alarm(get_rand_time());
@@ -61,13 +63,25 @@ alarm_handler(int sig)
   
 int main (int argc, char *argv[])
 {
-  if (argc != 2)
+  if (argc != 3)
   {
-    fprintf(stderr, "Usage: client_modify unique_number, where unique_number is a unique number\n");
+    fprintf(stderr, "Usage: client_modify pos_unique_number [123], where unique_number is a positive or zero unique number for the group\n"
+                    "And the second number is a identifier for which group the fprintf is submitting too...\n");
     exit(1);
   }
   
   proc_id = atoi(argv[1]);
+  group_id = atoi(argv[2]);
+  if (group_id != 1 && group_id != 2 && group_id != 3)
+  {
+    fprintf(stderr, "Error: the group id should be one, two or three.  It is: %d\n", group_id);
+    exit(1);
+  }
+
+
+  strcpy(send_group, "/experimental/pool");
+  strcat(send_group, argv[2]);
+
   printf("Program starting\n");
 
   srand(time(NULL));
@@ -146,11 +160,12 @@ int main (int argc, char *argv[])
   cid1 = pds_get_root_context (new_domain_id);
   if((atoi(argv[1])) == 0)
   {
-    eid1 = pds_create_entity_float (new_domain_id, "/experimental/pool", null_pds_context_id, &ft, NULL);
+    eid1 = pds_create_entity_float (new_domain_id, send_group, null_pds_context_id, &ft, NULL);
   }
 
+  
 
-  if((pds_set_entity_float_data (new_domain_id, "/experimental/pool", cid1, &ft, 0)) > 0 )
+  if((pds_set_entity_float_data (new_domain_id, send_group, cid1, &ft, 0)) > 0 )
     printf("Successfully set the new float data, should see something in the other program.\n");
   else
     printf ("Failed to set the new float data\n");

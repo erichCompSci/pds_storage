@@ -15,13 +15,15 @@
 #include <assert.h>
 
 
+
 #include "agent/pds.h"
 #include "common/formats.h"
-
-#define PDS_CONNECT_FILE "/net/hu21/elohrman/pds_connect"
+#include "tests/logging.h"
 
 pds_domain_id_t new_domain_id;
 CManager cm;
+pds_entity_float_data_change_ntf global_store[5];
+int group_id;
 
 /*Debugging purposes only */
 int domain_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
@@ -41,18 +43,41 @@ int domain_event_handler (CManager cm, void* event, void* client_data, attr_list
 int
 entity_float_data_change_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
 {
-  int i;
-  pds_entity_float_data_change_ntf_ptr evt = (pds_entity_float_data_change_ntf_ptr) event;
-  printf("-------------------------\n");
-  printf("Entity float data change handler called\n");
-  pds_entity_float_data_t new_data = evt->float_data;
-  
-  printf("The new float data for /experimental/final is:");
-  for(i = 0; i < (new_data.data_size - 1); ++i)
-    printf(" %f,", new_data.data[i]); 
-  printf( " %f\n", new_data.data[i]);
+  static int count = 0;
+  if (count < 4)
+  {
+    pds_entity_float_data_change_ntf_ptr evt = (pds_entity_float_data_change_ntf_ptr) event;
+    memcpy(&global_store[count], evt, sizeof(pds_entity_float_data_change_ntf));
+    ++count;
+  }
+  else if(count == 4)
+  {
+    pds_entity_float_data_change_ntf_ptr evt = (pds_entity_float_data_change_ntf_ptr) event;
+    memcpy(&global_store[count], evt, sizeof(pds_entity_float_data_change_ntf));
+    count = 0;
 
-  printf("-------------------------\n");
+    float total, average;
+    total = 0.0;
+    for(int i = 0; i < 5; ++i)
+    {
+      pds_entity_float_data_t new_data = global_store[i].float_data;
+      if (new_data.data_size != 1)
+      {
+        fprintf(stderr, "Error: the %dth one of this window had size: %d\n", i, new_data.data_size); 
+        exit(1);
+      }
+      
+      total += new_data.data[0];
+    }
+    
+    average = total / 5;
+    printf("The average for group %d is: %f\n", group_id, average);
+  }
+  else
+  {
+    fprintf(stderr, "Serious error: count is greater than 4...\n");
+    exit(1);
+  }
 
   return 1;
 }
@@ -82,9 +107,9 @@ void register_domain()
   printf("Registered for domain changes...\n");
 }
 
-void register_entity_channel(int which_channel, char * print_msg, EVSimpleHandlerFunc handler_func )
+void register_entity_channel(int which_channel, char * entity_to_create, char * print_msg, EVSimpleHandlerFunc handler_func )
 {
-  pds_register_for_entity_changes_by_channel(cm, new_domain_id, "/experimental/pool", null_pds_context_id, handler_func, 0, which_channel);
+  pds_register_for_entity_changes_by_channel(cm, new_domain_id, entity_to_create, null_pds_context_id, handler_func, 0, which_channel);
   printf("Registered for: %s\n", print_msg ? print_msg : "NULL");
 }
 
@@ -100,23 +125,43 @@ int main (int argc, char *argv[])
   char *str = "First stored string before any changes are made.";
   pds_entity_float_data_t ft;
   char **bindings;
+  char receive_group[20];
+  char * the_host;
   int i2;
   atom_t VAL1_ATOM, VAL2_ATOM;
 
+  if(argc != 2)
+  {
+    fprintf(stderr, "Usage: client_watch group_id where group_id is [123]\n");
+    exit(1);
+  }
+  group_id = atoi(argv[1]);
+  if(group_id != 1 && group_id != 2 && group_id != 3)
+  {
+    fprintf(stderr, "Error: group_id should be one, two, or three.  It is: %d\n", group_id);
+    exit(1);
+  }
+
+  strcpy(receive_group, "/experimental/pool");
+  strcat(receive_group, argv[1]);
+
   pds_host = getenv ("PDS_SERVER_HOST");
+  the_host = getenv("HOSTNAME");
 
   if (!pds_host && !access(PDS_CONNECT_FILE, F_OK))
   {
       char hostname[128];
       FILE * temp_ptr = fopen(PDS_CONNECT_FILE, "r");
       fscanf(temp_ptr, "%s", hostname);
-      printf("Hostname is: %s\n", hostname);
+      printf("PDS_HOST is: %s\n", hostname);
       fclose(temp_ptr);
       pds_host = strdup(hostname);
   }
 
   if (pds_host == NULL) 
+  {
       pds_host = getenv ("HOSTNAME");
+  }
 
   if (pds_host == NULL) {
       char hostname[128];
@@ -124,6 +169,9 @@ int main (int argc, char *argv[])
 	  pds_host = strdup(hostname);
       }
   }
+
+  
+  initialize_log(
 
   contact_attrs = create_attr_list();
   set_attr (contact_attrs,
@@ -156,8 +204,8 @@ int main (int argc, char *argv[])
   /* For debugging purposes */
   //register_domain(); 
 
-  register_entity_channel(ENTITY_BIND_UNBIND, "entity_bind_unbind", entity_bind_unbind_event_handler);
-  register_entity_channel(ENTITY_DATA_CHANGE_FLOAT, "entity_float_data_change", entity_float_data_change_event_handler);
+  register_entity_channel(ENTITY_BIND_UNBIND, receive_group, "entity_bind_unbind", entity_bind_unbind_event_handler);
+  register_entity_channel(ENTITY_DATA_CHANGE_FLOAT, receive_group, "entity_float_data_change", entity_float_data_change_event_handler);
 
   fflush (0);
   
