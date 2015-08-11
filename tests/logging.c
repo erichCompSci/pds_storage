@@ -28,6 +28,11 @@ int log_average(float average)
     fprintf(stderr, "Error: log_average did not log!\n");
     return 0;
   }
+  if(fflush(log_fd) == EOF)
+  {
+    fprintf(stderr, "Error: log_average could not flush!\n");
+    return 0;
+  }
   return 1;
 }
 

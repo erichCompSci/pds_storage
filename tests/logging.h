@@ -7,7 +7,7 @@
 
 #define PDS_CONNECT_FILE "/net/hu21/elohrman/pds_connect"
 //Point the below to the build_directory/dump_dir
-#define LOG_DUMP_DIR "/net/hu21/elohrman/build_pds_storage/dump_dir/"
+#define LOG_DUMP_DIR "/net/hu21/elohrman/Systems/build_pds_storage/dump_dir/"
 
 // All of these return 0 on failure, 1 on success
 

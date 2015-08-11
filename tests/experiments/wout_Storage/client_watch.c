@@ -44,6 +44,7 @@ int
 entity_float_data_change_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
 {
   static int count = 0;
+  printf("Event received!\n");
   if (count < 4)
   {
     pds_entity_float_data_change_ntf_ptr evt = (pds_entity_float_data_change_ntf_ptr) event;
@@ -71,6 +72,7 @@ entity_float_data_change_event_handler (CManager cm, void* event, void* client_d
     }
     
     average = total / 5;
+    printf("Trying to log average now...\n");
     if(!log_average(average))
     {
       fprintf(stderr, "Error: could not log to file!\n");

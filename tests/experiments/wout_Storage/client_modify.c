@@ -52,6 +52,7 @@ alarm_handler(int sig)
   ft.data = &curr_float;
   ft.data_size = 1;
 
+  printf("Setting the data to %f\n", curr_float);
   if((pds_set_entity_float_data(new_domain_id, send_group, cid1, &ft, 0)) <= 0 ) 
   {
     fprintf(stderr, "Error: client_modify #%d:%d could not set /experimental/pool data\n", proc_id, group_id);
