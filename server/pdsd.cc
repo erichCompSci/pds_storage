@@ -300,8 +300,12 @@ main (int argc, char **argv)
   if(!gethostname(hostname, sizeof(hostname)))
   {
     FILE * temp_file = fopen(PDS_CONNECT_FILE, "w");
-    fprintf(temp_file, "%s", hostname);
-    fclose(temp_file);
+    //FIXME:Temporarily skipping a problem, need to fix PDS_CONNECT_FILE
+    if(temp_file)
+    {
+        fprintf(temp_file, "%s", hostname);
+        fclose(temp_file);
+    }
   } 
 
 
