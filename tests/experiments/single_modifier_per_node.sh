@@ -1,7 +1,7 @@
 #!/bin/bash
 
 EXPER_DIR="${HOME}/Systems/build_pds_storage/tests/experiments/wout_Storage"
-wait_time=.5
+wait_time=.1
 
 (ssh elohrman@windu1.cc.gatech.edu <<'ENDSSH'
 ~/Systems/build_pds_storage/server/pdsd -no_fork > /dev/null &
@@ -22,7 +22,7 @@ do
   for (( j = 2; j <= $num_cpus; j++ ))
   do
     group=$[ $j % 3 + 1 ] 
-    ssh elohrman@windu$i.cc.gatech.edu "$EXPER_DIR/client_watch $i $group </dev/null >/dev/null &" &
+    ssh elohrman@windu$i.cc.gatech.edu "$EXPER_DIR/client_watch $j $group </dev/null >/dev/null &" &
     sleep $wait_time 
   done
 done

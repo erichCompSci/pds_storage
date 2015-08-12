@@ -214,13 +214,22 @@ ADD_CUSTOM_TARGET( make_dump_directory ALL
                   ${CMAKE_CURRENT_BINARY_DIR}/dump_dir )
 ENDIF()
 
-get_filename_component(cprun
+get_filename_component(single_mod
                        ./tests/experiments/single_modifier_per_node.sh
+                       ABSOLUTE)
+
+get_filename_component(clean_up
+                       ./tests/experiments/clean_up_all.sh
                        ABSOLUTE)
 
 ADD_CUSTOM_TARGET( copy_experiments_to_build ALL
                    COMMAND ${CMAKE_COMMAND} -E copy 
-                   ${cprun} ${CMAKE_CURRENT_BINARY_DIR}/tests/experiments/single_modifier_per_node.sh)
+                   ${single_mod} ${CMAKE_CURRENT_BINARY_DIR}/tests/experiments/single_modifier_per_node.sh)
+
+ADD_CUSTOM_COMMAND( TARGET copy_experiments_to_build
+                    POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy
+                   ${clean_up} ${CMAKE_CURRENT_BINARY_DIR}/tests/experiments/clean_up_all.sh )
 
 ADD_SUBDIRECTORY( jni )
 ADD_SUBDIRECTORY( server )
