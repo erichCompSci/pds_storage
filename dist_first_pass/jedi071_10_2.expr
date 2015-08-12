@@ -2,7 +2,7 @@ jedi071_10_2	Average: 12.261150
 jedi071_10_2	Average: 12.978027
 jedi071_10_2	Average: 13.397566
 jedi071_10_2	Average: 10.443092
-jedi071_10_2	CPU usage: 0.008998
+jedi071_10_2	CPU: 0.008998
 jedi071_10_2	Average: 12.706902
 jedi071_10_2	Average: 19.372925
 jedi071_10_2	Average: 17.535355
@@ -15,7 +15,7 @@ jedi071_10_2	Average: 16.270813
 jedi071_10_2	Average: 13.926195
 jedi071_10_2	Average: 10.100253
 jedi071_10_2	Average: 19.581425
-jedi071_10_2	CPU usage: 0.011998
+jedi071_10_2	CPU: 0.011998
 jedi071_10_2	Average: 15.844449
 jedi071_10_2	Average: 14.024074
 jedi071_10_2	Average: 12.696047
@@ -28,7 +28,7 @@ jedi071_10_2	Average: 17.638474
 jedi071_10_2	Average: 10.958679
 jedi071_10_2	Average: 12.284678
 jedi071_10_2	Average: 11.036038
-jedi071_10_2	CPU usage: 0.014997
+jedi071_10_2	CPU: 0.014997
 jedi071_10_2	Average: 14.421277
 jedi071_10_2	Average: 13.742940
 jedi071_10_2	Average: 10.774696
@@ -41,7 +41,7 @@ jedi071_10_2	Average: 16.828001
 jedi071_10_2	Average: 11.192483
 jedi071_10_2	Average: 16.972340
 jedi071_10_2	Average: 16.928253
-jedi071_10_2	CPU usage: 0.016997
+jedi071_10_2	CPU: 0.016997
 jedi071_10_2	Average: 12.615964
 jedi071_10_2	Average: 12.772702
 jedi071_10_2	Average: 14.797981
@@ -54,7 +54,7 @@ jedi071_10_2	Average: 17.726257
 jedi071_10_2	Average: 13.746068
 jedi071_10_2	Average: 14.711362
 jedi071_10_2	Average: 10.010934
-jedi071_10_2	CPU usage: 0.019996
+jedi071_10_2	CPU: 0.019996
 jedi071_10_2	Average: 16.113132
 jedi071_10_2	Average: 14.432211
 jedi071_10_2	Average: 18.525047
@@ -67,7 +67,7 @@ jedi071_10_2	Average: 12.482951
 jedi071_10_2	Average: 17.680773
 jedi071_10_2	Average: 14.120674
 jedi071_10_2	Average: 19.455292
-jedi071_10_2	CPU usage: 0.021996
+jedi071_10_2	CPU: 0.021996
 jedi071_10_2	Average: 14.894583
 jedi071_10_2	Average: 12.071255
 jedi071_10_2	Average: 17.381729
@@ -80,7 +80,7 @@ jedi071_10_2	Average: 16.191103
 jedi071_10_2	Average: 13.631966
 jedi071_10_2	Average: 15.744003
 jedi071_10_2	Average: 10.902465
-jedi071_10_2	CPU usage: 0.024995
+jedi071_10_2	CPU: 0.024995
 jedi071_10_2	Average: 10.526110
 jedi071_10_2	Average: 17.015598
 jedi071_10_2	Average: 18.075111
@@ -93,7 +93,7 @@ jedi071_10_2	Average: 14.838140
 jedi071_10_2	Average: 16.383711
 jedi071_10_2	Average: 18.955502
 jedi071_10_2	Average: 18.958817
-jedi071_10_2	CPU usage: 0.026995
+jedi071_10_2	CPU: 0.026995
 jedi071_10_2	Average: 13.564528
 jedi071_10_2	Average: 13.853398
 jedi071_10_2	Average: 17.910255
@@ -106,7 +106,7 @@ jedi071_10_2	Average: 11.434238
 jedi071_10_2	Average: 13.923047
 jedi071_10_2	Average: 17.970036
 jedi071_10_2	Average: 17.178242
-jedi071_10_2	CPU usage: 0.029995
+jedi071_10_2	CPU: 0.029995
 jedi071_10_2	Average: 11.612935
 jedi071_10_2	Average: 17.704353
 jedi071_10_2	Average: 11.841110
@@ -119,7 +119,7 @@ jedi071_10_2	Average: 18.452192
 jedi071_10_2	Average: 12.492626
 jedi071_10_2	Average: 14.436472
 jedi071_10_2	Average: 17.407692
-jedi071_10_2	CPU usage: 0.031994
+jedi071_10_2	CPU: 0.031994
 jedi071_10_2	Average: 10.275473
 jedi071_10_2	Average: 10.972220
 jedi071_10_2	Average: 15.304840
@@ -131,7 +131,7 @@ jedi071_10_2	Average: 18.287106
 jedi071_10_2	Average: 14.688906
 jedi071_10_2	Average: 19.721344
 jedi071_10_2	Average: 15.134242
-jedi071_10_2	CPU usage: 0.034993
+jedi071_10_2	CPU: 0.034993
 jedi071_10_2	Average: 12.658940
 jedi071_10_2	Average: 19.959755
 jedi071_10_2	Average: 14.271875
@@ -144,7 +144,7 @@ jedi071_10_2	Average: 18.536911
 jedi071_10_2	Average: 16.164684
 jedi071_10_2	Average: 16.989105
 jedi071_10_2	Average: 17.692513
-jedi071_10_2	CPU usage: 0.036993
+jedi071_10_2	CPU: 0.036993
 jedi071_10_2	Average: 10.601156
 jedi071_10_2	Average: 19.143955
 jedi071_10_2	Average: 10.876629
@@ -157,7 +157,7 @@ jedi071_10_2	Average: 17.638332
 jedi071_10_2	Average: 13.752806
 jedi071_10_2	Average: 12.327238
 jedi071_10_2	Average: 11.308045
-jedi071_10_2	CPU usage: 0.039993
+jedi071_10_2	CPU: 0.039993
 jedi071_10_2	Average: 18.887047
 jedi071_10_2	Average: 18.207632
 jedi071_10_2	Average: 18.846802
@@ -170,7 +170,7 @@ jedi071_10_2	Average: 11.329901
 jedi071_10_2	Average: 13.392954
 jedi071_10_2	Average: 17.494585
 jedi071_10_2	Average: 19.697037
-jedi071_10_2	CPU usage: 0.041993
+jedi071_10_2	CPU: 0.041993
 jedi071_10_2	Average: 11.085466
 jedi071_10_2	Average: 14.093832
 jedi071_10_2	Average: 10.229420
@@ -183,7 +183,7 @@ jedi071_10_2	Average: 10.576337
 jedi071_10_2	Average: 19.564512
 jedi071_10_2	Average: 14.329142
 jedi071_10_2	Average: 16.715916
-jedi071_10_2	CPU usage: 0.044992
+jedi071_10_2	CPU: 0.044992
 jedi071_10_2	Average: 10.872558
 jedi071_10_2	Average: 11.702094
 jedi071_10_2	Average: 19.080189
@@ -196,7 +196,7 @@ jedi071_10_2	Average: 10.903723
 jedi071_10_2	Average: 18.770714
 jedi071_10_2	Average: 14.296675
 jedi071_10_2	Average: 13.002611
-jedi071_10_2	CPU usage: 0.047991
+jedi071_10_2	CPU: 0.047991
 jedi071_10_2	Average: 18.467751
 jedi071_10_2	Average: 11.098351
 jedi071_10_2	Average: 12.561583
@@ -209,7 +209,7 @@ jedi071_10_2	Average: 18.267586
 jedi071_10_2	Average: 13.163454
 jedi071_10_2	Average: 17.832098
 jedi071_10_2	Average: 13.010925
-jedi071_10_2	CPU usage: 0.050991
+jedi071_10_2	CPU: 0.050991
 jedi071_10_2	Average: 19.879370
 jedi071_10_2	Average: 16.227116
 jedi071_10_2	Average: 11.581464
@@ -222,7 +222,7 @@ jedi071_10_2	Average: 15.739389
 jedi071_10_2	Average: 12.227763
 jedi071_10_2	Average: 14.510103
 jedi071_10_2	Average: 16.201160
-jedi071_10_2	CPU usage: 0.052991
+jedi071_10_2	CPU: 0.052991
 jedi071_10_2	Average: 15.230374
 jedi071_10_2	Average: 11.583302
 jedi071_10_2	Average: 16.328724
@@ -235,7 +235,7 @@ jedi071_10_2	Average: 16.338642
 jedi071_10_2	Average: 13.186678
 jedi071_10_2	Average: 19.502098
 jedi071_10_2	Average: 13.584326
-jedi071_10_2	CPU usage: 0.055991
+jedi071_10_2	CPU: 0.055991
 jedi071_10_2	Average: 16.197603
 jedi071_10_2	Average: 12.288981
 jedi071_10_2	Average: 12.424718
@@ -248,7 +248,7 @@ jedi071_10_2	Average: 10.224280
 jedi071_10_2	Average: 13.620070
 jedi071_10_2	Average: 12.452044
 jedi071_10_2	Average: 19.999928
-jedi071_10_2	CPU usage: 0.058990
+jedi071_10_2	CPU: 0.058990
 jedi071_10_2	Average: 19.821232
 jedi071_10_2	Average: 12.977778
 jedi071_10_2	Average: 11.404533
@@ -261,7 +261,7 @@ jedi071_10_2	Average: 14.915482
 jedi071_10_2	Average: 11.836266
 jedi071_10_2	Average: 18.102158
 jedi071_10_2	Average: 11.921817
-jedi071_10_2	CPU usage: 0.060989
+jedi071_10_2	CPU: 0.060989
 jedi071_10_2	Average: 15.420590
 jedi071_10_2	Average: 11.303284
 jedi071_10_2	Average: 17.709572
@@ -274,7 +274,7 @@ jedi071_10_2	Average: 19.154888
 jedi071_10_2	Average: 13.023659
 jedi071_10_2	Average: 12.774958
 jedi071_10_2	Average: 18.447083
-jedi071_10_2	CPU usage: 0.063989
+jedi071_10_2	CPU: 0.063989
 jedi071_10_2	Average: 13.023587
 jedi071_10_2	Average: 16.129499
 jedi071_10_2	Average: 16.001364
@@ -287,4 +287,4 @@ jedi071_10_2	Average: 18.684156
 jedi071_10_2	Average: 13.019374
 jedi071_10_2	Average: 10.520422
 jedi071_10_2	Average: 13.568869
-jedi071_10_2	CPU usage: 0.065989
+jedi071_10_2	CPU: 0.065989
