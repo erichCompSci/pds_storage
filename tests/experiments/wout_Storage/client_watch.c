@@ -21,7 +21,7 @@
 
 #include "agent/pds.h"
 #include "common/formats.h"
-#include "tests/logging.h"
+#include "common/logging.h"
 
 pds_domain_id_t new_domain_id;
 CManager cm;

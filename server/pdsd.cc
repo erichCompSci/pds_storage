@@ -44,6 +44,7 @@ extern "C" {
 extern "C"
 {
 #include "common/formats.h"
+#include "common/logging.h"
 }
 #include "agent/pds.h"
 #include "engine/objectId.h"
@@ -51,8 +52,8 @@ extern "C"
 #include "engine/Domain.h"
 #include "engine/CleaningThread.h"
 #include "engine/CheckpointThread.h"
+//FIXME:I know this is bad, but I'm running out of time, I'll make it pretty later
 
-#define PDS_CONNECT_FILE "/net/hu21/elohrman/pds_connect"
 
 int debug_flag;
 CManager server_cm;
@@ -70,6 +71,31 @@ extern "C" int handle_http_request (CMConnection cmc, CMTransport transport,
 				    char *buffer, long length);
 //extern char* dump_repository_path_;
 static char* xml_file_name_ = 0;
+
+void * resource_handle(void * ignore)
+{
+  
+  struct rusage resource_usage;
+  while(1)
+  {
+
+
+    sleep(30);
+
+    if(getrusage(RUSAGE_SELF, &resource_usage))
+    {
+      fprintf(stderr, "Error: couldn't get the resource_usage\n");
+    }
+    else
+    {
+      if(!log_rusage(&resource_usage))
+      {
+        fprintf(stderr, "Error: couldn't log the resource_usage\n");
+      }
+    }
+
+  }  
+}
 
 extern void
 shutdown_server()
@@ -124,6 +150,13 @@ main (int argc, char **argv)
   attr_list try_contact_info;
   attr_list my_contact_info;
   int report = 0;
+  pthread_t res_thread;
+
+  if(!initialize_log("pdsd_server"))
+  {
+    fprintf(stderr, "Error: log not initialized, quitting!\n");
+    exit(1);
+  }
 
   test_cm = CManager_create();
 
@@ -308,6 +341,7 @@ main (int argc, char **argv)
     }
   } 
 
+  pthread_create(&res_thread, NULL, resource_handle, NULL);  
 
   CMrun_network (server_cm);
 }

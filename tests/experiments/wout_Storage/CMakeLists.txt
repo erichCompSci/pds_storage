@@ -23,8 +23,8 @@ ELSE ()
     )
 ENDIF()
 
-ADD_EXECUTABLE(client_modify client_modify.c ../../logging.c)
-ADD_EXECUTABLE(client_watch client_watch.c ../../logging.c)
+ADD_EXECUTABLE(client_modify client_modify.c )
+ADD_EXECUTABLE(client_watch client_watch.c )
 TARGET_LINK_LIBRARIES(client_modify pdsagent ${BASE_LIBS})
 TARGET_LINK_LIBRARIES(client_watch pdsagent ${BASE_LIBS})
 

@@ -23,7 +23,7 @@ ELSE ()
     )
 ENDIF()
 
-SET (LOCAL_DEPS cmdline.c logging.c)
+SET (LOCAL_DEPS cmdline.c )
 
 ADD_EXECUTABLE(basic basic.c ${LOCAL_DEPS}) 
 ADD_EXECUTABLE(event_channel_test_recv event_channel_test_recv.c ${LOCAL_DEPS})

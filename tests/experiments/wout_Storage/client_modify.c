@@ -14,15 +14,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <time.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <signal.h>
 
 
 #include "agent/pds.h"
 #include "common/formats.h"
 #include "cmdline.h"
+#include "common/logging.h"
 
-#define PDS_CONNECT_FILE "/net/hu21/elohrman/pds_connect"
 
 const float RANGE_RAND = 10.0;
 const float LOWER_RAND_BOUND = 10.0;
@@ -48,6 +49,7 @@ int get_rand_time() { return (rand() % 2) + 1; }
 static void
 alarm_handler(int sig)
 {
+  static int count = 0;
   curr_float = get_rand_float();  
   ft.data = &curr_float;
   ft.data_size = 1;
@@ -57,13 +59,33 @@ alarm_handler(int sig)
   {
     fprintf(stderr, "Error: client_modify #%d:%d could not set /experimental/pool data\n", proc_id, group_id);
   }
+  if (count == 14)
+  {
+    struct rusage resource_usage;
+    if(getrusage(RUSAGE_SELF, &resource_usage))
+    {
+      fprintf(stderr, "Error: couldn't get the resource_usage\n");
+    }
+    else
+    {
+      if(!log_rusage(&resource_usage))
+      {
+        fprintf(stderr, "Error: couldn't log the resource_usage\n");
+      }
+    }
+    count = 0;
+  }
+  else
+    count++;
   
-  alarm(get_rand_time());
+  alarm(2);
     
 }
   
 int main (int argc, char *argv[])
 {
+  char log_name[100];
+
   if (argc != 3)
   {
     fprintf(stderr, "Usage: client_modify pos_unique_number [123], where unique_number is a positive or zero unique number for the group\n"
@@ -82,6 +104,16 @@ int main (int argc, char *argv[])
 
   strcpy(send_group, "/experimental/pool");
   strcat(send_group, argv[2]);
+
+  strcpy(log_name, "modify_");
+  strcat(log_name, argv[1]);
+  strcat(log_name, argv[2]);
+
+  if(!initialize_log(log_name))
+  {
+    fprintf(stderr, "Error: log not initialized, quitting!\n");
+    exit(1);
+  }
 
   printf("Program starting\n");
 
@@ -173,7 +205,7 @@ int main (int argc, char *argv[])
 
   fflush (0);
 
-  alarm(get_rand_time());
+  alarm(2);
 
   CMrun_network(cm);
 
