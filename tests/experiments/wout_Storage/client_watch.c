@@ -158,8 +158,14 @@ int main (int argc, char *argv[])
 
   if(the_host == NULL)
   {
-    fprintf(stderr, "Host environmental variable not set!\n");
-    exit(1);
+    char hostname[128];
+    if (gethostname(&hostname[0], sizeof(hostname)) == 0) 
+	    the_host = strdup(hostname);
+    else
+    {
+      fprintf(stderr, "Host environmental variable not set!\n");
+      exit(1);
+    }
   }
 
   if (!pds_host && !access(PDS_CONNECT_FILE, F_OK))

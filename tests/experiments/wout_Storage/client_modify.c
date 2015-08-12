@@ -43,7 +43,7 @@ char send_group[20];
 
 float get_rand_float() { return RANGE_RAND * ((float) rand() / (float)RAND_MAX) + LOWER_RAND_BOUND; }
 
-int get_rand_time() { return (rand() % 5) + 1; }
+int get_rand_time() { return (rand() % 2) + 1; }
 
 static void
 alarm_handler(int sig)

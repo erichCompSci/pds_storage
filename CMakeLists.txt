@@ -212,7 +212,15 @@ IF(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/dump_dir)
 ADD_CUSTOM_TARGET( make_dump_directory ALL
                   COMMAND ${CMAKE_COMMAND} -E make_directory
                   ${CMAKE_CURRENT_BINARY_DIR}/dump_dir )
-ENDIF(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/dump_dir)
+ENDIF()
+
+get_filename_component(cprun
+                       ./tests/experiments/single_modifier_per_node.sh
+                       ABSOLUTE)
+
+ADD_CUSTOM_TARGET( copy_experiments_to_build ALL
+                   COMMAND ${CMAKE_COMMAND} -E copy 
+                   ${cprun} ${CMAKE_CURRENT_BINARY_DIR}/tests/experiments/single_modifier_per_node.sh)
 
 ADD_SUBDIRECTORY( jni )
 ADD_SUBDIRECTORY( server )
