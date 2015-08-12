@@ -28,12 +28,32 @@ int log_average(float average)
     fprintf(stderr, "Error: log_average did not log!\n");
     return 0;
   }
-  if(fflush(log_fd) == EOF)
+  /*if(fflush(log_fd) == EOF)
   {
     fprintf(stderr, "Error: log_average could not flush!\n");
     return 0;
-  }
+  }*/
   return 1;
+}
+
+int log_rusage(struct rusage * resource)
+{
+  double micro_time = ((double)resource->ru_utime.tv_usec + (double) resource->ru_stime.tv_usec) / (double) 1000000;
+  double tot_time = (double)resource->ru_utime.tv_sec + (double) resource->ru_stime.tv_sec + micro_time;
+  
+  if(fprintf(log_fd, "%s\tCPU usage: %f\n", proc_ident, tot_time) < 0)
+  {
+    fprintf(stderr, "Error: CPU usage did not log!\n");
+    return 0;
+  }
+  if(fflush(log_fd) == EOF)
+  {
+    fprintf(stderr, "Error: log_rusage could not flush!\n");
+    return 0;
+  }
+    
+  return 1;
+
 }
 
 int log_something(char * something)

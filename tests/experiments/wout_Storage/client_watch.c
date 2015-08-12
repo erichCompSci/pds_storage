@@ -13,6 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <pthread.h>
 
 
 
@@ -24,6 +27,36 @@ pds_domain_id_t new_domain_id;
 CManager cm;
 pds_entity_float_data_change_ntf global_store[5];
 int group_id;
+static pthread_mutex_t fd_mutex = PTHREAD_MUTEX_INITIALIZER;    
+
+void * rusage_handler(void * ignore)
+{
+
+  struct rusage resource_usage;
+  while(1)
+  {
+
+
+    sleep(30);
+
+		pthread_mutex_lock(&fd_mutex);
+    if(getrusage(RUSAGE_SELF, &resource_usage))
+    {
+      fprintf(stderr, "Error: couldn't get the resource_usage\n");
+    }
+    else
+    {
+      if(!log_rusage(&resource_usage))
+      {
+        fprintf(stderr, "Error: couldn't log the resource_usage\n");
+      }
+    }
+    pthread_mutex_unlock(&fd_mutex);
+
+  }  
+
+
+}
 
 /*Debugging purposes only */
 int domain_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
@@ -44,6 +77,7 @@ int
 entity_float_data_change_event_handler (CManager cm, void* event, void* client_data, attr_list event_list)
 {
   static int count = 0;
+
   printf("Event received!\n");
   if (count < 4)
   {
@@ -72,13 +106,17 @@ entity_float_data_change_event_handler (CManager cm, void* event, void* client_d
     }
     
     average = total / 5;
-    printf("Trying to log average now...\n");
+    //printf("Trying to log average now...\n");
+    pthread_mutex_lock(&fd_mutex);
     if(!log_average(average))
     {
       fprintf(stderr, "Error: could not log to file!\n");
     }
+    pthread_mutex_unlock(&fd_mutex);
 
+    
   }
+
   else
   {
     fprintf(stderr, "Serious error: count is greater than 4...\n");
@@ -123,6 +161,8 @@ void register_entity_channel(int which_channel, char * entity_to_create, char * 
 int main (int argc, char *argv[])
 {
   printf("Program starting\n");
+  pthread_t thread;
+
   pds_service wps;
   pds_context_id_t cid1;
   pds_entity_id_t eid1;
@@ -149,6 +189,7 @@ int main (int argc, char *argv[])
     fprintf(stderr, "Error: group_id should be one, two, or three.  It is: %d\n", group_id);
     exit(1);
   }
+
 
   strcpy(receive_group, "/experimental/pool");
   strcat(receive_group, argv[2]);
@@ -202,6 +243,8 @@ int main (int argc, char *argv[])
     fprintf(stderr, "Error: log not initialized, quitting!\n");
     exit(1);
   }
+
+	pthread_create(&thread, NULL, rusage_handler, NULL);
 
   contact_attrs = create_attr_list();
   set_attr (contact_attrs,

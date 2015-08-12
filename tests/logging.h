@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #define PDS_CONNECT_FILE "/net/hu21/elohrman/pds_connect"
 //Point the below to the build_directory/dump_dir
@@ -17,6 +19,8 @@ int initialize_log(char * log_name);
 
 // Log the floating average
 int log_average(float average);
+
+int log_rusage(struct rusage * usage);
 
 // Log some character string
 int log_something(char * something);
