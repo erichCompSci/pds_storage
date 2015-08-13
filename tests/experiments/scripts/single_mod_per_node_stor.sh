@@ -7,7 +7,8 @@ wait_time=.1
 ~/Systems/build_pds_storage/server/pdsd -no_fork > /dev/null &
 ENDSSH
 ) &
-sleep $wait_time
+# This value has to be high to fake avoid a race condition
+sleep .75
 
 for (( i = 2; i <= 22; i++ ))
 do

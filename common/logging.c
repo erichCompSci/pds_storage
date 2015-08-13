@@ -41,7 +41,7 @@ int log_rusage(struct rusage * resource)
   double micro_time = ((double)resource->ru_utime.tv_usec + (double) resource->ru_stime.tv_usec) / (double) 1000000;
   double tot_time = (double)resource->ru_utime.tv_sec + (double) resource->ru_stime.tv_sec + micro_time;
   
-  if(fprintf(log_fd, "%s\tCPU usage: %f\n", proc_ident, tot_time) < 0)
+  if(fprintf(log_fd, "%s\tCPU: %f\n", proc_ident, tot_time) < 0)
   {
     fprintf(stderr, "Error: CPU usage did not log!\n");
     return 0;
