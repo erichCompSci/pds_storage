@@ -1,5 +1,5 @@
-BEGIN { ORS="," }
+BEGIN { fake=ORS; ORS="," }
 $2 ~ /CPU/ {
 print $3
 }
-END { print ";\n" }
+END { ORS=fake; print ";\n" }

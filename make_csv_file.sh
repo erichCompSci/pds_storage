@@ -9,6 +9,7 @@ fi
 
 directory1=$1
 directory2=$2
+dump_file_name=compare.csv
 
 files_in_d1=$( ls $1 )
 
@@ -18,11 +19,13 @@ do
   if [ -f "$2/$file" ]
   then
    read -d '\t' line other_stuff < "$1/$file"
-   echo "$line" 1>>testing.csv
-   #awk -f get_cpu_values.gawk "$1/$file" 1>>testing.csv
-   #echo "$line" 1>>testing.csv
-   #echo "," 1>>testing.csv
-   #awk -f get_cpu_values.gawk "$2/$file" 1>>testing.csv
+   temp=$line"_simple,"
+   printf "$temp" 1>>$dump_file_name
+   awk -f get_cpu_values.gawk "$1/$file" 1>>$dump_file_name
+   temp=$line"_stor,"
+   printf "$temp" 1>>$dump_file_name
+   awk -f get_cpu_values.gawk "$2/$file" 1>>$dump_file_name
+   printf "\n" 1>>$dump_file_name
   else
     echo "$file DOES NOT EXIST IN BOTH DIRECTORIES"
   fi
