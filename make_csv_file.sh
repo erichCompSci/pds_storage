@@ -1,15 +1,15 @@
 #!/bin/bash
 
 
-if [ $# -ne 2 ]
+if [ $# -ne 3 ]
 then
-  echo "Usage: $0 first_dir second_dir"
+  echo "Usage: $0 first_dir second_dir comp_file_name"
   exit 1
 fi
 
 directory1=$1
 directory2=$2
-dump_file_name=compare.csv
+dump_file_name=$3
 
 files_in_d1=$( ls $1 )
 
