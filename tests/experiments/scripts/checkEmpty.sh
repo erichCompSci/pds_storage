@@ -7,6 +7,10 @@ fi
 
 dir=$1
 files=$(ls $1)
+if [ ! "$(ls -A $1)" ]
+then
+  echo "Directory is empty"
+fi
 
 for file in $files
 do
